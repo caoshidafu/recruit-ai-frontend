@@ -1,452 +1,129 @@
 <template>
-  <div class="candidate-card">
-    <div class="match-indicator">
-      <div class="match-score">{{ candidate.matchScore }}%</div>
-      <span class="match-label">匹配度</span>
-    </div>
-
-    <div class="candidate-header">
-      <img
-        :src="candidate.avatar"
-        :alt="candidate.name"
-        class="candidate-avatar"
-      />
-      <div class="candidate-info">
-        <h4 class="candidate-name">{{ candidate.name }}</h4>
-        <div class="candidate-meta">
-          <span>{{ candidate.experience }}年经验</span>
-          <span class="separator">|</span>
-          <span>{{ candidate.title }}</span>
-          <span class="separator">|</span>
-          <span>{{ candidate.location }}</span>
-        </div>
+  <div class="candidate-card" :class="{ 'expanded': isExpanded }">
+    <!-- 折叠状态的简化视图 -->
+    <div class="candidate-header" @click="toggleExpand">
+      <div class="match-indicator">
+        <div class="match-score">{{ candidate.matchScore }}%</div>
+        <div class="match-label">匹配度</div>
       </div>
-    </div>
-
-    <div class="education-section">
-      <h5>教育经历</h5>
-      <div class="education-list">
-        <div
-          v-for="(edu, index) in candidate.educationHistory"
-          :key="index"
-          class="education-item"
-        >
-          <div class="edu-header">
-            <span class="degree">{{ edu.degree }}</span>
-            <span class="duration">{{ edu.duration }}</span>
-          </div>
-          <div class="edu-details">
-            <span class="school">{{ edu.school }}</span>
+      
+      <div class="candidate-basic-info">
+        <img
+          :src="candidate.avatar"
+          :alt="candidate.name"
+          class="candidate-avatar"
+        />
+        <div class="candidate-info">
+          <h4 class="candidate-name">{{ candidate.name }}</h4>
+          <div class="candidate-meta">
+            <span>{{ candidate.experience }}年经验</span>
             <span class="separator">·</span>
-            <span class="major">{{ edu.major }}</span>
+            <span>{{ candidate.title }}</span>
+            <span class="separator">·</span>
+            <span>{{ candidate.location }}</span>
+          </div>
+          <div class="candidate-summary">
+            <span>{{ candidate.educationHistory[0]?.degree }} | {{ candidate.skills.slice(0, 3).join(' · ') }}</span>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="recommend-section">
-      <h5>推荐理由</h5>
-      <ul class="recommend-reasons">
-        <li v-for="(reason, index) in candidate.recommendReasons" :key="index">
-          {{ reason }}
-        </li>
-      </ul>
-    </div>
-
-    <div class="highlight-section">
-      <h5>关键匹配点</h5>
-      <div class="highlights">
-        <span
-          v-for="(highlight, index) in candidate.keyHighlights"
-          :key="index"
-          class="highlight-tag"
-        >
-          {{ highlight }}
-        </span>
-      </div>
-    </div>
-
-    <div class="skills-section">
-      <h5>技能标签</h5>
-      <div class="candidate-skills">
-        <span
-          v-for="skill in candidate.skills"
-          :key="skill"
-          class="skill-tag"
-        >
-          {{ skill }}
-        </span>
-      </div>
-    </div>
-
-    <div class="work-section">
-      <h5>过往经历</h5>
-      <div
-        v-for="(work, index) in candidate.workHistory"
-        :key="index"
-        class="work-item"
-      >
-        <div class="work-header">
-          <span class="company">{{ work.company }}</span>
-          <span class="duration">{{ work.duration }}</span>
-        </div>
-        <div class="position">{{ work.position }}</div>
-        <div v-if="work.description" class="description">
-          {{ work.description }}
-        </div>
-      </div>
-    </div>
-
-    <div v-if="showDetails" class="candidate-details">
-      <h5>详细信息</h5>
-      <div class="detail-content">
-        <div class="detail-item">
-          <span class="detail-label">当前公司：</span>
-          <span class="detail-value">{{ candidate.currentCompany }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">求职状态：</span>
-          <span class="detail-value">{{ candidate.status }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">期望薪资：</span>
-          <span class="detail-value">{{ candidate.expectedSalary }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="showAIAnalysis && aiAnalysis" class="ai-analysis-section">
-      <h5>🤖 AI 智能分析报告</h5>
-
-      <!-- 分析导航标签 -->
-      <div class="ai-tabs">
-        <button
-          v-for="(tab, index) in tabs"
-          :key="tab"
-          :class="`ai-tab ${activeTab === index ? 'active' : ''}`"
-          @click="activeTab = index"
-        >
-          {{ tab }}
+      <div class="expand-controls">
+        <button class="quick-action-btn contact-btn" @click.stop="quickContact">
+          <span class="btn-icon">💬</span>
+        </button>
+        <button class="expand-btn" :class="{ 'expanded': isExpanded }">
+          <span class="expand-icon">{{ isExpanded ? '▲' : '▼' }}</span>
         </button>
       </div>
+    </div>
 
-      <div class="ai-content">
-        <!-- 综合评估 -->
-        <div v-if="activeTab === 0" class="ai-section">
-          <p class="ai-summary">{{ aiAnalysis.summary }}</p>
-
-          <div class="ai-metrics">
-            <div class="metric-card">
-              <div class="metric-icon">📊</div>
-              <div class="metric-value">{{ candidate.matchScore }}%</div>
-              <div class="metric-label">综合匹配度</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">⭐</div>
-              <div class="metric-value">4.5/5</div>
-              <div class="metric-label">推荐指数</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">🎯</div>
-              <div class="metric-value">高</div>
-              <div class="metric-label">成功概率</div>
-            </div>
-          </div>
-
-          <div class="ai-detail">
-            <h6>✅ 优势分析</h6>
-            <ul>
-              <li v-for="(item, index) in aiAnalysis.strengths" :key="index">
-                {{ item }}
-              </li>
-            </ul>
-          </div>
-
-          <div class="ai-detail">
-            <h6>⚠️ 注意事项</h6>
-            <ul>
-              <li v-for="(item, index) in aiAnalysis.concerns" :key="index">
-                {{ item }}
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 能力雷达 -->
-        <div v-if="activeTab === 1" class="ai-section">
-          <div class="ai-radar-section">
-            <h6>多维能力评估雷达图</h6>
-            <RadarChart :data="aiAnalysis.radarData" />
-          </div>
-
-          <div class="radar-insights">
-            <h6>能力洞察</h6>
-            <div class="insight-cards">
-              <div class="insight-card strong">
-                <div class="insight-label">最强项</div>
-                <div class="insight-value">技能匹配 (95%)</div>
-              </div>
-              <div class="insight-card weak">
-                <div class="insight-label">待提升</div>
-                <div class="insight-value">稳定性 (80%)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 性格分析 -->
-        <div v-if="activeTab === 2 && aiAnalysis.personality" class="ai-section">
-          <h6>{{ aiAnalysis.personality.title }}</h6>
-          <div class="personality-traits">
-            <div
-              v-for="(trait, index) in aiAnalysis.personality.traits"
-              :key="index"
-              class="trait-item"
+    <!-- 展开状态的详细内容 -->
+    <div class="candidate-details" v-show="isExpanded">
+      <div class="details-content">
+        <!-- 技能标签 -->
+        <div class="skills-section">
+          <h5>技能标签</h5>
+          <div class="candidate-skills">
+            <span
+              v-for="skill in candidate.skills"
+              :key="skill"
+              class="skill-tag"
             >
-              <div class="trait-header">
-                <span class="trait-name">{{ trait.name }}</span>
-                <span class="trait-score">{{ trait.score }}分</span>
-              </div>
-              <div class="trait-bar">
-                <div
-                  class="trait-fill"
-                  :style="{ width: `${trait.score}%` }"
-                />
-              </div>
-              <div class="trait-desc">{{ trait.description }}</div>
-            </div>
-          </div>
-
-          <div class="personality-summary">
-            <h6>性格总结</h6>
-            <p>
-              候选人展现出积极主动、善于创新的性格特质，适合需要独立思考和解决问题的岗位。
-            </p>
+              {{ skill }}
+            </span>
           </div>
         </div>
 
-        <!-- 技能矩阵 -->
-        <div v-if="activeTab === 3 && aiAnalysis.skillsAnalysis" class="ai-section">
-          <h6>{{ aiAnalysis.skillsAnalysis.title }}</h6>
-
-          <div class="skills-matrix">
-            <div class="skill-category">
-              <h6>🎯 核心技能</h6>
-              <div class="skill-tags">
-                <span
-                  v-for="skill in aiAnalysis.skillsAnalysis.core"
-                  :key="skill"
-                  class="skill-tag core"
-                >
-                  {{ skill }}
-                </span>
-              </div>
-            </div>
-
-            <div class="skill-category">
-              <h6>🚀 新兴技能</h6>
-              <div class="skill-tags">
-                <span
-                  v-for="skill in aiAnalysis.skillsAnalysis.emerging"
-                  :key="skill"
-                  class="skill-tag emerging"
-                >
-                  {{ skill }}
-                </span>
-              </div>
-            </div>
-
-            <div class="skill-category">
-              <h6>📚 待补充技能</h6>
-              <div class="skill-tags">
-                <span
-                  v-for="skill in aiAnalysis.skillsAnalysis.gaps"
-                  :key="skill"
-                  class="skill-tag gap"
-                >
-                  {{ skill }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="skill-recommendations">
-            <h6>提升建议</h6>
-            <ul>
-              <li
-                v-for="(rec, index) in aiAnalysis.skillsAnalysis.recommendations"
-                :key="index"
-              >
-                {{ rec }}
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 发展潜力 -->
-        <div v-if="activeTab === 4 && aiAnalysis.careerPath" class="ai-section">
-          <h6>{{ aiAnalysis.careerPath.title }}</h6>
-
-          <div class="career-timeline">
-            <div class="timeline-item current">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content">
-                <div class="timeline-title">当前</div>
-                <div class="timeline-role">
-                  {{ aiAnalysis.careerPath.current }}
-                </div>
-              </div>
-            </div>
-
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content">
-                <div class="timeline-title">短期发展</div>
-                <div class="timeline-role">
-                  {{ aiAnalysis.careerPath.shortTerm }}
-                </div>
-              </div>
-            </div>
-
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content">
-                <div class="timeline-title">中期目标</div>
-                <div class="timeline-role">
-                  {{ aiAnalysis.careerPath.midTerm }}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="potential-assessment">
-            <p>{{ aiAnalysis.careerPath.potential }}</p>
-          </div>
-
-          <!-- 市场分析 -->
-          <div class="market-analysis">
-            <h6>{{ aiAnalysis.marketAnalysis.title }}</h6>
-            <div class="market-info">
-              <div class="info-item">
-                <span class="info-label">市场薪资区间：</span>
-                <span class="info-value">
-                  {{ aiAnalysis.marketAnalysis.salary.market }}
-                </span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">薪资水平：</span>
-                <span class="info-value">
-                  前{{ 100 - aiAnalysis.marketAnalysis.salary.percentile }}%
-                </span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">人才稀缺度：</span>
-                <span class="info-value">
-                  {{ aiAnalysis.marketAnalysis.rarity }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 风险评估 -->
-        <div v-if="activeTab === 5 && aiAnalysis.riskAssessment" class="ai-section">
-          <h6>{{ aiAnalysis.riskAssessment.title }}</h6>
-
-          <div class="risk-matrix">
-            <div
-              v-for="(risk, index) in aiAnalysis.riskAssessment.risks"
+        <!-- 关键匹配点 -->
+        <div class="highlight-section">
+          <h5>关键匹配点</h5>
+          <div class="highlights">
+            <span
+              v-for="(highlight, index) in candidate.keyHighlights"
               :key="index"
-              class="risk-item"
+              class="highlight-tag"
             >
-              <div class="risk-header">
-                <span class="risk-type">{{ risk.type }}</span>
-                <span :class="`risk-level ${risk.level}`">
-                  {{ risk.level }}
-                </span>
-              </div>
-              <div class="risk-bar">
-                <div
-                  :class="`risk-fill ${risk.level}`"
-                  :style="{ width: `${risk.score}%` }"
-                />
-              </div>
-            </div>
+              {{ highlight }}
+            </span>
           </div>
+        </div>
 
-          <!-- 面试建议 -->
-          <div class="interview-suggestions">
-            <h6>{{ aiAnalysis.interviewSuggestions.title }}</h6>
-            <div class="suggested-questions">
-              <div
-                v-for="(q, index) in aiAnalysis.interviewSuggestions.questions"
-                :key="index"
-                class="question-item"
-              >
-                <span class="question-number">{{ index + 1 }}</span>
-                <span class="question-text">{{ q }}</span>
-              </div>
-            </div>
+        <!-- 推荐理由 -->
+        <div class="recommend-section">
+          <h5>推荐理由</h5>
+          <ul class="recommend-reasons">
+            <li v-for="(reason, index) in candidate.recommendReasons" :key="index">
+              {{ reason }}
+            </li>
+          </ul>
+        </div>
 
-            <div class="focus-areas">
-              <h6>重点考察方向</h6>
-              <div class="focus-tags">
-                <span
-                  v-for="area in aiAnalysis.interviewSuggestions.focus"
-                  :key="area"
-                  class="focus-tag"
-                >
-                  {{ area }}
-                </span>
+        <!-- 教育经历 -->
+        <div class="education-section">
+          <h5>教育经历</h5>
+          <div class="education-list">
+            <div
+              v-for="(edu, index) in candidate.educationHistory"
+              :key="index"
+              class="education-item"
+            >
+              <div class="edu-header">
+                <span class="degree">{{ edu.degree }}</span>
+                <span class="duration">{{ edu.duration }}</span>
               </div>
-            </div>
-          </div>
-
-          <!-- 团队契合度 -->
-          <div class="team-fit">
-            <h6>{{ aiAnalysis.teamFit.title }}</h6>
-            <div class="fit-score">
-              <div class="score-circle">
-                <span class="score-value">
-                  {{ aiAnalysis.teamFit.score }}%
-                </span>
+              <div class="edu-details">
+                <span class="school">{{ edu.school }}</span>
+                <span class="separator">·</span>
+                <span class="major">{{ edu.major }}</span>
               </div>
-              <p class="fit-analysis">
-                {{ aiAnalysis.teamFit.analysis }}
-              </p>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- AI分析操作栏 -->
-      <div class="ai-actions">
-        <button class="ai-action-btn download">
-          <span>📥</span> 下载报告
-        </button>
-        <button class="ai-action-btn share">
-          <span>🔗</span> 分享报告
-        </button>
-        <button class="ai-action-btn compare">
-          <span>📊</span> 对比分析
-        </button>
+        <!-- 工作经历 -->
+        <div class="work-section">
+          <h5>过往经历</h5>
+          <div
+            v-for="(work, index) in candidate.workHistory"
+            :key="index"
+            class="work-item"
+          >
+            <div class="work-header">
+              <span class="company">{{ work.company }}</span>
+              <span class="duration">{{ work.duration }}</span>
+            </div>
+            <div class="position">{{ work.position }}</div>
+            <div v-if="work.description" class="description">
+              {{ work.description }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="candidate-actions">
-      <button
-        class="action-btn details-btn"
-        @click="showDetails = !showDetails"
-      >
-        <span class="btn-icon">👁️</span>
-        <span class="btn-text">
-          {{ showDetails ? "收起详情" : "查看详情" }}
-        </span>
-      </button>
-      <button class="action-btn contact-btn">
-        <span class="btn-icon">💬</span>
-        <span class="btn-text">联系候选人</span>
-      </button>
+    <!-- 展开状态下的操作按钮 -->
+    <div v-if="isExpanded" class="expanded-actions">
       <button
         class="action-btn ai-btn"
         @click="generateAIAnalysis"
@@ -457,6 +134,30 @@
           {{ aiLoading ? "分析中..." : showAIAnalysis ? "重新分析" : "AI分析" }}
         </span>
       </button>
+      <button class="action-btn details-btn" @click="showDetails = !showDetails">
+        <span class="btn-icon">👁️</span>
+        <span class="btn-text">{{ showDetails ? "收起详情" : "详细信息" }}</span>
+      </button>
+      <button class="action-btn contact-btn" @click="quickContact">
+        <span class="btn-icon">💬</span>
+        <span class="btn-text">联系候选人</span>
+      </button>
+    </div>
+
+    <!-- 简化的详细信息 -->
+    <div v-if="showDetails && isExpanded" class="simple-details">
+      <div class="detail-row">
+        <span class="detail-label">当前公司：</span>
+        <span class="detail-value">{{ candidate.currentCompany }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">求职状态：</span>
+        <span class="detail-value">{{ candidate.status }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">期望薪资：</span>
+        <span class="detail-value">{{ candidate.expectedSalary }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -477,6 +178,7 @@ export default {
     }
   },
   setup(props) {
+    const isExpanded = ref(false)
     const showDetails = ref(false)
     const showAIAnalysis = ref(false)
     const aiLoading = ref(false)
@@ -491,6 +193,14 @@ export default {
       "发展潜力",
       "风险评估",
     ]
+
+    const toggleExpand = () => {
+      isExpanded.value = !isExpanded.value
+    }
+
+    const quickContact = () => {
+      alert(`联系候选人：${props.candidate.name}`)
+    }
 
     const generateAIAnalysis = () => {
       aiLoading.value = true
@@ -594,12 +304,15 @@ export default {
     }
 
     return {
+      isExpanded,
       showDetails,
       showAIAnalysis,
       aiLoading,
       aiAnalysis,
       activeTab,
       tabs,
+      toggleExpand,
+      quickContact,
       generateAIAnalysis
     }
   }
@@ -607,5 +320,470 @@ export default {
 </script>
 
 <style scoped>
-/* 基础样式在这里会太长，我会在后面的样式文件中统一添加 */
+/* 候选人卡片 - 下拉式设计 */
+.candidate-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e8ecf3;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.candidate-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.candidate-card.expanded {
+  border-color: #667eea;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+}
+
+/* 候选人头部 - 可点击展开 */
+.candidate-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.candidate-header:hover {
+  background-color: #f8f9fa;
+}
+
+/* 匹配度指示器 */
+.match-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.match-score {
+  font-size: 24px;
+  font-weight: 700;
+  color: #28a745;
+  line-height: 1;
+}
+
+.match-label {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 4px;
+}
+
+/* 候选人基本信息 */
+.candidate-basic-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.candidate-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e9ecef;
+}
+
+.candidate-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.candidate-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 4px 0;
+}
+
+.candidate-meta {
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.candidate-summary {
+  font-size: 13px;
+  color: #868e96;
+  line-height: 1.4;
+}
+
+.separator {
+  margin: 0 6px;
+  color: #dee2e6;
+}
+
+/* 展开控制按钮 */
+.expand-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-action-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: #f8f9fa;
+  color: #495057;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.quick-action-btn:hover {
+  background: #e9ecef;
+  transform: scale(1.05);
+}
+
+.expand-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: #667eea;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.expand-btn:hover {
+  background: #5a6fd8;
+  transform: scale(1.05);
+}
+
+.expand-btn.expanded {
+  background: #495057;
+}
+
+.expand-icon {
+  font-size: 14px;
+  transition: transform 0.3s;
+}
+
+.expand-btn.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+/* 详细内容展开区域 */
+.candidate-details {
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+  animation: slideDown 0.3s ease;
+}
+
+.details-content {
+  padding: 20px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+  }
+}
+
+/* 详细内容各区块 */
+.skills-section,
+.highlight-section,
+.recommend-section,
+.education-section,
+.work-section {
+  margin-bottom: 24px;
+}
+
+.skills-section:last-child,
+.highlight-section:last-child,
+.recommend-section:last-child,
+.education-section:last-child,
+.work-section:last-child {
+  margin-bottom: 0;
+}
+
+.skills-section h5,
+.highlight-section h5,
+.recommend-section h5,
+.education-section h5,
+.work-section h5 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 技能标签 */
+.candidate-skills,
+.highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-tag,
+.highlight-tag {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.highlight-tag {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+/* 推荐理由 */
+.recommend-reasons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recommend-reasons li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: #495057;
+  position: relative;
+  padding-left: 16px;
+}
+
+.recommend-reasons li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #28a745;
+  font-weight: 600;
+}
+
+/* 教育经历 */
+.education-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.education-item {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.edu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.degree {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.duration {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.edu-details {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+/* 工作经历 */
+.work-item {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  margin-bottom: 12px;
+}
+
+.work-item:last-child {
+  margin-bottom: 0;
+}
+
+.work-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.company {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.position {
+  font-size: 13px;
+  color: #667eea;
+  margin-bottom: 4px;
+}
+
+.description {
+  font-size: 12px;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+/* 展开状态下的操作按钮 */
+.expanded-actions {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  background: white;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-1px);
+}
+
+.action-btn.ai-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.action-btn.ai-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.action-btn.contact-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+}
+
+.action-btn.contact-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  font-size: 14px;
+}
+
+.btn-text {
+  font-size: 12px;
+}
+
+/* 简化的详细信息 */
+.simple-details {
+  padding: 16px 20px;
+  background: white;
+  border-top: 1px solid #e9ecef;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.detail-label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .candidate-header {
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .candidate-basic-info {
+    width: 100%;
+  }
+
+  .expand-controls {
+    align-self: flex-end;
+    margin-top: 8px;
+  }
+
+  .details-content {
+    padding: 16px;
+  }
+
+  .expanded-actions {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+}
+
+/* 加载状态 */
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.action-btn:disabled:hover {
+  transform: none !important;
+}
 </style>
