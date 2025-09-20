@@ -251,7 +251,9 @@ body {
   flex: 1;
   background: #f8f9fa;
   padding: 24px;
-  overflow-y: auto;
+  overflow: hidden; /* 改为hidden，让内部滚动容器处理滚动 */
+  display: flex;
+  flex-direction: column;
 }
 
 .panel-header {
@@ -292,6 +294,11 @@ body {
 .content-body.candidates .candidates-list {
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 24px;
+}
+
+/* 确保panel-header不会被滚动容器压缩 */
+.panel-header {
+  flex-shrink: 0;
 }
 
 /* 响应式设计 */
@@ -347,6 +354,11 @@ body {
   }
   
   .candidates-panel {
+    padding: 16px;
+  }
+  
+  /* 确保移动端候选人面板也使用flexbox */
+  .content-body.candidates .candidates-panel {
     padding: 16px;
   }
   

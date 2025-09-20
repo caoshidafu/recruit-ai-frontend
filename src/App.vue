@@ -336,10 +336,11 @@ export default {
 }
 
 .candidates-grid.infinite-scroll {
-  max-height: 70vh;
+  flex: 1; /* 占据剩余空间 */
   overflow-y: auto;
   padding-right: 8px;
   scroll-behavior: smooth;
+  min-height: 0; /* 允许flex shrink */
 }
 
 .candidates-grid.infinite-scroll::-webkit-scrollbar {
@@ -702,6 +703,10 @@ export default {
     gap: 12px;
   }
   
+  .candidates-grid.infinite-scroll {
+    padding-right: 4px; /* 移动端减少padding */
+  }
+  
   .pagination-container {
     padding: 20px;
     margin-top: 16px;
@@ -755,6 +760,10 @@ export default {
 @media (max-width: 1024px) and (min-width: 769px) {
   .candidates-grid {
     gap: 14px;
+  }
+  
+  .candidates-grid.infinite-scroll {
+    padding-right: 6px; /* 中等屏幕适中的padding */
   }
   
   .pagination-container {
