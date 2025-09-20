@@ -1,7 +1,9 @@
 // API管理器 - 统一管理真实API和Mock API的调用
-import * as JobAPI from './JOBAPI.js'
-import * as CandidateAPI from './CANDIDATEAPI.js'
-import * as MockAPI from './MOCKAPI.js'
+import * as JobAPI from './JobAPI.js'
+import * as CandidateAPI from './CandidateAPI.js'
+import * as MockAPI from './MockAPI.js'
+
+// ==================== API配置 ====================
 
 // 判断是否使用Mock数据
 // 在开发环境默认使用Mock数据，生产环境需要配置环境变量

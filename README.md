@@ -30,17 +30,15 @@ vue3-project/
 ├── src/
 │   ├── api/                # API接口目录
 │   │   ├── index.js            # HTTP请求基础方法
-│   │   ├── JOBAPI.js           # 职位相关API接口
-│   │   ├── CANDIDATEAPI.js     # 候选人相关API接口
-│   │   ├── MOCKAPI.js          # Mock API接口
+│   │   ├── JobAPI.js           # 职位相关API接口
+│   │   ├── CandidateAPI.js     # 候选人相关API接口
+│   │   ├── MockAPI.js          # Mock API接口（包含模拟数据）
 │   │   └── mockManager.js      # API管理器（统一调用入口）
 │   ├── components/          # 组件目录
 │   │   ├── CandidateCard.vue    # 候选人卡片组件
 │   │   ├── JobCard.vue          # 岗位卡片组件
 │   │   ├── JobDetail.vue        # 岗位详情组件
 │   │   └── RadarChart.vue       # 雷达图组件
-│   ├── data/               # 数据目录
-│   │   └── mockData.js         # 模拟数据
 │   ├── styles/             # 样式目录
 │   │   └── global.css          # 全局样式
 │   ├── App.vue             # 主应用组件
