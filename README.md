@@ -256,7 +256,11 @@ npm install
 
 ### 开发模式
 ```bash
+# 使用serve命令启动（原始）
 npm run serve
+
+# 使用dev命令启动（新增别名）
+npm run dev
 ```
 
 ### 生产构建
