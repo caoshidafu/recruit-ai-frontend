@@ -31,7 +31,7 @@
 ## 项目结构
 
 ```
-vue3-project/
+recruit-ai-frontend/
 ├── public/
 │   ├── favicon.ico
 │   └── index.html
