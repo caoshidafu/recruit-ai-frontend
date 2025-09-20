@@ -241,10 +241,13 @@ body {
 }
 
 .left-panel {
-  width: 400px;
+  /* width现在通过内联样式动态设置 */
   background: white;
   border-right: 1px solid #e8ecf3;
   overflow-y: auto;
+  flex-shrink: 0; /* 防止收缩 */
+  min-width: 300px; /* 设置最小宽度 */
+  max-width: 800px; /* 设置最大宽度 */
 }
 
 .candidates-panel {
@@ -254,6 +257,7 @@ body {
   overflow: hidden; /* 改为hidden，让内部滚动容器处理滚动 */
   display: flex;
   flex-direction: column;
+  min-width: 0; /* 允许收缩 */
 }
 
 .panel-header {

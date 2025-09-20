@@ -64,13 +64,19 @@
         </div>
 
         <div :class="`content-body ${viewMode}`">
-          <div v-if="viewMode === 'split'" class="left-panel">
+          <div v-if="viewMode === 'split'" class="left-panel" :style="{ width: leftPanelWidth + 'px' }">
             <JobDetail
               :job="selectedJob"
               :showDetail="showJobDetail"
               @toggle="showJobDetail = !showJobDetail"
             />
           </div>
+          
+          <!-- 可拖拽分割器 -->
+          <ResizableSplitter 
+            v-if="viewMode === 'split'" 
+            @resize="handleSplitterResize"
+          />
 
           <div class="candidates-panel">
             <div class="panel-header">
@@ -131,6 +137,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import JobCard from './components/JobCard.vue'
 import CandidateCard from './components/CandidateCard.vue'
 import JobDetail from './components/JobDetail.vue'
+import ResizableSplitter from './components/ResizableSplitter.vue'
 import apiManager from './api/mockManager.js'
 
 export default {
@@ -138,7 +145,8 @@ export default {
   components: {
     JobCard,
     CandidateCard,
-    JobDetail
+    JobDetail,
+    ResizableSplitter
   },
   setup() {
     // 响应式数据
@@ -153,6 +161,11 @@ export default {
     const showJobDetail = ref(true)
     const viewMode = ref('split')
     const loading = ref(false)
+    
+    // 分割器相关状态
+    const leftPanelWidth = ref(400) // 左侧面板宽度，默认400px
+    const minLeftWidth = ref(300) // 最小宽度
+    const maxLeftWidth = ref(800) // 最大宽度
     
     // 无限滚动相关状态
     const pageSize = ref(5) // 每次加载5个候选人（因为每个都展开，内容更多）
@@ -232,6 +245,16 @@ export default {
         candidatesContainer.value.scrollTop = 0
       }
     }
+    
+    // 处理分割器拖拽调整
+    const handleSplitterResize = (deltaX) => {
+      const newWidth = leftPanelWidth.value + deltaX
+      
+      // 限制在最小和最大宽度之间
+      if (newWidth >= minLeftWidth.value && newWidth <= maxLeftWidth.value) {
+        leftPanelWidth.value = newWidth
+      }
+    }
 
     // 加载职位列表
     const loadJobs = async () => {
@@ -309,6 +332,9 @@ export default {
       displayedCount,
       loadingMore,
       candidatesContainer,
+      leftPanelWidth,
+      minLeftWidth,
+      maxLeftWidth,
       // 计算属性
       currentCandidates,
       displayedCandidates,
@@ -321,7 +347,8 @@ export default {
       loadCandidatesForJob,
       handleScroll,
       loadMoreCandidates,
-      resetScrolling
+      resetScrolling,
+      handleSplitterResize
     }
   }
 }
