@@ -1612,8 +1612,12 @@ export function mockGetCandidateAIAnalysis(candidateId, analysisType = 'detailed
         return;
       }
       
-      // 根据候选人ID和数据生成个性化的AI分析
+      // 根据候选人ID和分析类型生成个性化的AI分析
       const baseScore = candidate.matchScore || 85;
+      
+      // 根据分析类型调整分析深度
+      const isBasicAnalysis = analysisType === 'basic';
+      const isComprehensive = analysisType === 'comprehensive';
       const isHighPerformer = baseScore >= 90;
       const isMidPerformer = baseScore >= 80 && baseScore < 90;
       
@@ -1739,8 +1743,8 @@ export function mockGetCandidateAIAnalysis(candidateId, analysisType = 'detailed
           isMidPerformer ?
           '候选人具备良好的基础能力，有一定发展潜力，可作为重点关注对象' :
           '候选人基础能力尚可，需要进一步评估和培养，可考虑作为储备人选',
-        strengths: strengths.slice(0, 5), // 最多显示5个优势
-        improvements: improvements.slice(0, 4), // 最多显示4个建议
+        strengths: strengths.slice(0, isBasicAnalysis ? 3 : isComprehensive ? 7 : 5), // 根据分析类型调整显示数量
+        improvements: improvements.slice(0, isBasicAnalysis ? 2 : isComprehensive ? 6 : 4), // 根据分析类型调整显示数量
         jobMatching: {
           skillMatch: Math.round(jobMatching.skillMatch),
           experienceMatch: Math.round(jobMatching.experienceMatch),

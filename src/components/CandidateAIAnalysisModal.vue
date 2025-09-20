@@ -152,7 +152,7 @@
 </template>
 
 <script>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import RadarChart from './RadarChart.vue'
 import apiManager from '../api/mockManager.js'
 
