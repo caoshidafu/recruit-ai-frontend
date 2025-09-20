@@ -341,7 +341,7 @@
 </template>
 
 <script>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { apiManager } from '../api/mockManager.js'
 
 export default {

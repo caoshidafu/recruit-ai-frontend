@@ -921,12 +921,19 @@ export function mockParseJobDescription(description) {
   // 模拟AI解析延迟
   return new Promise((resolve) => {
     setTimeout(() => {
+      // 根据传入的描述内容进行简单关键词匹配
+      const hasVue = description?.toLowerCase().includes('vue');
+      const hasReact = description?.toLowerCase().includes('react');
+      const hasNode = description?.toLowerCase().includes('node');
+      
       // 模拟AI解析结果
       const mockParsedData = {
         skills: [
-          'Vue.js', 'JavaScript', 'TypeScript', 'Node.js', 'MySQL', 
-          'Redis', 'Git', '前端框架', 'RESTful API', '响应式设计'
-        ],
+          ...(hasVue ? ['Vue.js', 'JavaScript', 'TypeScript'] : []),
+          ...(hasReact ? ['React', 'JavaScript', 'TypeScript'] : []),
+          ...(hasNode ? ['Node.js', 'Express'] : []),
+          'MySQL', 'Redis', 'Git', '前端框架', 'RESTful API', '响应式设计'
+        ].filter(Boolean),
         requirements: [
           '3年以上前端开发经验',
           '熟练掌握Vue.js生态系统',
@@ -969,6 +976,9 @@ export function mockParseJobDescription(description) {
 export function mockAnalyzeJobRequirements(jobId) {
   return new Promise((resolve) => {
     setTimeout(() => {
+      // 根据jobId模拟不同的分析结果
+      const isHighLevel = parseInt(jobId) % 2 === 0;
+      
       const mockAnalysisData = {
         matchCriteria: {
           technicalSkills: {
@@ -978,8 +988,8 @@ export function mockAnalyzeJobRequirements(jobId) {
           },
           experience: {
             weight: 0.3,
-            minYears: 3,
-            maxYears: 8,
+            minYears: isHighLevel ? 5 : 3,
+            maxYears: isHighLevel ? 10 : 8,
             relevantDomains: ['前端开发', 'Web开发', '全栈开发']
           },
           education: {
@@ -1163,43 +1173,83 @@ export function mockGetEducationCandidates(params = {}) {
 export function mockAiMatchCandidates(jobId, analysisDepth = 'detailed') {
   return new Promise((resolve) => {
     setTimeout(() => {
+      // 根据分析深度和jobId调整结果
+      const isDetailed = analysisDepth === 'detailed';
+      const matchCount = isDetailed ? 6 : 3;
+      const baseScore = parseInt(jobId) % 2 === 0 ? 90 : 85;
+      
       // 模拟AI匹配分析结果
+      const allCandidates = [
+        {
+          id: 1,
+          matchScore: baseScore + 4,
+          matchReasons: [
+            '技能匹配度高：Vue.js、JavaScript、TypeScript',
+            '工作经验符合要求：5年前端开发经验',
+            '项目背景相似：大型电商平台开发经验'
+          ],
+          confidenceScore: 0.94,
+          riskFactors: []
+        },
+        {
+          id: 3,
+          matchScore: 89,
+          matchReasons: [
+            '技术栈匹配：Vue.js、Node.js全栈经验',
+            '学历背景优秀：211院校计算机专业',
+            '团队协作能力强'
+          ],
+          confidenceScore: 0.89,
+          riskFactors: ['地理位置较远']
+        },
+        {
+          id: 5,
+          matchScore: 85,
+          matchReasons: [
+            '前端技能扎实：JavaScript、CSS、HTML',
+            '快速学习能力：能够快速掌握新技术',
+            '工作态度积极'
+          ],
+          confidenceScore: 0.85,
+          riskFactors: ['经验稍显不足']
+        },
+        {
+          id: 7,
+          matchScore: 82,
+          matchReasons: [
+            'React转Vue经验：具备框架迁移能力',
+            '大厂背景：阿里巴巴3年工作经验',
+            '技术视野广阔'
+          ],
+          confidenceScore: 0.82,
+          riskFactors: ['薪资期望较高']
+        },
+        {
+          id: 9,
+          matchScore: 79,
+          matchReasons: [
+            '基础扎实：计算机基础知识牢固',
+            '学习能力强：自主学习Vue.js',
+            '工作稳定性好'
+          ],
+          confidenceScore: 0.79,
+          riskFactors: ['缺乏大型项目经验']
+        },
+        {
+          id: 11,
+          matchScore: 76,
+          matchReasons: [
+            '后端转前端：全栈思维优势',
+            '逻辑思维清晰：算法基础扎实',
+            '责任心强'
+          ],
+          confidenceScore: 0.76,
+          riskFactors: ['前端经验相对较少']
+        }
+      ];
+      
       const mockMatchData = {
-        candidates: [
-          {
-            id: 1,
-            matchScore: 94,
-            matchReasons: [
-              '技能匹配度高：Vue.js、JavaScript、TypeScript',
-              '工作经验符合要求：5年前端开发经验',
-              '项目背景相似：大型电商平台开发经验'
-            ],
-            confidenceScore: 0.94,
-            riskFactors: []
-          },
-          {
-            id: 3,
-            matchScore: 89,
-            matchReasons: [
-              '技术栈匹配：Vue.js、Node.js全栈经验',
-              '学历背景优秀：211院校计算机专业',
-              '团队协作能力强'
-            ],
-            confidenceScore: 0.89,
-            riskFactors: ['地理位置较远']
-          },
-          {
-            id: 5,
-            matchScore: 85,
-            matchReasons: [
-              '前端技能扎实：JavaScript、CSS、HTML',
-              '快速学习能力：能够快速掌握新技术',
-              '工作态度积极'
-            ],
-            confidenceScore: 0.85,
-            riskFactors: ['经验稍显不足']
-          }
-        ],
+        candidates: allCandidates.slice(0, matchCount),
         matchSummary: {
           totalAnalyzed: 156,
           highMatch: 12,
