@@ -111,7 +111,6 @@
                 v-for="candidate in displayedCandidates"
                 :key="candidate.id"
                 :candidate="candidate"
-                :defaultExpanded="true"
                 class="candidate-column"
               />
               

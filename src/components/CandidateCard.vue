@@ -119,7 +119,7 @@
 
       <!-- 操作按钮 -->
       <div class="card-actions">
-        <button class="action-btn contact-btn" @click.stop="quickContact">
+        <button class="action-btn details-btn" @click.stop="quickContact">
           <span class="btn-icon">📄</span>
           <span class="btn-text">查看详情</span>
         </button>
@@ -551,35 +551,19 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.action-btn.contact-btn {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1px solid #f59e0b;
-  color: #92400e;
-  position: relative;
-  overflow: hidden;
+/* 查看详情按钮 */
+.details-btn {
+  background: white;
+  color: var(--gray-700);
+  border: 2px solid var(--gray-200);
 }
 
-.action-btn.contact-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s;
-}
-
-.action-btn.contact-btn:hover::before {
-  left: 100%;
-}
-
-.action-btn.contact-btn:hover {
-  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
-  border-color: #d97706;
-  color: #78350f;
+.details-btn:hover {
+  background: var(--gray-50);
+  border-color: var(--primary);
+  color: var(--primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .action-btn.ai-btn {
