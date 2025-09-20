@@ -331,16 +331,18 @@ export default {
 .candidates-grid {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   margin-bottom: 24px;
 }
 
 .candidates-grid.infinite-scroll {
   flex: 1; /* 占据剩余空间 */
   overflow-y: auto;
-  padding-right: 8px;
+  padding-right: 12px;
   scroll-behavior: smooth;
   min-height: 0; /* 允许flex shrink */
+  /* 确保每个候选人都能完整显示 */
+  scroll-padding-top: 20px;
 }
 
 .candidates-grid.infinite-scroll::-webkit-scrollbar {
