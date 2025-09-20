@@ -175,113 +175,8 @@
               </div>
               <h3>AI正在智能匹配候选人...</h3>
               <p>正在匹配 {{ matchingProgress.total }} 位候选人</p>
+              <p class="auto-publish-note">匹配完成后将自动发布职位</p>
             </div>
-
-            <div v-if="!isMatching && matchResult" class="matching-result">
-              <div class="result-summary">
-                <h3>匹配结果概览</h3>
-                <div class="summary-stats">
-                  <div class="summary-item">
-                    <div class="summary-number">{{ matchResult.matchSummary.totalAnalyzed }}</div>
-                    <div class="summary-label">总候选人数</div>
-                  </div>
-                  <div class="summary-item">
-                    <div class="summary-number">{{ matchResult.matchSummary.highMatch }}</div>
-                    <div class="summary-label">高匹配度</div>
-                  </div>
-                  <div class="summary-item">
-                    <div class="summary-number">{{ Math.round(matchResult.matchSummary.averageMatchScore) }}%</div>
-                    <div class="summary-label">平均匹配度</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="candidates-list">
-                <h4>推荐候选人</h4>
-                <div v-for="candidate in matchResult.candidates" :key="candidate.id" class="candidate-card">
-                  <div class="candidate-header">
-                    <div class="candidate-info">
-                      <img 
-                        :src="`https://images.unsplash.com/photo-153972346789${candidate.id}-abc123?w=60&h=60&fit=crop&crop=face`" 
-                        :alt="'候选人' + candidate.id" 
-                        class="candidate-avatar"
-                      >
-                      <div class="candidate-details">
-                        <h5>候选人 #{{ candidate.id }}</h5>
-                        <div class="match-score">
-                          <span class="score-label">匹配度:</span>
-                          <span class="score-value" :class="getScoreClass(candidate.matchScore)">
-                            {{ candidate.matchScore }}%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="confidence-indicator">
-                      <span class="confidence-label">置信度</span>
-                      <div class="confidence-circle" :style="getConfidenceStyle(candidate.confidenceScore)">
-                        {{ Math.round(candidate.confidenceScore * 100) }}%
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="match-details">
-                    <div class="match-reasons">
-                      <h6>匹配原因</h6>
-                      <ul>
-                        <li v-for="reason in candidate.matchReasons" :key="reason">
-                          {{ reason }}
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div v-if="candidate.riskFactors.length > 0" class="risk-factors">
-                      <h6>风险因素</h6>
-                      <ul>
-                        <li v-for="risk in candidate.riskFactors" :key="risk" class="risk-item">
-                          {{ risk }}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="recommendations">
-                <h4>AI建议</h4>
-                <div class="recommendation-cards">
-                  <div v-for="rec in matchResult.recommendations" :key="rec.candidateId" 
-                       class="recommendation-card" :class="rec.type">
-                    <div class="rec-icon">
-                      <svg v-if="rec.type === 'priority'" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                      </svg>
-                      <svg v-else-if="rec.type === 'potential'" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
-                      </svg>
-                      <svg v-else width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
-                      </svg>
-                    </div>
-                    <div class="rec-content">
-                      <div class="rec-candidate">候选人 #{{ rec.candidateId }}</div>
-                      <div class="rec-reason">{{ rec.reason }}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" @click="prevStep">上一步</button>
-            <button 
-              type="button" 
-              class="btn btn-success" 
-              @click="createJob"
-              :disabled="isMatching || isCreating"
-            >
-              {{ isCreating ? '发布中...' : '确认发布职位' }}
-            </button>
           </div>
         </div>
       </div>
@@ -382,6 +277,7 @@ export default {
         await performAiAnalysis()
       } else if (currentStep.value === 2) {
         currentStep.value = 3
+        // 执行匹配，匹配完成后会自动创建职位并关闭弹窗
         await performMatching()
       }
     }
@@ -471,13 +367,49 @@ export default {
 
         if (response.success) {
           matchResult.value = response.data
+          
+          // 匹配完成后，立即创建职位并关闭弹窗
+          await createJobAfterMatching()
         } else {
           console.error('智能匹配失败:', response.message)
+          alert('智能匹配失败，请重试')
         }
       } catch (error) {
         console.error('智能匹配错误:', error)
+        alert('智能匹配出现错误，请重试')
       } finally {
         isMatching.value = false
+      }
+    }
+
+    const createJobAfterMatching = async () => {
+      try {
+        const jobData = {
+          title: jobForm.title,
+          department: jobForm.department,
+          level: jobForm.level,
+          location: jobForm.location,
+          salary: jobForm.salary,
+          description: jobForm.description,
+          aiAnalysis: aiAnalysis.value,
+          matchResult: matchResult.value,
+          status: 'active',
+          publishedAt: new Date().toISOString()
+        }
+
+        const response = await apiManager.createJob(jobData)
+
+        if (response.success) {
+          // 职位创建成功，直接关闭弹窗并通知父组件
+          emit('created', response.data)
+          closeModal()
+        } else {
+          console.error('创建职位失败:', response.message)
+          alert('创建职位失败，请重试')
+        }
+      } catch (error) {
+        console.error('创建职位错误:', error)
+        alert('创建职位出现错误，请重试')
       }
     }
 
@@ -998,6 +930,12 @@ export default {
 .matching-loading p {
   margin: 0 0 32px 0;
   color: #6b7280;
+}
+
+.matching-loading .auto-publish-note {
+  color: #10b981;
+  font-weight: 500;
+  margin: 12px 0 0 0;
 }
 
 

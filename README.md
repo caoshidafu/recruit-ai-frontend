@@ -333,9 +333,10 @@ const eduCandidates = await apiManager.getRecommendedCandidates({
 
 - **用户体验优化**:
   - 步骤指示器显示发布进度
-  - 实时加载动画和进度反馈
+  - 简洁匹配界面：去除复杂统计，专注核心匹配过程
   - 候选人匹配结果可视化展示
   - 一键确认发布，自动刷新职位列表
+  - 流畅的动画效果和进度指示
 
 ## 推荐策略
 
