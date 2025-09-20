@@ -173,7 +173,7 @@ export default {
     const loading = ref(false)
     
     // 分页相关状态
-    const pageSize = ref(2) // 每页显示2个候选人
+    const pageSize = ref(4) // 每页显示4个候选人（单列布局）
     const currentPage = ref(1)
 
     // 计算属性
@@ -332,13 +332,12 @@ export default {
 </script>
 
 <style>
-/* 候选人网格布局 - 列式显示 */
+/* 候选人网格布局 - 单列显示 */
 .candidates-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 两列布局 */
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin-bottom: 24px;
-  align-items: start; /* 确保卡片从顶部对齐 */
 }
 
 .candidate-column {
@@ -575,8 +574,7 @@ export default {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .candidates-grid {
-    grid-template-columns: 1fr; /* 移动端单列布局 */
-    gap: 16px;
+    gap: 12px;
   }
   
   .pagination-container {
@@ -631,8 +629,7 @@ export default {
 
 @media (max-width: 1024px) and (min-width: 769px) {
   .candidates-grid {
-    grid-template-columns: 1fr 1fr; /* 平板保持两列 */
-    gap: 18px;
+    gap: 14px;
   }
   
   .pagination-container {
@@ -653,7 +650,7 @@ export default {
 /* 大屏幕优化 */
 @media (min-width: 1400px) {
   .candidates-grid {
-    gap: 24px;
+    gap: 18px;
   }
   
   .pagination-container {

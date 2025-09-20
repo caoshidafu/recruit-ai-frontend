@@ -2,11 +2,6 @@
   <div class="candidate-card" :class="{ 'expanded': isExpanded }">
     <!-- 折叠状态的简化视图 -->
     <div class="candidate-header" @click="toggleExpand">
-      <div class="match-indicator">
-        <div class="match-score">{{ candidate.matchScore }}%</div>
-        <div class="match-label">匹配度</div>
-      </div>
-      
       <div class="candidate-basic-info">
         <img
           :src="candidate.avatar"
@@ -28,13 +23,20 @@
         </div>
       </div>
 
-      <div class="expand-controls">
-        <button class="quick-action-btn contact-btn" @click.stop="quickContact">
-          <span class="btn-icon">💬</span>
-        </button>
-        <button class="expand-btn" :class="{ 'expanded': isExpanded }">
-          <span class="expand-icon">{{ isExpanded ? '▲' : '▼' }}</span>
-        </button>
+      <div class="header-right">
+        <div class="match-indicator">
+          <div class="match-score">{{ candidate.matchScore }}%</div>
+          <div class="match-label">匹配度</div>
+        </div>
+        
+        <div class="expand-controls">
+          <button class="quick-action-btn contact-btn" @click.stop="quickContact">
+            <span class="btn-icon">💬</span>
+          </button>
+          <button class="expand-btn" :class="{ 'expanded': isExpanded }">
+            <span class="expand-icon">{{ isExpanded ? '▲' : '▼' }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -344,7 +346,7 @@ export default {
   padding: 24px;
   display: flex;
   align-items: center;
-  gap: 18px;
+  justify-content: space-between;
   cursor: pointer;
   user-select: none;
   position: relative;
@@ -354,25 +356,40 @@ export default {
   background-color: #f8f9fa;
 }
 
-/* 匹配度指示器 */
+/* 头部右侧区域 */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 匹配度指示器 - 右侧绿色高亮 */
 .match-indicator {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 80px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+  min-width: 85px;
 }
 
 .match-score {
-  font-size: 24px;
-  font-weight: 700;
-  color: #28a745;
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
   line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .match-label {
-  font-size: 12px;
-  color: #6c757d;
-  margin-top: 4px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 2px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* 候选人基本信息 */
@@ -381,6 +398,7 @@ export default {
   align-items: center;
   gap: 16px;
   flex: 1;
+  min-width: 0;
 }
 
 .candidate-avatar {
@@ -746,17 +764,31 @@ export default {
   .candidate-header {
     padding: 16px;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    align-items: stretch;
+    gap: 16px;
   }
 
   .candidate-basic-info {
     width: 100%;
   }
 
+  .header-right {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .match-indicator {
+    min-width: 70px;
+    padding: 10px 14px;
+  }
+
+  .match-score {
+    font-size: 24px;
+  }
+
   .expand-controls {
-    align-self: flex-end;
-    margin-top: 8px;
+    gap: 6px;
   }
 
   .details-content {
@@ -772,6 +804,14 @@ export default {
     flex: 1;
     min-width: 120px;
     justify-content: center;
+  }
+
+  /* 移动端匹配度优化 */
+  .match-indicator {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-radius: 10px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
   }
 }
 
