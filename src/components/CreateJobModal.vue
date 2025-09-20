@@ -414,17 +414,18 @@ export default {
           }
         }, 800)
 
-        const response = await apiManager.parseJobDescription(jobForm.description)
+        // 1. 先解析职位描述
+        const parseResponse = await apiManager.parseJobDescription(jobForm.description)
         
         clearInterval(progressInterval)
         analysisProgress.value = 3
 
-        if (response.success) {
-          aiAnalysis.value = response.data
+        if (parseResponse.success) {
+          aiAnalysis.value = parseResponse.data
           
           // 自动填充从AI解析出的基本信息到jobForm
-          if (response.data.extractedInfo) {
-            const extracted = response.data.extractedInfo
+          if (parseResponse.data.extractedInfo) {
+            const extracted = parseResponse.data.extractedInfo
             
             // 如果表单字段为空，则使用AI解析的结果
             if (!jobForm.title && extracted.title) {
@@ -443,8 +444,11 @@ export default {
               jobForm.salary = extracted.salary
             }
           }
+
+          // 2. 创建职位
+          await createJobAndMatch()
         } else {
-          console.error('AI分析失败:', response.message)
+          console.error('AI分析失败:', parseResponse.message)
           alert('AI分析失败，请检查网络连接或重试')
         }
       } catch (error) {
@@ -455,7 +459,7 @@ export default {
       }
     }
 
-    const performMatching = async () => {
+    const performMatching = async (jobId = null) => {
       isMatching.value = true
       matchingProgress.analyzed = 0
       matchingProgress.matched = 0
@@ -469,7 +473,7 @@ export default {
           }
         }, 200)
 
-        const response = await apiManager.aiMatchCandidates(Date.now(), 'detailed')
+        const response = await apiManager.aiMatchCandidates(jobId || Date.now(), 'detailed')
         
         clearInterval(progressInterval)
         matchingProgress.analyzed = matchingProgress.total
@@ -484,6 +488,45 @@ export default {
         console.error('智能匹配错误:', error)
       } finally {
         isMatching.value = false
+      }
+    }
+
+    const createJobAndMatch = async () => {
+      try {
+        // 先创建职位
+        const jobData = {
+          title: jobForm.title,
+          department: jobForm.department,
+          level: jobForm.level,
+          location: jobForm.location,
+          salary: jobForm.salary,
+          description: jobForm.description,
+          aiAnalysis: aiAnalysis.value,
+          status: 'active',
+          publishedAt: new Date().toISOString()
+        }
+
+        const createResponse = await apiManager.createJob(jobData)
+
+        if (createResponse.success) {
+          // 自动跳转到智能匹配步骤
+          currentStep.value = 3
+          
+          // 开始智能匹配
+          await performMatching(createResponse.data.id)
+          
+          // 匹配完成后，自动关闭弹窗并通知父组件
+          setTimeout(() => {
+            emit('created', createResponse.data)
+            closeModal()
+          }, 1000) // 给用户1秒时间看到完成状态
+        } else {
+          console.error('创建职位失败:', createResponse.message)
+          alert('创建职位失败，请重试')
+        }
+      } catch (error) {
+        console.error('创建职位错误:', error)
+        alert('创建职位出现错误，请重试')
       }
     }
 
@@ -562,6 +605,8 @@ export default {
       nextStep,
       prevStep,
       createJob,
+      createJobAndMatch,
+      performMatching,
       getScoreClass,
       getConfidenceStyle
     }

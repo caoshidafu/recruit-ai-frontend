@@ -882,10 +882,57 @@ export function mockCreateJob(jobData) {
     ...jobData,
     candidateCount: 0,
     newCandidates: 0,
-    interviewingCount: 0
+    interviewingCount: 0,
+    // 添加职位卡片显示信息
+    cardInfo: {
+      title: jobData.title || '新职位',
+      department: jobData.department || '技术部',
+      level: jobData.level || '中级',
+      location: jobData.location || '北京',
+      salary: jobData.salary || '15-25K',
+      status: 'active',
+      publishedAt: jobData.publishedAt || new Date().toISOString(),
+      urgency: 'normal', // 紧急程度：urgent, normal, low
+      tags: extractJobTags(jobData.description || ''),
+      stats: {
+        applicants: 0,
+        views: 1,
+        publishDays: 0
+      }
+    }
   };
-  mockData.jobs.push(newJob);
+  
+  // 将新职位插入到数组开头，确保它在顶部显示
+  mockData.jobs.unshift(newJob);
+  
   return mockRequest(newJob);
+}
+
+// 辅助函数：从职位描述中提取标签
+function extractJobTags(description) {
+  const desc = description.toLowerCase();
+  const tags = [];
+  
+  // 技术栈标签
+  if (desc.includes('vue') || desc.includes('前端')) tags.push('Vue.js');
+  if (desc.includes('react')) tags.push('React');
+  if (desc.includes('java')) tags.push('Java');
+  if (desc.includes('python')) tags.push('Python');
+  if (desc.includes('node')) tags.push('Node.js');
+  if (desc.includes('golang') || desc.includes('go语言')) tags.push('Go');
+  
+  // 工作性质标签
+  if (desc.includes('全栈')) tags.push('全栈开发');
+  if (desc.includes('架构') || desc.includes('系统设计')) tags.push('架构设计');
+  if (desc.includes('团队') || desc.includes('管理')) tags.push('团队管理');
+  if (desc.includes('创业') || desc.includes('初创')) tags.push('创业公司');
+  
+  // 技能标签
+  if (desc.includes('微服务')) tags.push('微服务');
+  if (desc.includes('云') || desc.includes('docker') || desc.includes('k8s')) tags.push('云原生');
+  if (desc.includes('ai') || desc.includes('机器学习') || desc.includes('算法')) tags.push('AI/ML');
+  
+  return tags.slice(0, 3); // 最多返回3个标签
 }
 
 /**
