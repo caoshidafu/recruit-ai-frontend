@@ -1,7 +1,7 @@
 <template>
   <div class="candidate-card">
-    <!-- 候选人头部信息 -->
-    <div class="candidate-header">
+    <!-- 可点击的候选人头部信息 -->
+    <div class="candidate-header" @click="toggleExpanded">
       <div class="candidate-basic-info">
         <img
           :src="candidate.avatar"
@@ -25,108 +25,123 @@
           <div class="match-score">{{ candidate.matchScore }}%</div>
           <div class="match-label">匹配度</div>
         </div>
-      </div>
-    </div>
-
-    <!-- 教育经历 -->
-    <div class="education-section">
-      <h5>教育经历</h5>
-      <div class="education-list">
-        <div
-          v-for="(edu, index) in candidate.educationHistory"
-          :key="index"
-          class="education-item"
-        >
-          <div class="education-content">
-            <div class="education-main">
-              <span class="degree">{{ edu.degree }}</span>
-              <span class="duration">{{ edu.duration }}</span>
-            </div>
-            <div class="education-details">
-              <span class="school">{{ edu.school }}</span>
-              <span class="separator">·</span>
-              <span class="major">{{ edu.major }}</span>
-            </div>
-          </div>
+        <!-- 展开/收起按钮 -->
+        <div class="expand-button">
+          <i :class="['expand-icon', { 'rotated': isExpanded }]">▼</i>
         </div>
       </div>
     </div>
 
-    <!-- 推荐理由 -->
-    <div class="recommend-section">
-      <h5>推荐理由</h5>
-      <ul class="recommend-reasons">
-        <li v-for="(reason, index) in candidate.recommendReasons" :key="index">
-          {{ reason }}
-        </li>
-      </ul>
-    </div>
-
-    <!-- 关键匹配点 -->
-    <div class="highlight-section">
-      <h5>关键匹配点</h5>
-      <div class="highlights">
-        <span
-          v-for="(highlight, index) in candidate.keyHighlights"
-          :key="index"
-          class="highlight-tag"
-        >
-          {{ highlight }}
-        </span>
-      </div>
-    </div>
-
-    <!-- 技能标签 -->
-    <div class="skills-section">
-      <h5>技能标签</h5>
-      <div class="candidate-skills">
-        <span
-          v-for="skill in candidate.skills"
-          :key="skill"
-          class="skill-tag"
-        >
-          {{ skill }}
-        </span>
-      </div>
-    </div>
-
-    <!-- 工作经历 -->
-    <div class="work-section">
-      <h5>过往经历</h5>
-      <div class="work-list">
-        <div
-          v-for="(work, index) in candidate.workHistory"
-          :key="index"
-          class="work-item"
-        >
-          <div class="work-content">
-            <div class="work-main">
-              <span class="company">{{ work.company }}</span>
-              <span class="duration">{{ work.duration }}</span>
+    <!-- 展开内容区域 -->
+    <div v-if="isExpanded" class="expanded-content">
+      <div class="content-grid">
+        <!-- 左侧内容区域 -->
+        <div class="left-panel">
+          <!-- 教育经历 -->
+          <div class="education-section">
+            <h5>教育经历</h5>
+            <div class="education-list">
+              <div
+                v-for="(edu, index) in candidate.educationHistory"
+                :key="index"
+                class="education-item"
+              >
+                <div class="education-content">
+                  <div class="education-main">
+                    <span class="degree">{{ edu.degree }}</span>
+                    <span class="duration">{{ edu.duration }}</span>
+                  </div>
+                  <div class="education-details">
+                    <span class="school">{{ edu.school }}</span>
+                    <span class="separator">·</span>
+                    <span class="major">{{ edu.major }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="position">{{ work.position }}</div>
-            <div v-if="work.description" class="description">
-              {{ work.description }}
+          </div>
+
+          <!-- 推荐理由 -->
+          <div class="recommend-section">
+            <h5>推荐理由</h5>
+            <ul class="recommend-reasons">
+              <li v-for="(reason, index) in candidate.recommendReasons" :key="index">
+                {{ reason }}
+              </li>
+            </ul>
+          </div>
+
+          <!-- 关键匹配点 -->
+          <div class="highlight-section">
+            <h5>关键匹配点</h5>
+            <div class="highlights">
+              <span
+                v-for="(highlight, index) in candidate.keyHighlights"
+                :key="index"
+                class="highlight-tag"
+              >
+                {{ highlight }}
+              </span>
+            </div>
+          </div>
+
+          <!-- 技能标签 -->
+          <div class="skills-section">
+            <h5>技能标签</h5>
+            <div class="candidate-skills">
+              <span
+                v-for="skill in candidate.skills"
+                :key="skill"
+                class="skill-tag"
+              >
+                {{ skill }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧内容区域 -->
+        <div class="right-panel">
+          <!-- 工作经历 -->
+          <div class="work-section">
+            <h5>过往经历</h5>
+            <div class="work-list">
+              <div
+                v-for="(work, index) in candidate.workHistory"
+                :key="index"
+                class="work-item"
+              >
+                <div class="work-content">
+                  <div class="work-main">
+                    <span class="company">{{ work.company }}</span>
+                    <span class="duration">{{ work.duration }}</span>
+                  </div>
+                  <div class="position">{{ work.position }}</div>
+                  <div v-if="work.description" class="description">
+                    {{ work.description }}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 操作按钮 -->
-    <div class="card-actions">
-      <button class="action-btn contact-btn" @click="quickContact">
-        <span class="btn-icon">💬</span>
-        <span class="btn-text">查看详情</span>
-      </button>
-      <button class="action-btn ai-btn" @click="generateAIAnalysis">
-        <span class="btn-icon">💬</span>
-        <span class="btn-text">联系候选人</span>
-      </button>
-      <button class="action-btn analysis-btn" @click="showAIAnalysis = !showAIAnalysis">
-        <span class="btn-icon">🤖</span>
-        <span class="btn-text">AI分析</span>
-      </button>
+      <!-- 操作按钮 -->
+      <div class="card-actions">
+        <button class="action-btn contact-btn" @click.stop="quickContact">
+          <span class="btn-icon">👁</span>
+          <span class="btn-text">查看详情</span>
+        </button>
+        <button class="action-btn ai-btn" @click.stop="generateAIAnalysis">
+          <span class="btn-icon">💬</span>
+          <span class="btn-text">联系候选人</span>
+        </button>
+        <button class="action-btn analysis-btn" @click.stop="showAIAnalysis = !showAIAnalysis">
+          <span class="btn-icon">🤖</span>
+          <span class="btn-text">AI分析</span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -144,6 +159,11 @@ export default {
   },
   setup(props) {
     const showAIAnalysis = ref(false)
+    const isExpanded = ref(false)
+
+    const toggleExpanded = () => {
+      isExpanded.value = !isExpanded.value
+    }
 
     const quickContact = () => {
       alert(`联系候选人：${props.candidate.name}`)
@@ -155,6 +175,8 @@ export default {
 
     return {
       showAIAnalysis,
+      isExpanded,
+      toggleExpanded,
       quickContact,
       generateAIAnalysis
     }
@@ -163,35 +185,52 @@ export default {
 </script>
 
 <style scoped>
-/* 候选人卡片 - 完整展示设计 */
+/* CSS变量定义 */
+:root {
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --primary: #2563eb;
+}
+/* 候选人卡片 - 折叠/展开设计 */
 .candidate-card {
   background: white;
-  border-radius: 16px;
-  border: 1px solid #e8ecf3;
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  position: relative;
+  transition: all 0.2s ease;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  /* 设置最小高度确保每个卡片至少占满一个屏幕高度的合理空间 */
-  min-height: calc(100vh - 200px);
   display: flex;
   flex-direction: column;
+  /* 展开状态下限制最大高度，超出部分滚动 */
+  max-height: calc(100vh - 100px);
 }
 
 .candidate-card:hover {
-  border-color: #667eea;
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.12);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: var(--gray-300);
 }
 
-/* 候选人头部信息 */
+/* 候选人头部信息 - 可点击区域 */
 .candidate-header {
-  padding: 24px;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #f1f3f4;
-  background: #fafbfc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.candidate-header:hover {
+  background: var(--gray-50);
 }
 
 /* 候选人基本信息 */
@@ -204,12 +243,10 @@ export default {
 }
 
 .candidate-avatar {
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #e9ecef;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .candidate-info {
@@ -218,56 +255,139 @@ export default {
 }
 
 .candidate-name {
-  font-size: 20px;
-  font-weight: 700;
-  color: #2c3e50;
-  margin: 0 0 6px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0 0 4px 0;
 }
 
 .candidate-meta {
-  font-size: 14px;
-  color: #6c757d;
+  font-size: 13px;
+  color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
   line-height: 1.5;
 }
 
 .separator {
-  margin: 0 8px;
-  color: #dee2e6;
+  color: var(--gray-400);
 }
 
 /* 头部右侧区域 */
 .header-right {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
 /* 匹配度指示器 - 右侧绿色高亮 */
 .match-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  border-radius: 16px;
-  padding: 16px 20px;
-  box-shadow: 0 4px 16px rgba(40, 167, 69, 0.25);
+  text-align: center;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
   min-width: 90px;
 }
 
 .match-score {
-  font-size: 32px;
-  font-weight: 900;
-  color: white;
+  font-size: 20px;
+  font-weight: 700;
   line-height: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .match-label {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.95);
-  margin-top: 4px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+}
+
+/* 展开按钮 */
+.expand-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.1);
+  transition: all 0.3s ease;
+}
+
+.expand-icon {
+  font-size: 12px;
+  color: #667eea;
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.expand-button:hover {
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(1.1);
+}
+
+/* 展开内容区域 */
+.expanded-content {
+  animation: slideDown 0.3s ease-out;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* 内容网格布局 */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  flex: 1;
+  overflow: hidden;
+  padding: 20px;
+}
+
+/* 左右面板 */
+.left-panel,
+.right-panel {
+  overflow-y: auto;
+  /* 自定义滚动条样式 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+}
+
+.left-panel::-webkit-scrollbar,
+.right-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.left-panel::-webkit-scrollbar-track,
+.right-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.left-panel::-webkit-scrollbar-thumb,
+.right-panel::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 3px;
+}
+
+.left-panel::-webkit-scrollbar-thumb:hover,
+.right-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.5);
+}
+
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 详细内容各区块 */
@@ -276,15 +396,16 @@ export default {
 .highlight-section,
 .skills-section,
 .work-section {
-  padding: 20px;
-  margin-bottom: 0;
+  padding: 0 0 20px 0;
+  margin-bottom: 20px;
   border-bottom: 1px solid #f1f3f4;
   flex-shrink: 0;
 }
 
 .work-section {
-  flex: 1;
   border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .education-section h5,
@@ -293,17 +414,19 @@ export default {
 .skills-section h5,
 .work-section h5 {
   font-size: 14px;
-  font-weight: 700;
-  color: #495057;
-  margin: 0 0 12px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 8px;
 }
 
-/* 教育经历 */
+/* 教育经历部分 */
+.education-section {
+  margin-bottom: 16px;
+  background: var(--gray-50);
+  padding: 12px;
+  border-radius: 8px;
+}
+
 .education-list {
   display: flex;
   flex-direction: column;
@@ -311,70 +434,58 @@ export default {
 }
 
 .education-item {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  overflow: hidden;
+  font-size: 13px;
 }
 
-.education-content {
-  padding: 12px 16px;
-}
-
-.education-main {
+.edu-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .degree {
-  font-weight: 700;
-  color: #2c3e50;
-  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-800);
 }
 
 .duration {
+  color: var(--gray-500);
   font-size: 12px;
-  color: #6c757d;
+}
+
+.edu-details {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--gray-600);
+}
+
+.school {
   font-weight: 500;
 }
 
-.education-details {
-  font-size: 13px;
-  color: #495057;
+.major {
+  color: var(--gray-500);
 }
 
-/* 推荐理由 */
+/* 推荐理由部分 */
 .recommend-reasons {
   list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  font-size: 13px;
+  color: var(--gray-600);
 }
 
 .recommend-reasons li {
-  padding: 0;
-  font-size: 13px;
-  color: #495057;
+  padding: 4px 0;
+  padding-left: 16px;
   position: relative;
-  padding-left: 20px;
-  line-height: 1.5;
-  background: #f8f9fa;
-  border-radius: 6px;
-  padding: 8px 8px 8px 24px;
 }
 
-.recommend-reasons li::before {
-  content: "✓";
+.recommend-reasons li:before {
+  content: "•";
   position: absolute;
-  left: 8px;
-  top: 8px;
-  color: #28a745;
-  font-weight: 700;
-  font-size: 12px;
+  left: 0;
+  color: var(--primary);
 }
 
 /* 关键匹配点 */
@@ -385,14 +496,13 @@ export default {
 }
 
 .highlight-tag {
-  background: #fff3e0;
-  color: #f57c00;
   padding: 6px 12px;
-  border-radius: 16px;
+  background: #ff6b6b15;
+  color: #dc2626;
+  border: 1px solid #ff6b6b30;
+  border-radius: 6px;
   font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  border: 1px solid rgba(245, 124, 0, 0.2);
+  font-weight: 500;
 }
 
 /* 技能标签 */
@@ -421,47 +531,42 @@ export default {
 }
 
 .work-item {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  overflow: hidden;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.work-item:last-child {
+  margin-bottom: 0;
 }
 
 .work-content {
-  padding: 12px 16px;
+  padding: 0;
 }
 
 .work-main {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .company {
-  font-weight: 700;
-  color: #2c3e50;
-  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-900);
 }
 
 .position {
-  font-size: 13px;
-  color: #667eea;
-  margin-bottom: 6px;
-  font-weight: 600;
+  color: var(--gray-600);
+  margin-bottom: 4px;
 }
 
 .description {
+  color: var(--gray-500);
   font-size: 12px;
-  color: #6c757d;
-  line-height: 1.5;
 }
 
 /* 操作按钮 */
 .card-actions {
-  padding: 20px;
-  background: #fafbfc;
-  border-top: 1px solid #f1f3f4;
+  padding: 16px 20px;
   display: flex;
   gap: 12px;
   justify-content: center;
@@ -470,8 +575,8 @@ export default {
 
 .action-btn {
   background: white;
-  border: 1px solid #dee2e6;
-  color: #495057;
+  border: 1px solid var(--gray-300);
+  color: var(--gray-700);
   padding: 12px 20px;
   border-radius: 8px;
   cursor: pointer;
@@ -480,41 +585,36 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   flex: 1;
   justify-content: center;
   max-width: 150px;
 }
 
 .action-btn:hover {
-  border-color: #667eea;
-  color: #667eea;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--gray-50);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .action-btn.contact-btn {
-  background: #667eea;
+  background: var(--primary);
   color: white;
   border: none;
 }
 
 .action-btn.contact-btn:hover {
-  background: #5a6fd8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  background: #1d4ed8;
 }
 
 .action-btn.ai-btn {
-  background: #28a745;
+  background: #10b981;
   color: white;
   border: none;
 }
 
 .action-btn.ai-btn:hover {
-  background: #218838;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+  background: #059669;
 }
 
 .action-btn.analysis-btn {
@@ -540,15 +640,15 @@ export default {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .candidate-card {
-    min-height: calc(100vh - 160px);
+    max-height: calc(100vh - 80px);
     margin-bottom: 16px;
   }
 
   .candidate-header {
-    padding: 20px;
+    padding: 16px;
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
+    gap: 12px;
   }
 
   .candidate-basic-info {
@@ -568,16 +668,29 @@ export default {
     font-size: 28px;
   }
 
+  /* 移动端改为垂直布局 */
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 16px;
+  }
+
   .education-section,
   .recommend-section,
   .highlight-section,
   .skills-section,
   .work-section {
-    padding: 16px;
+    padding: 0 0 16px 0;
+    margin-bottom: 16px;
+  }
+
+  .work-section {
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 
   .card-actions {
-    padding: 16px;
+    padding: 12px 16px;
     flex-direction: column;
     gap: 8px;
   }
@@ -591,11 +704,15 @@ export default {
 /* 小屏幕进一步优化 */
 @media (max-width: 480px) {
   .candidate-card {
-    min-height: calc(100vh - 120px);
+    max-height: calc(100vh - 60px);
   }
 
   .candidate-header {
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .content-grid {
+    padding: 12px;
   }
   
   .education-section,
@@ -603,11 +720,17 @@ export default {
   .highlight-section,
   .skills-section,
   .work-section {
-    padding: 12px;
+    padding: 0 0 12px 0;
+    margin-bottom: 12px;
+  }
+
+  .work-section {
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
   
   .card-actions {
-    padding: 12px;
+    padding: 10px 12px;
   }
 }
 </style>
