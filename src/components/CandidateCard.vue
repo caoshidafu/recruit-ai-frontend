@@ -119,15 +119,15 @@
 
       <!-- 操作按钮 -->
       <div class="card-actions">
-        <button class="action-btn details-btn" @click.stop="quickContact">
+        <button class="action-btn details-btn" @click.stop="viewDetails">
           <span class="btn-icon">📄</span>
           <span class="btn-text">查看详情</span>
         </button>
-        <button class="action-btn ai-btn" @click.stop="generateAIAnalysis">
+        <button class="action-btn contact-btn" @click.stop="quickContact">
           <span class="btn-icon">💬</span>
           <span class="btn-text">联系候选人</span>
         </button>
-        <button class="action-btn analysis-btn" @click.stop="showAIAnalysis = !showAIAnalysis">
+        <button class="action-btn ai-btn" @click.stop="generateAIAnalysis">
           <span class="btn-icon">🤖</span>
           <span class="btn-text">AI分析</span>
         </button>
@@ -159,6 +159,10 @@ export default {
       isExpanded.value = !isExpanded.value
     }
 
+    const viewDetails = () => {
+      alert(`查看候选人详情：${props.candidate.name}`)
+    }
+
     const quickContact = () => {
       alert(`联系候选人：${props.candidate.name}`)
     }
@@ -171,6 +175,7 @@ export default {
       showAIAnalysis,
       isExpanded,
       toggleExpanded,
+      viewDetails,
       quickContact,
       generateAIAnalysis
     }
@@ -192,6 +197,7 @@ export default {
   --gray-800: #1f2937;
   --gray-900: #111827;
   --primary: #2563eb;
+  --primary-dark: #1d4ed8;
 }
 /* 候选人卡片 - 折叠/展开设计 */
 .candidate-card {
@@ -566,25 +572,59 @@ export default {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.action-btn.ai-btn {
-  background: #10b981;
+/* 联系候选人按钮 */
+.contact-btn {
+  background: var(--primary);
   color: white;
-  border: none;
 }
 
-.action-btn.ai-btn:hover {
-  background: #059669;
+.contact-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
 }
 
-.action-btn.analysis-btn {
+/* AI分析按钮 */
+.ai-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border: none;
+  position: relative;
+  overflow: hidden;
 }
 
-.action-btn.analysis-btn:hover {
+.ai-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.ai-btn:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.ai-btn:hover:before {
+  left: 100%;
+}
+
+.ai-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-btn:disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-icon {
@@ -592,8 +632,8 @@ export default {
 }
 
 .btn-text {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* 响应式设计 */
