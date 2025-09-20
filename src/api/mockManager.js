@@ -78,6 +78,28 @@ class APIManager {
   }
 
   /**
+   * AI解析职位描述
+   */
+  async parseJobDescription(description) {
+    if (this.useMock) {
+      return await MockAPI.mockParseJobDescription(description)
+    } else {
+      return await JobAPI.parseJobDescription(description)
+    }
+  }
+
+  /**
+   * 分析职位需求
+   */
+  async analyzeJobRequirements(jobId) {
+    if (this.useMock) {
+      return await MockAPI.mockAnalyzeJobRequirements(jobId)
+    } else {
+      return await JobAPI.analyzeJobRequirements(jobId)
+    }
+  }
+
+  /**
    * 获取职位候选人统计
    */
   async getJobCandidateStats(jobId) {
@@ -213,6 +235,17 @@ class APIManager {
       return { success: true, data: { matchScore: 85 }, message: 'Mock match success' }
     } else {
       return await CandidateAPI.matchCandidateToJob(candidateId, jobId)
+    }
+  }
+
+  /**
+   * AI智能匹配候选人
+   */
+  async aiMatchCandidates(jobId, analysisDepth = 'detailed') {
+    if (this.useMock) {
+      return await MockAPI.mockAiMatchCandidates(jobId, analysisDepth)
+    } else {
+      return await CandidateAPI.aiMatchCandidates(jobId, analysisDepth)
     }
   }
 

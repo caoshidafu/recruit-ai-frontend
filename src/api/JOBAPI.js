@@ -83,3 +83,29 @@ export function getJobCandidateStats(jobId) {
 export function searchJobs(searchParams) {
   return get('/jobs/search', searchParams)
 }
+
+/**
+ * AI解析职位描述
+ * 功能描述：使用AI技术解析原始职位描述，提取结构化信息
+ * 入参：{ description: string } - 原始职位描述文本
+ * 返回参数：{ success: boolean, data: Object, message: string }
+ * data包含：{ skills: Array, requirements: Array, benefits: Array, experience: string, education: string }
+ * url地址：/jobs/ai-parse
+ * 请求方式：POST
+ */
+export function parseJobDescription(description) {
+  return post('/jobs/ai-parse', { description })
+}
+
+/**
+ * 分析职位需求
+ * 功能描述：分析已创建职位的详细需求和匹配标准
+ * 入参：{ jobId: number } - 职位ID
+ * 返回参数：{ success: boolean, data: Object, message: string }
+ * data包含：{ matchCriteria: Object, skillWeights: Object, recommendationStrategy: string }
+ * url地址：/jobs/analyze/:id
+ * 请求方式：POST
+ */
+export function analyzeJobRequirements(jobId) {
+  return post(`/jobs/analyze/${jobId}`)
+}

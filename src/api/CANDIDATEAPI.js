@@ -119,3 +119,16 @@ export function getCandidateRadarData(candidateId) {
 export function matchCandidateToJob(candidateId, jobId) {
   return post('/candidates/match', { candidateId, jobId })
 }
+
+/**
+ * AI智能匹配候选人
+ * 功能描述：基于AI算法为新创建的职位智能匹配候选人
+ * 入参：{ jobId: number, analysisDepth?: string } - 职位ID和分析深度（'basic', 'detailed', 'comprehensive'）
+ * 返回参数：{ success: boolean, data: Object, message: string }
+ * data包含：{ candidates: Array, matchReasons: Object, confidenceScores: Object, recommendations: Array }
+ * url地址：/candidates/ai-match
+ * 请求方式：POST
+ */
+export function aiMatchCandidates(jobId, analysisDepth = 'detailed') {
+  return post('/candidates/ai-match', { jobId, analysisDepth })
+}

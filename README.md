@@ -9,6 +9,8 @@
 - 📊 雷达图可视化候选人能力
 - 🔄 多种推荐策略（智能推荐、经验推荐、学历推荐）
 - 📋 岗位管理和详情展示
+- ✨ 智能职位发布系统，支持AI解析职位描述和自动匹配候选人
+- 🤖 三步智能发布流程：基本信息填写 → AI职位解析 → 智能候选人匹配
 - 👥 候选人折叠式卡片设计，采用单列布局，支持无限滚动加载，默认折叠状态  
 - 📱 无限滚动分页系统，下拉自动加载更多候选人，提升浏览体验
 - 🎯 候选人卡片交互优化，支持点击展开/折叠详情，三个操作按钮采用差异化设计
@@ -45,7 +47,8 @@ vue3-project/
 │   │   ├── JobCard.vue          # 岗位卡片组件
 │   │   ├── JobDetail.vue        # 岗位详情组件
 │   │   ├── RadarChart.vue       # 雷达图组件
-│   │   └── ResizableSplitter.vue # 可拖拽分割器组件
+│   │   ├── ResizableSplitter.vue # 可拖拽分割器组件
+│   │   └── CreateJobModal.vue   # 创建职位模态框组件
 │   ├── styles/             # 样式目录
 │   │   └── global.css          # 全局样式
 │   ├── App.vue             # 主应用组件
@@ -236,6 +239,8 @@ const candidates = await apiManager.getSmartCandidates()
 - `createJob(jobData)`: 创建新职位
 - `updateJob(jobId, jobData)`: 更新职位信息
 - `getJobCandidateStats(jobId)`: 获取职位候选人统计
+- `parseJobDescription(description)`: AI解析职位描述，提取技能要求和工作职责
+- `analyzeJobRequirements(jobId)`: 分析职位需求，生成匹配标签
 
 #### 候选人相关接口
 - `getSmartCandidates(params)`: 获取智能推荐候选人，支持jobId参数过滤
@@ -244,6 +249,7 @@ const candidates = await apiManager.getSmartCandidates()
 - `getCandidateDetail(candidateId)`: 获取候选人详情
 - `getCandidateRadarData(candidateId)`: 获取候选人雷达图数据
 - `searchCandidates(searchParams)`: 搜索候选人
+- `aiMatchCandidates(jobId, analysisDepth)`: AI智能匹配候选人，返回匹配度和推荐理由
 
 **参数说明:**
 - `jobId`: 职位ID，用于筛选该职位的相关候选人
@@ -272,6 +278,30 @@ const candidates = await apiManager.getSmartCandidates()
 - **单列布局**: 改为垂直单列布局，提升信息可读性
 - **匹配度突出**: 右侧绿色高亮显示匹配度分数
 - **响应式滚动**: 自定义滚动条样式，流畅滚动体验
+
+### 智能职位发布系统
+- **三步发布流程**:
+  1. **基本信息**: 职位名称、部门、级别、地点、薪资、职位描述填写
+  2. **AI解析**: 自动解析职位描述，提取技能要求、经验需求、工作职责和匹配标签
+  3. **智能匹配**: AI自动匹配候选人，展示匹配度、置信度和详细推荐理由
+
+- **AI解析功能**:
+  - 智能识别核心技能要求（如Vue.js、JavaScript、TypeScript等）
+  - 自动提取经验需求和工作年限要求
+  - 生成岗位匹配标签和关键词
+  - 分析置信度评估，确保解析准确性
+
+- **智能匹配算法**:
+  - 基于岗位要求匹配最合适候选人
+  - 多维度评分：技能匹配、经验匹配、学历匹配
+  - 风险因素识别（如地理位置、经验不足等）
+  - AI推荐建议：优先联系、潜力培养、培训提升
+
+- **用户体验优化**:
+  - 步骤指示器显示发布进度
+  - 实时加载动画和进度反馈
+  - 候选人匹配结果可视化展示
+  - 一键确认发布，自动刷新职位列表
 
 ## 推荐策略
 

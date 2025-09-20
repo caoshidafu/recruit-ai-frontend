@@ -31,7 +31,7 @@
             />
           </div>
 
-          <button class="create-job-btn">
+          <button class="create-job-btn" @click="showCreateJobModal = true">
             <span>➕</span> 发布新岗位
           </button>
         </div>
@@ -134,6 +134,13 @@
         </div>
       </main>
     </div>
+
+    <!-- 创建职位模态框 -->
+    <CreateJobModal 
+      :visible="showCreateJobModal"
+      @close="showCreateJobModal = false"
+      @created="handleJobCreated"
+    />
   </div>
 </template>
 
@@ -143,6 +150,7 @@ import JobCard from './components/JobCard.vue'
 import CandidateCard from './components/CandidateCard.vue'
 import JobDetail from './components/JobDetail.vue'
 import ResizableSplitter from './components/ResizableSplitter.vue'
+import CreateJobModal from './components/CreateJobModal.vue'
 import apiManager from './api/mockManager.js'
 
 export default {
@@ -151,7 +159,8 @@ export default {
     JobCard,
     CandidateCard,
     JobDetail,
-    ResizableSplitter
+    ResizableSplitter,
+    CreateJobModal
   },
   setup() {
     // 响应式数据
@@ -166,6 +175,7 @@ export default {
     const showJobDetail = ref(true)
     const viewMode = ref('split')
     const loading = ref(false)
+    const showCreateJobModal = ref(false)
     
     // 分割器相关状态
     const leftPanelWidth = ref(400) // 左侧面板宽度，默认400px
@@ -328,6 +338,21 @@ export default {
       await loadCandidatesForJob(jobId)
     }
 
+    // 处理职位创建完成事件
+    const handleJobCreated = async (newJob) => {
+      // 将新职位添加到职位列表的开头
+      jobs.value.unshift(newJob)
+      
+      // 设置为当前选中的职位
+      selectedJob.value = newJob
+      
+      // 加载新职位的候选人数据
+      await loadCandidatesForJob(newJob.id)
+      
+      // 重置滚动状态
+      resetScrolling()
+    }
+
     // 监听推荐类型变化，重置滚动
     watch(recommendType, () => {
       resetScrolling()
@@ -348,6 +373,7 @@ export default {
       showJobDetail,
       viewMode,
       loading,
+      showCreateJobModal,
       pageSize,
       displayedCount,
       loadingMore,
@@ -372,7 +398,8 @@ export default {
       loadMoreCandidates,
       resetScrolling,
       handleSplitterResize,
-      handleMainSplitterResize
+      handleMainSplitterResize,
+      handleJobCreated
     }
   }
 }

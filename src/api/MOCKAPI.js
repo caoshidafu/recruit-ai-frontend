@@ -909,6 +909,109 @@ export function mockGetJobCandidateStats(jobId) {
   }
 }
 
+/**
+ * Mock - AI解析职位描述
+ * 功能描述：使用AI技术解析原始职位描述，提取结构化信息
+ * 入参：{ description: string } - 原始职位描述文本
+ * 返回参数：{ success: boolean, data: Object, message: string }
+ * url地址：/jobs/ai-parse
+ * 请求方式：POST
+ */
+export function mockParseJobDescription(description) {
+  // 模拟AI解析延迟
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 模拟AI解析结果
+      const mockParsedData = {
+        skills: [
+          'Vue.js', 'JavaScript', 'TypeScript', 'Node.js', 'MySQL', 
+          'Redis', 'Git', '前端框架', 'RESTful API', '响应式设计'
+        ],
+        requirements: [
+          '3年以上前端开发经验',
+          '熟练掌握Vue.js生态系统',
+          '具备良好的代码规范和团队协作能力',
+          '有大型项目开发经验',
+          '熟悉前端工程化工具'
+        ],
+        benefits: [
+          '五险一金',
+          '年终奖金',
+          '弹性工作时间',
+          '技术培训',
+          '团队建设活动',
+          '带薪年假'
+        ],
+        experience: '3-5年',
+        education: '本科及以上',
+        workType: '全职',
+        analysisConfidence: 0.95,
+        suggestions: [
+          '建议在职位描述中明确技术栈版本要求',
+          '可以增加对候选人软技能的描述',
+          '薪资范围建议更加具体'
+        ]
+      };
+      
+      resolve(mockRequest(mockParsedData));
+    }, 2000); // 模拟2秒AI解析时间
+  });
+}
+
+/**
+ * Mock - 分析职位需求
+ * 功能描述：分析已创建职位的详细需求和匹配标准
+ * 入参：{ jobId: number } - 职位ID
+ * 返回参数：{ success: boolean, data: Object, message: string }
+ * url地址：/jobs/analyze/:id
+ * 请求方式：POST
+ */
+export function mockAnalyzeJobRequirements(jobId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const mockAnalysisData = {
+        matchCriteria: {
+          technicalSkills: {
+            weight: 0.4,
+            required: ['Vue.js', 'JavaScript', 'TypeScript'],
+            preferred: ['Node.js', 'MySQL', 'Redis']
+          },
+          experience: {
+            weight: 0.3,
+            minYears: 3,
+            maxYears: 8,
+            relevantDomains: ['前端开发', 'Web开发', '全栈开发']
+          },
+          education: {
+            weight: 0.2,
+            minLevel: '本科',
+            preferredMajors: ['计算机科学', '软件工程', '信息技术']
+          },
+          softSkills: {
+            weight: 0.1,
+            required: ['团队合作', '沟通能力', '学习能力']
+          }
+        },
+        skillWeights: {
+          'Vue.js': 0.25,
+          'JavaScript': 0.20,
+          'TypeScript': 0.15,
+          'Node.js': 0.10,
+          'MySQL': 0.08,
+          'Redis': 0.07,
+          'Git': 0.05,
+          '前端框架': 0.10
+        },
+        recommendationStrategy: 'hybrid', // hybrid, experience-based, skill-based
+        confidenceScore: 0.92,
+        estimatedCandidatePool: 156
+      };
+      
+      resolve(mockRequest(mockAnalysisData));
+    }, 1500); // 模拟1.5秒分析时间
+  });
+}
+
 // ==================== 候选人相关Mock API ====================
 
 /**
@@ -1047,6 +1150,91 @@ export function mockGetEducationCandidates(params = {}) {
     candidates = candidates.slice(0, params.limit);
   }
   return mockRequest(candidates);
+}
+
+/**
+ * Mock - AI智能匹配候选人
+ * 功能描述：基于AI算法为新创建的职位智能匹配候选人
+ * 入参：{ jobId: number, analysisDepth?: string } - 职位ID和分析深度
+ * 返回参数：{ success: boolean, data: Object, message: string }
+ * url地址：/candidates/ai-match
+ * 请求方式：POST
+ */
+export function mockAiMatchCandidates(jobId, analysisDepth = 'detailed') {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 模拟AI匹配分析结果
+      const mockMatchData = {
+        candidates: [
+          {
+            id: 1,
+            matchScore: 94,
+            matchReasons: [
+              '技能匹配度高：Vue.js、JavaScript、TypeScript',
+              '工作经验符合要求：5年前端开发经验',
+              '项目背景相似：大型电商平台开发经验'
+            ],
+            confidenceScore: 0.94,
+            riskFactors: []
+          },
+          {
+            id: 3,
+            matchScore: 89,
+            matchReasons: [
+              '技术栈匹配：Vue.js、Node.js全栈经验',
+              '学历背景优秀：211院校计算机专业',
+              '团队协作能力强'
+            ],
+            confidenceScore: 0.89,
+            riskFactors: ['地理位置较远']
+          },
+          {
+            id: 5,
+            matchScore: 85,
+            matchReasons: [
+              '前端技能扎实：JavaScript、CSS、HTML',
+              '快速学习能力：能够快速掌握新技术',
+              '工作态度积极'
+            ],
+            confidenceScore: 0.85,
+            riskFactors: ['经验稍显不足']
+          }
+        ],
+        matchSummary: {
+          totalAnalyzed: 156,
+          highMatch: 12,
+          mediumMatch: 35,
+          lowMatch: 109,
+          averageMatchScore: 78.5
+        },
+        recommendations: [
+          {
+            type: 'priority',
+            candidateId: 1,
+            reason: '综合匹配度最高，建议优先联系'
+          },
+          {
+            type: 'potential',
+            candidateId: 3,
+            reason: '潜力较大，可作为备选方案'
+          },
+          {
+            type: 'training',
+            candidateId: 5,
+            reason: '基础良好，可通过培训提升'
+          }
+        ],
+        analysisMetrics: {
+          processingTime: '1.8s',
+          dataPoints: 247,
+          algorithmVersion: 'v2.1.3',
+          confidenceLevel: 0.91
+        }
+      };
+      
+      resolve(mockRequest(mockMatchData));
+    }, 2500); // 模拟2.5秒AI匹配分析时间
+  });
 }
 
 /**
