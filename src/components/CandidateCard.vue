@@ -164,13 +164,9 @@
 
 <script>
 import { ref } from 'vue'
-import RadarChart from './RadarChart.vue'
 
 export default {
   name: 'CandidateCard',
-  components: {
-    RadarChart
-  },
   props: {
     candidate: {
       type: Object,
