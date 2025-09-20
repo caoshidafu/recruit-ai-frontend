@@ -340,10 +340,10 @@ export default {
 
     // 处理职位创建完成事件
     const handleJobCreated = async (newJob) => {
-      // 将新职位添加到职位列表的开头
-      jobs.value.unshift(newJob)
+      // 重新加载职位列表以获取最新数据（包含新创建的职位）
+      await loadJobs()
       
-      // 设置为当前选中的职位
+      // 设置为当前选中的职位（新职位在列表顶部）
       selectedJob.value = newJob
       
       // 加载新职位的候选人数据

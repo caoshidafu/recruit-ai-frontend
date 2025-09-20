@@ -902,7 +902,8 @@ export function mockCreateJob(jobData) {
     }
   };
   
-  // 将新职位插入到数组开头，确保它在顶部显示
+  // 将新职位添加到mockData.jobs中以保持数据持久性
+  // 但注意：前端不应该重复添加到显示列表中
   mockData.jobs.unshift(newJob);
   
   return mockRequest(newJob);
