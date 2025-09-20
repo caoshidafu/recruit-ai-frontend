@@ -921,6 +921,33 @@ export function mockGetJobCandidateStats(jobId) {
  */
 export function mockGetSmartCandidates(params = {}) {
   let candidates = mockData.candidates.smart;
+  
+  // 根据jobId进行筛选，模拟不同职位有不同的推荐候选人
+  if (params.jobId) {
+    const jobId = parseInt(params.jobId);
+    // 根据职位ID返回不同的候选人组合
+    switch (jobId) {
+      case 1: // 高级Java开发工程师
+        candidates = candidates.filter(c => [1, 2, 5, 8, 9].includes(c.id));
+        break;
+      case 2: // 前端技术专家
+        candidates = candidates.filter(c => [3, 6, 7].includes(c.id));
+        break;
+      case 3: // 产品经理
+        candidates = candidates.filter(c => [4, 6, 10].includes(c.id));
+        break;
+      case 4: // 数据分析师
+        candidates = candidates.filter(c => [7, 8, 11, 12].includes(c.id));
+        break;
+      case 5: // UI设计师
+        candidates = candidates.filter(c => [3, 6, 13].includes(c.id));
+        break;
+      default:
+        // 默认返回所有候选人
+        break;
+    }
+  }
+  
   if (params.limit) {
     candidates = candidates.slice(0, params.limit);
   }
@@ -937,6 +964,32 @@ export function mockGetSmartCandidates(params = {}) {
  */
 export function mockGetExperienceCandidates(params = {}) {
   let candidates = mockData.candidates.experience;
+  
+  // 根据jobId进行筛选，模拟不同职位有不同的经验匹配候选人
+  if (params.jobId) {
+    const jobId = parseInt(params.jobId);
+    switch (jobId) {
+      case 1: // 高级Java开发工程师
+        candidates = candidates.filter(c => [1, 8, 9, 10].includes(c.id));
+        break;
+      case 2: // 前端技术专家
+        candidates = candidates.filter(c => [2, 3, 7].includes(c.id));
+        break;
+      case 3: // 产品经理
+        candidates = candidates.filter(c => [4, 6, 10].includes(c.id));
+        break;
+      case 4: // 数据分析师
+        candidates = candidates.filter(c => [5, 8, 12].includes(c.id));
+        break;
+      case 5: // UI设计师
+        candidates = candidates.filter(c => [2, 6, 7].includes(c.id));
+        break;
+      default:
+        // 默认返回所有候选人
+        break;
+    }
+  }
+  
   if (params.minExperience) {
     candidates = candidates.filter(c => c.experience >= params.minExperience);
   }
@@ -959,6 +1012,32 @@ export function mockGetExperienceCandidates(params = {}) {
  */
 export function mockGetEducationCandidates(params = {}) {
   let candidates = mockData.candidates.education;
+  
+  // 根据jobId进行筛选，模拟不同职位有不同的学历匹配候选人
+  if (params.jobId) {
+    const jobId = parseInt(params.jobId);
+    switch (jobId) {
+      case 1: // 高级Java开发工程师
+        candidates = candidates.filter(c => [11, 12, 13, 14].includes(c.id));
+        break;
+      case 2: // 前端技术专家
+        candidates = candidates.filter(c => [11, 13, 14].includes(c.id));
+        break;
+      case 3: // 产品经理
+        candidates = candidates.filter(c => [12, 13, 14].includes(c.id));
+        break;
+      case 4: // 数据分析师
+        candidates = candidates.filter(c => [11, 12, 14].includes(c.id));
+        break;
+      case 5: // UI设计师
+        candidates = candidates.filter(c => [11, 13].includes(c.id));
+        break;
+      default:
+        // 默认返回所有候选人
+        break;
+    }
+  }
+  
   if (params.degree) {
     candidates = candidates.filter(c => 
       c.educationHistory.some(edu => edu.degree === params.degree)

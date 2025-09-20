@@ -90,51 +90,32 @@
             </div>
 
             <!-- 候选人网格布局 - 列式显示 -->
-            <div class="candidates-grid">
+            <div 
+              class="candidates-grid infinite-scroll"
+              ref="candidatesContainer"
+              @scroll="handleScroll"
+            >
               <CandidateCard
-                v-for="candidate in currentPageCandidates"
+                v-for="candidate in displayedCandidates"
                 :key="candidate.id"
                 :candidate="candidate"
                 class="candidate-column"
               />
-            </div>
-            
-            <!-- 分页控制 -->
-            <div v-if="totalPages > 1" class="pagination-container">
-              <div class="pagination-info">
-                <span>推荐候选人 ({{ currentCandidates.length }})</span>
-                <span>第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
+              
+              <!-- 加载更多指示器 -->
+              <div v-if="hasMore && !loadingMore" class="load-more-trigger">
+                <div class="load-more-text">下拉查看更多候选人</div>
               </div>
               
-              <div class="pagination-controls">
-                <button 
-                  @click="goToPage(currentPage - 1)"
-                  :disabled="currentPage === 1"
-                  class="pagination-btn prev-btn"
-                >
-                  <span class="btn-icon">⬅️</span>
-                  上一页
-                </button>
-                
-                <div class="page-numbers">
-                  <button
-                    v-for="page in visiblePages"
-                    :key="page"
-                    @click="goToPage(page)"
-                    :class="['page-btn', { active: page === currentPage }]"
-                  >
-                    {{ page }}
-                  </button>
-                </div>
-                
-                <button 
-                  @click="goToPage(currentPage + 1)"
-                  :disabled="currentPage === totalPages"
-                  class="pagination-btn next-btn"
-                >
-                  下一页
-                  <span class="btn-icon">➡️</span>
-                </button>
+              <!-- 加载中指示器 -->
+              <div v-if="loadingMore" class="loading-more-indicator">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">正在加载更多候选人...</div>
+              </div>
+              
+              <!-- 没有更多数据指示器 -->
+              <div v-if="!hasMore && displayedCandidates.length > 0" class="no-more-indicator">
+                <div class="no-more-text">已显示全部候选人</div>
               </div>
             </div>
           </div>
@@ -172,52 +153,24 @@ export default {
     const viewMode = ref('split')
     const loading = ref(false)
     
-    // 分页相关状态
-    const pageSize = ref(4) // 每页显示4个候选人（单列布局）
-    const currentPage = ref(1)
+    // 无限滚动相关状态
+    const pageSize = ref(10) // 每次加载10个候选人
+    const displayedCount = ref(10) // 当前显示的候选人数量
+    const loadingMore = ref(false) // 是否正在加载更多
+    const candidatesContainer = ref(null) // 容器引用
 
     // 计算属性
     const currentCandidates = computed(() => {
       return candidates.value[recommendType.value] || []
     })
 
-    // 分页相关计算属性
-    const totalPages = computed(() => {
-      return Math.ceil(currentCandidates.value.length / pageSize.value)
+    // 无限滚动相关计算属性
+    const displayedCandidates = computed(() => {
+      return currentCandidates.value.slice(0, displayedCount.value)
     })
 
-    const currentPageCandidates = computed(() => {
-      const startIndex = (currentPage.value - 1) * pageSize.value
-      const endIndex = startIndex + pageSize.value
-      return currentCandidates.value.slice(startIndex, endIndex)
-    })
-
-    const visiblePages = computed(() => {
-      const pages = []
-      const maxVisible = 5
-      const total = totalPages.value
-      const current = currentPage.value
-      
-      if (total <= maxVisible) {
-        for (let i = 1; i <= total; i++) {
-          pages.push(i)
-        }
-      } else {
-        let start = Math.max(1, current - 2)
-        let end = Math.min(total, current + 2)
-        
-        if (current <= 3) {
-          end = maxVisible
-        } else if (current >= total - 2) {
-          start = total - maxVisible + 1
-        }
-        
-        for (let i = start; i <= end; i++) {
-          pages.push(i)
-        }
-      }
-      
-      return pages
+    const hasMore = computed(() => {
+      return displayedCount.value < currentCandidates.value.length
     })
 
     const recommendOptions = [
@@ -229,21 +182,54 @@ export default {
     // 方法
     const setSelectedJob = async (job) => {
       selectedJob.value = job
-      await loadCandidates()
-      // 重置分页
-      resetPagination()
+      await loadCandidatesForJob(job.id) // 调用新的API加载候选人
+      // 重置无限滚动
+      resetScrolling()
     }
 
-    // 分页方法
-    const goToPage = (page) => {
-      if (page >= 1 && page <= totalPages.value && page !== currentPage.value) {
-        currentPage.value = page
+    // 无限滚动处理方法
+    const handleScroll = (event) => {
+      const container = event.target
+      const scrollTop = container.scrollTop
+      const scrollHeight = container.scrollHeight
+      const clientHeight = container.clientHeight
+      
+      // 当滚动到底部附近（还有100px时）触发加载更多
+      if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore.value && !loadingMore.value) {
+        loadMoreCandidates()
       }
     }
 
-    // 重置分页
-    const resetPagination = () => {
-      currentPage.value = 1
+    // 加载更多候选人
+    const loadMoreCandidates = async () => {
+      if (loadingMore.value || !hasMore.value) return
+      
+      try {
+        loadingMore.value = true
+        
+        // 模拟网络延迟
+        await new Promise(resolve => setTimeout(resolve, 800))
+        
+        // 增加显示数量
+        const newCount = Math.min(
+          displayedCount.value + pageSize.value,
+          currentCandidates.value.length
+        )
+        displayedCount.value = newCount
+        
+      } catch (error) {
+        console.error('加载更多候选人失败:', error)
+      } finally {
+        loadingMore.value = false
+      }
+    }
+
+    // 重置滚动状态
+    const resetScrolling = () => {
+      displayedCount.value = pageSize.value
+      if (candidatesContainer.value) {
+        candidatesContainer.value.scrollTop = 0
+      }
     }
 
     // 加载职位列表
@@ -264,16 +250,16 @@ export default {
       }
     }
 
-    // 加载候选人数据
-    const loadCandidates = async () => {
+    // 根据职位ID加载候选人数据
+    const loadCandidatesForJob = async (jobId) => {
       try {
         loading.value = true
         
-        // 并行加载三种类型的候选人数据
+        // 并行加载三种类型的候选人数据，传入职位ID
         const [smartResponse, experienceResponse, educationResponse] = await Promise.all([
-          apiManager.getSmartCandidates(),
-          apiManager.getExperienceCandidates(),
-          apiManager.getEducationCandidates()
+          apiManager.getSmartCandidates({ jobId }),
+          apiManager.getExperienceCandidates({ jobId }),
+          apiManager.getEducationCandidates({ jobId })
         ])
 
         if (smartResponse.success) {
@@ -292,9 +278,15 @@ export default {
       }
     }
 
-    // 监听推荐类型变化，重置分页
+    // 加载候选人数据（默认方法，用于初始化）
+    const loadCandidates = async () => {
+      const jobId = selectedJob.value?.id
+      await loadCandidatesForJob(jobId)
+    }
+
+    // 监听推荐类型变化，重置滚动
     watch(recommendType, () => {
-      resetPagination()
+      resetScrolling()
     })
 
     // 组件挂载时初始化数据
@@ -313,31 +305,60 @@ export default {
       viewMode,
       loading,
       pageSize,
-      currentPage,
+      displayedCount,
+      loadingMore,
+      candidatesContainer,
       // 计算属性
       currentCandidates,
-      currentPageCandidates,
-      totalPages,
-      visiblePages,
+      displayedCandidates,
+      hasMore,
       recommendOptions,
       // 方法
       setSelectedJob,
       loadJobs,
       loadCandidates,
-      goToPage,
-      resetPagination
+      loadCandidatesForJob,
+      handleScroll,
+      loadMoreCandidates,
+      resetScrolling
     }
   }
 }
 </script>
 
 <style>
-/* 候选人网格布局 - 单列显示 */
+/* 候选人网格布局 - 单列显示，支持无限滚动 */
 .candidates-grid {
   display: flex;
   flex-direction: column;
   gap: 16px;
   margin-bottom: 24px;
+}
+
+.candidates-grid.infinite-scroll {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  scroll-behavior: smooth;
+}
+
+.candidates-grid.infinite-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.candidates-grid.infinite-scroll::-webkit-scrollbar-track {
+  background: #f1f3f4;
+  border-radius: 3px;
+}
+
+.candidates-grid.infinite-scroll::-webkit-scrollbar-thumb {
+  background: #c1c8cd;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.candidates-grid.infinite-scroll::-webkit-scrollbar-thumb:hover {
+  background: #a8b1b8;
 }
 
 .candidate-column {
@@ -346,7 +367,110 @@ export default {
   transition: all 0.3s ease;
 }
 
-/* 分页容器 */
+/* 无限滚动指示器样式 */
+.load-more-trigger {
+  text-align: center;
+  padding: 20px;
+  color: #8e9297;
+  font-size: 14px;
+  border: 2px dashed #e8ecf3;
+  border-radius: 12px;
+  margin: 16px 0;
+  background: #fafbfc;
+  transition: all 0.3s ease;
+}
+
+.load-more-trigger:hover {
+  border-color: #667eea;
+  color: #667eea;
+  background: #f8f9ff;
+}
+
+.load-more-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.load-more-text::before,
+.load-more-text::after {
+  content: "↓";
+  font-size: 16px;
+  animation: bounce 2s infinite;
+}
+
+.load-more-text::after {
+  animation-delay: 0.5s;
+}
+
+.loading-more-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin: 16px 0;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+.loading-text {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.no-more-indicator {
+  text-align: center;
+  padding: 20px;
+  color: #9ca3af;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+.no-more-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.no-more-text::before,
+.no-more-text::after {
+  content: "—";
+  color: #d1d5db;
+  font-weight: bold;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 分页容器 - 保留备用 */
 .pagination-container {
   background: white;
   border-radius: 16px;
@@ -354,6 +478,7 @@ export default {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   border: 1px solid #e8ecf3;
   margin-top: 20px;
+  display: none; /* 隐藏传统分页 */
 }
 
 .pagination-info {
