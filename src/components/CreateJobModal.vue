@@ -174,17 +174,7 @@
                 </svg>
               </div>
               <h3>AI正在智能匹配候选人...</h3>
-              <p>正在分析 {{ matchingProgress.total }} 位候选人</p>
-              <div class="matching-stats">
-                <div class="stat-item">
-                  <span class="stat-number">{{ matchingProgress.analyzed }}</span>
-                  <span class="stat-label">已分析</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-number">{{ matchingProgress.matched }}</span>
-                  <span class="stat-label">匹配成功</span>
-                </div>
-              </div>
+              <p>正在匹配 {{ matchingProgress.total }} 位候选人</p>
             </div>
 
             <div v-if="!isMatching && matchResult" class="matching-result">
@@ -1010,28 +1000,6 @@ export default {
   color: #6b7280;
 }
 
-.matching-stats {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-number {
-  display: block;
-  font-size: 24px;
-  font-weight: 700;
-  color: #10b981;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #6b7280;
-}
 
 .matching-result {
   width: 100%;
