@@ -249,6 +249,17 @@ class APIManager {
     }
   }
 
+  /**
+   * 获取候选人AI分析报告
+   */
+  async getCandidateAIAnalysis(candidateId, analysisType = 'detailed') {
+    if (this.useMock) {
+      return await MockAPI.mockGetCandidateAIAnalysis(candidateId, analysisType)
+    } else {
+      return await CandidateAPI.getCandidateAIAnalysis(candidateId, analysisType)
+    }
+  }
+
   // ==================== 工具方法 ====================
 
   /**

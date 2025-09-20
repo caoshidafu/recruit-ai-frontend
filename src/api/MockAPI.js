@@ -1585,5 +1585,186 @@ export function mockSearchCandidates(searchParams = {}) {
   return mockRequest(filteredCandidates);
 }
 
+/**
+ * Mock - 获取候选人AI分析报告
+ * 功能描述：使用AI技术深度分析候选人的能力、优势、改进建议等
+ * 入参：{ candidateId: number, analysisType?: string } - 候选人ID和分析类型
+ * 返回参数：{ success: boolean, data: Object, message: string }
+ * url地址：/candidates/:id/ai-analysis
+ * 请求方式：GET
+ */
+export function mockGetCandidateAIAnalysis(candidateId, analysisType = 'detailed') {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 在所有候选人分类中查找
+      let candidate = null;
+      for (const category of Object.values(mockData.candidates)) {
+        candidate = category.find(c => c.id === parseInt(candidateId));
+        if (candidate) break;
+      }
+      
+      if (!candidate) {
+        resolve({
+          success: false,
+          message: '候选人不存在',
+          data: null
+        });
+        return;
+      }
+      
+      // 根据候选人ID和数据生成个性化的AI分析
+      const baseScore = candidate.matchScore || 85;
+      const isHighPerformer = baseScore >= 90;
+      const isMidPerformer = baseScore >= 80 && baseScore < 90;
+      
+      // 根据候选人技能生成分析内容
+      const hasJavaSkills = candidate.skills.some(skill => skill.toLowerCase().includes('java'));
+      const hasFrontendSkills = candidate.skills.some(skill => 
+        ['vue', 'react', 'javascript', 'typescript'].some(tech => skill.toLowerCase().includes(tech))
+      );
+      const hasBackendSkills = candidate.skills.some(skill => 
+        ['spring', 'mysql', 'redis', 'kafka'].some(tech => skill.toLowerCase().includes(tech))
+      );
+      
+      // 生成优势分析
+      const strengths = [];
+      if (isHighPerformer) {
+        strengths.push('技术能力突出，在相关领域有深入的专业知识');
+        strengths.push('工作经验丰富，具备解决复杂技术问题的能力');
+      }
+      if (hasJavaSkills) {
+        strengths.push('Java技术栈熟练，具备企业级应用开发经验');
+      }
+      if (hasFrontendSkills) {
+        strengths.push('前端技术掌握扎实，能够开发现代化的用户界面');
+      }
+      if (hasBackendSkills) {
+        strengths.push('后端架构设计能力强，熟悉分布式系统开发');
+      }
+      if (candidate.experience >= 5) {
+        strengths.push('工作经验丰富，具备良好的项目管理和团队协作能力');
+      }
+      if (candidate.educationHistory?.some(edu => ['硕士', '博士'].includes(edu.degree))) {
+        strengths.push('学历背景优秀，理论基础扎实，学习能力强');
+      }
+      
+      // 生成改进建议
+      const improvements = [];
+      if (!isHighPerformer && isMidPerformer) {
+        improvements.push('建议在核心技术深度上继续提升，关注最新技术趋势');
+      }
+      if (!isMidPerformer) {
+        improvements.push('需要加强技术基础，建议通过项目实践提升技能水平');
+      }
+      if (candidate.experience < 3) {
+        improvements.push('工作经验相对较少，建议多参与复杂项目积累实践经验');
+      }
+      if (!candidate.skills.some(skill => skill.toLowerCase().includes('docker'))) {
+        improvements.push('建议学习容器化技术，提升系统部署和运维能力');
+      }
+      if (!hasBackendSkills && hasFrontendSkills) {
+        improvements.push('建议补充后端技术知识，成为更全面的全栈开发者');
+      }
+      if (!hasFrontendSkills && hasBackendSkills) {
+        improvements.push('可以学习前端技术，提升用户界面开发能力');
+      }
+      
+      // 岗位匹配度分析
+      const jobMatching = {
+        skillMatch: Math.min(baseScore + Math.random() * 10 - 5, 100),
+        experienceMatch: Math.min(Math.max(candidate.experience * 15, 60), 95),
+        educationMatch: candidate.educationHistory?.[0]?.degree === '博士' ? 95 : 
+                       candidate.educationHistory?.[0]?.degree === '硕士' ? 85 : 75,
+        cultureMatch: Math.min(baseScore + Math.random() * 15 - 7, 95)
+      };
+      
+      // 推荐行动
+      const recommendedActions = [];
+      if (isHighPerformer) {
+        recommendedActions.push({
+          icon: '🔥',
+          title: '优先联系',
+          description: '该候选人综合能力突出，建议立即安排面试',
+          priority: 'high'
+        });
+        recommendedActions.push({
+          icon: '💼',
+          title: '职位匹配',
+          description: '可考虑为其提供更具挑战性的岗位机会',
+          priority: 'medium'
+        });
+      } else if (isMidPerformer) {
+        recommendedActions.push({
+          icon: '📞',
+          title: '深入沟通',
+          description: '建议进行详细的技术面试，了解实际能力水平',
+          priority: 'high'
+        });
+        recommendedActions.push({
+          icon: '📚',
+          title: '能力培养',
+          description: '可作为储备人才，通过培训提升技能',
+          priority: 'medium'
+        });
+      } else {
+        recommendedActions.push({
+          icon: '🎯',
+          title: '基础评估',
+          description: '建议先进行基础技能测试，确认基本能力',
+          priority: 'medium'
+        });
+        recommendedActions.push({
+          icon: '📈',
+          title: '成长计划',
+          description: '制定详细的培训计划，帮助候选人快速成长',
+          priority: 'low'
+        });
+      }
+      
+      // 根据地理位置添加建议
+      if (candidate.location !== '北京') {
+        recommendedActions.push({
+          icon: '📍',
+          title: '地理因素',
+          description: `候选人位于${candidate.location}，需考虑远程工作或搬迁意愿`,
+          priority: 'medium'
+        });
+      }
+      
+      // 模拟AI分析结果
+      const mockAnalysisData = {
+        overallScore: baseScore,
+        recommendation: isHighPerformer ? 
+          '该候选人综合实力强，技术能力突出，建议优先考虑并快速推进面试流程' :
+          isMidPerformer ?
+          '候选人具备良好的基础能力，有一定发展潜力，可作为重点关注对象' :
+          '候选人基础能力尚可，需要进一步评估和培养，可考虑作为储备人选',
+        strengths: strengths.slice(0, 5), // 最多显示5个优势
+        improvements: improvements.slice(0, 4), // 最多显示4个建议
+        jobMatching: {
+          skillMatch: Math.round(jobMatching.skillMatch),
+          experienceMatch: Math.round(jobMatching.experienceMatch),
+          educationMatch: Math.round(jobMatching.educationMatch),
+          cultureMatch: Math.round(jobMatching.cultureMatch)
+        },
+        recommendedActions: recommendedActions.slice(0, 3), // 最多显示3个行动建议
+        analysisMetrics: {
+          confidence: 0.92,
+          dataPoints: 156,
+          analysisTime: '2.3s',
+          algorithmVersion: 'v3.2.1'
+        },
+        generatedAt: new Date().toISOString()
+      };
+      
+      resolve({
+        success: true,
+        data: mockAnalysisData,
+        message: 'AI分析完成'
+      });
+    }, 1800); // 模拟1.8秒AI分析时间
+  });
+}
+
 // 是否启用Mock模式的配置
 export const MOCK_ENABLED = process.env.VUE_APP_MOCK_ENABLED !== 'false';

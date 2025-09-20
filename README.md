@@ -43,12 +43,13 @@ recruit-ai-frontend/
 │   │   ├── MockAPI.js          # Mock API接口（包含模拟数据）
 │   │   └── mockManager.js      # API管理器（统一调用入口）
 │   ├── components/          # 组件目录
-│   │   ├── CandidateCard.vue    # 候选人卡片组件
-│   │   ├── JobCard.vue          # 岗位卡片组件
-│   │   ├── JobDetail.vue        # 岗位详情组件
-│   │   ├── RadarChart.vue       # 雷达图组件
-│   │   ├── ResizableSplitter.vue # 可拖拽分割器组件
-│   │   └── CreateJobModal.vue   # 创建职位模态框组件
+│   │   ├── CandidateCard.vue              # 候选人卡片组件
+│   │   ├── CandidateAIAnalysisModal.vue   # 候选人AI分析模态框组件
+│   │   ├── JobCard.vue                    # 岗位卡片组件
+│   │   ├── JobDetail.vue                  # 岗位详情组件
+│   │   ├── RadarChart.vue                 # 雷达图组件
+│   │   ├── ResizableSplitter.vue          # 可拖拽分割器组件
+│   │   └── CreateJobModal.vue             # 创建职位模态框组件
 │   ├── styles/             # 样式目录
 │   │   └── global.css          # 全局样式
 │   ├── App.vue             # 主应用组件
@@ -74,6 +75,7 @@ recruit-ai-frontend/
 - **展开状态**: 点击头部区域展开，显示完整的教育经历、推荐理由、关键匹配点、技能标签、工作经历
 - **交互设计**: 统一的展开/收起按钮，流畅的动画效果
 - **操作按钮**: 展开状态下提供查看详情、联系候选人、AI分析等操作选项
+- **AI分析功能**: 点击AI分析按钮显示候选人的AI分析模态框，包含雷达图和详细分析报告
 - **现代化设计**: 圆角卡片、柔和阴影、悬停效果
 - **响应式设计**: 移动端、平板、桌面端优化布局
 
@@ -116,6 +118,21 @@ recruit-ai-frontend/
 - 任职要求
 - 薪资福利
 - 可折叠展示
+
+### CandidateAIAnalysisModal.vue
+候选人AI分析模态框组件，提供深度的AI分析报告和雷达图可视化。
+
+**Props:**
+- `visible`: 是否显示模态框
+- `candidate`: 候选人对象
+
+**功能:**
+- **AI智能分析**: 使用AI技术分析候选人的综合能力和潜力
+- **雷达图展示**: 集成RadarChart组件，可视化候选人各维度能力
+- **详细分析报告**: 包含优势分析、改进建议、岗位匹配度等
+- **推荐行动**: 基于AI分析结果提供具体的行动建议
+- **现代化设计**: 优雅的模态框设计，支持渐变背景和动画效果
+- **响应式布局**: 适配移动端和桌面端
 
 ### RadarChart.vue
 雷达图组件，用于可视化候选人能力维度。
@@ -259,6 +276,7 @@ const candidates = await apiManager.getSmartCandidates()
 **其他候选人接口:**
 - `getCandidateDetail(candidateId)`: 获取候选人详情
 - `getCandidateRadarData(candidateId)`: 获取候选人雷达图数据
+- `getCandidateAIAnalysis(candidateId, analysisType)`: 获取候选人AI分析报告，包含优势、改进建议、匹配度等
 - `searchCandidates(searchParams)`: 搜索候选人
 - `aiMatchCandidates(jobId, analysisDepth)`: AI智能匹配候选人，返回匹配度和推荐理由
 
@@ -292,6 +310,15 @@ const eduCandidates = await apiManager.getRecommendedCandidates({
 ```
 
 ## 核心功能特性
+
+### AI智能分析功能
+- **深度候选人分析**: 使用AI技术对候选人进行多维度分析
+- **雷达图可视化**: 直观展示候选人在不同能力维度的表现
+- **智能推荐建议**: 基于AI分析结果提供具体的行动建议
+- **岗位匹配度**: 分析候选人与当前岗位的匹配程度
+- **个性化报告**: 为每个候选人生成定制化的分析报告
+
+## 其他核心功能
 
 ### 无限滚动分页
 - **下拉加载**: 当用户滚动到底部附近时自动加载更多候选人

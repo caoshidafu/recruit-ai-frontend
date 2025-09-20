@@ -153,3 +153,16 @@ export function matchCandidateToJob(candidateId, jobId) {
 export function aiMatchCandidates(jobId, analysisDepth = 'detailed') {
   return post('/candidates/ai-match', { jobId, analysisDepth })
 }
+
+/**
+ * 获取候选人AI分析报告
+ * 功能描述：使用AI技术深度分析候选人的能力、优势、改进建议等
+ * 入参：{ candidateId: number, analysisType?: string } - 候选人ID和分析类型（'basic', 'detailed', 'comprehensive'）
+ * 返回参数：{ success: boolean, data: Object, message: string }
+ * data包含：{ overallScore: number, recommendation: string, strengths: Array, improvements: Array, jobMatching: Object, recommendedActions: Array }
+ * url地址：/candidates/:id/ai-analysis
+ * 请求方式：GET
+ */
+export function getCandidateAIAnalysis(candidateId, analysisType = 'detailed') {
+  return get(`/candidates/${candidateId}/ai-analysis`, { analysisType })
+}

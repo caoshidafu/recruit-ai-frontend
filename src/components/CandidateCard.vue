@@ -133,14 +133,26 @@
         </button>
       </div>
     </div>
+
+    <!-- AI分析模态框 -->
+    <CandidateAIAnalysisModal
+      :visible="showAIAnalysis"
+      :candidate="candidate"
+      @close="showAIAnalysis = false"
+      @contact="handleContactFromModal"
+    />
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
+import CandidateAIAnalysisModal from './CandidateAIAnalysisModal.vue'
 
 export default {
   name: 'CandidateCard',
+  components: {
+    CandidateAIAnalysisModal
+  },
   props: {
     candidate: {
       type: Object,
@@ -168,7 +180,11 @@ export default {
     }
 
     const generateAIAnalysis = () => {
-      alert(`生成${props.candidate.name}的AI分析`)
+      showAIAnalysis.value = true
+    }
+
+    const handleContactFromModal = (candidate) => {
+      alert(`从AI分析模态框联系候选人：${candidate.name}`)
     }
 
     return {
@@ -177,7 +193,8 @@ export default {
       toggleExpanded,
       viewDetails,
       quickContact,
-      generateAIAnalysis
+      generateAIAnalysis,
+      handleContactFromModal
     }
   }
 }
