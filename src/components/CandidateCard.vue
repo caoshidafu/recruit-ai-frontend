@@ -503,10 +503,33 @@ export default {
   border-top: 1px solid #e9ecef;
   background: #f8f9fa;
   animation: slideDown 0.3s ease;
+  max-height: 60vh;
+  overflow-y: auto;
+  position: relative;
 }
 
 .details-content {
   padding: 20px;
+  max-height: none;
+}
+
+/* 自定义滚动条样式 */
+.candidate-details::-webkit-scrollbar {
+  width: 6px;
+}
+
+.candidate-details::-webkit-scrollbar-track {
+  background: #f1f3f4;
+  border-radius: 3px;
+}
+
+.candidate-details::-webkit-scrollbar-thumb {
+  background: #c1c7cd;
+  border-radius: 3px;
+}
+
+.candidate-details::-webkit-scrollbar-thumb:hover {
+  background: #a8b1ba;
 }
 
 @keyframes slideDown {
@@ -516,7 +539,7 @@ export default {
   }
   to {
     opacity: 1;
-    max-height: 2000px;
+    max-height: 60vh;
   }
 }
 
@@ -526,7 +549,11 @@ export default {
 .recommend-section,
 .education-section,
 .work-section {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
 }
 
 .skills-section:last-child,
@@ -542,13 +569,15 @@ export default {
 .recommend-section h5,
 .education-section h5,
 .work-section h5 {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #495057;
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
   display: flex;
   align-items: center;
   gap: 6px;
+  border-bottom: 1px solid #f1f3f4;
+  padding-bottom: 6px;
 }
 
 /* 技能标签 */
@@ -563,11 +592,12 @@ export default {
 .highlight-tag {
   background: #e3f2fd;
   color: #1976d2;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
   font-weight: 500;
   white-space: nowrap;
+  line-height: 1.4;
 }
 
 .highlight-tag {
@@ -583,11 +613,12 @@ export default {
 }
 
 .recommend-reasons li {
-  padding: 8px 0;
-  font-size: 14px;
+  padding: 6px 0;
+  font-size: 12px;
   color: #495057;
   position: relative;
   padding-left: 16px;
+  line-height: 1.4;
 }
 
 .recommend-reasons li::before {
@@ -596,6 +627,7 @@ export default {
   left: 0;
   color: #28a745;
   font-weight: 600;
+  font-size: 11px;
 }
 
 /* 教育经历 */
@@ -606,9 +638,9 @@ export default {
 }
 
 .education-item {
-  background: white;
-  padding: 12px 16px;
-  border-radius: 8px;
+  background: #f8f9fa;
+  padding: 10px 14px;
+  border-radius: 6px;
   border: 1px solid #e9ecef;
 }
 
@@ -622,26 +654,26 @@ export default {
 .degree {
   font-weight: 600;
   color: #495057;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .duration {
-  font-size: 12px;
+  font-size: 11px;
   color: #6c757d;
 }
 
 .edu-details {
-  font-size: 13px;
+  font-size: 12px;
   color: #6c757d;
 }
 
 /* 工作经历 */
 .work-item {
-  background: white;
-  padding: 12px 16px;
-  border-radius: 8px;
+  background: #f8f9fa;
+  padding: 10px 14px;
+  border-radius: 6px;
   border: 1px solid #e9ecef;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .work-item:last-child {
@@ -658,17 +690,17 @@ export default {
 .company {
   font-weight: 600;
   color: #495057;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .position {
-  font-size: 13px;
+  font-size: 12px;
   color: #667eea;
   margin-bottom: 4px;
 }
 
 .description {
-  font-size: 12px;
+  font-size: 11px;
   color: #6c757d;
   line-height: 1.4;
 }
@@ -791,6 +823,10 @@ export default {
     gap: 6px;
   }
 
+  .candidate-details {
+    max-height: 40vh;
+  }
+
   .details-content {
     padding: 16px;
   }
@@ -812,6 +848,37 @@ export default {
     border-radius: 10px;
     padding: 8px 12px;
     box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
+  }
+}
+
+/* 中等屏幕优化 */
+@media (max-width: 1200px) and (min-width: 769px) {
+  .candidate-details {
+    max-height: 50vh;
+  }
+}
+
+/* 小屏幕进一步优化 */
+@media (max-width: 480px) {
+  .candidate-details {
+    max-height: 35vh;
+  }
+
+  .details-content {
+    padding: 12px;
+  }
+  
+  .skills-section,
+  .highlight-section,
+  .recommend-section,
+  .education-section,
+  .work-section {
+    margin-bottom: 12px;
+    padding: 12px;
+  }
+  
+  .candidate-header {
+    padding: 12px;
   }
 }
 
