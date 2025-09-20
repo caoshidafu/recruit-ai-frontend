@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 
 export default {
   name: 'ResizableSplitter',
