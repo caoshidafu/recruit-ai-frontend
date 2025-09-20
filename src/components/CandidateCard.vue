@@ -120,7 +120,7 @@
       <!-- 操作按钮 -->
       <div class="card-actions">
         <button class="action-btn details-btn" @click.stop="viewDetails">
-          <span class="btn-icon">📄</span>
+          <span class="btn-icon">👁️</span>
           <span class="btn-text">查看详情</span>
         </button>
         <button class="action-btn contact-btn" @click.stop="quickContact">
@@ -549,13 +549,6 @@ export default {
   min-height: 44px;
 }
 
-.action-btn:hover {
-  background: var(--gray-50);
-  border-color: var(--primary);
-  color: var(--primary);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
 
 /* 查看详情按钮 */
 .details-btn {
@@ -581,7 +574,7 @@ export default {
 .contact-btn:hover {
   background: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* AI分析按钮 */
@@ -594,7 +587,7 @@ export default {
 
 .ai-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .ai-btn:before {
