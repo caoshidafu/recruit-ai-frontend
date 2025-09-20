@@ -220,6 +220,7 @@ export default {
 
     const aiAnalysis = ref(null)
     const matchResult = ref(null)
+    const createdJob = ref(null)
 
     const isBasicFormValid = computed(() => {
       return jobForm.title && 
@@ -259,6 +260,7 @@ export default {
       
       aiAnalysis.value = null
       matchResult.value = null
+      createdJob.value = null
     }
 
     const handleSubmitDescription = async () => {
@@ -384,32 +386,17 @@ export default {
 
     const createJobAfterMatching = async () => {
       try {
-        const jobData = {
-          title: jobForm.title,
-          department: jobForm.department,
-          level: jobForm.level,
-          location: jobForm.location,
-          salary: jobForm.salary,
-          description: jobForm.description,
-          aiAnalysis: aiAnalysis.value,
-          matchResult: matchResult.value,
-          status: 'active',
-          publishedAt: new Date().toISOString()
-        }
-
-        const response = await apiManager.createJob(jobData)
-
-        if (response.success) {
-          // 职位创建成功，直接关闭弹窗并通知父组件
-          emit('created', response.data)
+        if (createdJob.value) {
+          // 职位已经创建，直接关闭弹窗并通知父组件
+          emit('created', createdJob.value)
           closeModal()
         } else {
-          console.error('创建职位失败:', response.message)
-          alert('创建职位失败，请重试')
+          console.error('未找到已创建的职位信息')
+          alert('职位信息异常，请重试')
         }
       } catch (error) {
-        console.error('创建职位错误:', error)
-        alert('创建职位出现错误，请重试')
+        console.error('完成职位创建错误:', error)
+        alert('完成职位创建出现错误，请重试')
       }
     }
 
@@ -431,17 +418,14 @@ export default {
         const createResponse = await apiManager.createJob(jobData)
 
         if (createResponse.success) {
+          // 保存创建的职位信息
+          createdJob.value = createResponse.data
+          
           // 自动跳转到智能匹配步骤
           currentStep.value = 3
           
           // 开始智能匹配
           await performMatching(createResponse.data.id)
-          
-          // 匹配完成后，自动关闭弹窗并通知父组件
-          setTimeout(() => {
-            emit('created', createResponse.data)
-            closeModal()
-          }, 1000) // 给用户1秒时间看到完成状态
         } else {
           console.error('创建职位失败:', createResponse.message)
           alert('创建职位失败，请重试')
