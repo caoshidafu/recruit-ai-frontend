@@ -120,7 +120,7 @@
       <!-- 操作按钮 -->
       <div class="card-actions">
         <button class="action-btn contact-btn" @click.stop="quickContact">
-          <span class="btn-icon">👁</span>
+          <span class="btn-icon">📄</span>
           <span class="btn-text">查看详情</span>
         </button>
         <button class="action-btn ai-btn" @click.stop="generateAIAnalysis">
@@ -521,7 +521,7 @@ export default {
   padding: 16px 20px;
   display: flex;
   gap: 12px;
-  justify-content: center;
+  justify-content: stretch;
   flex-shrink: 0;
 }
 
@@ -529,7 +529,7 @@ export default {
   background: white;
   border: 1px solid var(--gray-300);
   color: var(--gray-700);
-  padding: 12px 20px;
+  padding: 12px 16px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
@@ -540,23 +540,46 @@ export default {
   transition: all 0.2s ease;
   flex: 1;
   justify-content: center;
-  max-width: 150px;
+  min-height: 44px;
 }
 
 .action-btn:hover {
   background: var(--gray-50);
   border-color: var(--primary);
   color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .action-btn.contact-btn {
-  background: var(--primary);
-  color: white;
-  border: none;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn.contact-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.action-btn.contact-btn:hover::before {
+  left: 100%;
 }
 
 .action-btn.contact-btn:hover {
-  background: #1d4ed8;
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+  border-color: #d97706;
+  color: #78350f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 .action-btn.ai-btn {
@@ -591,6 +614,25 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .card-actions {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  
+  .action-btn {
+    padding: 10px 12px;
+    font-size: 12px;
+    min-height: 40px;
+  }
+  
+  .btn-text {
+    font-size: 12px;
+  }
+  
+  .btn-icon {
+    font-size: 14px;
+  }
+  
   .candidate-card {
     max-height: calc(100vh - 80px);
     margin-bottom: 16px;
