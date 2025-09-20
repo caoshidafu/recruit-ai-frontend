@@ -32,95 +32,85 @@
       </div>
     </div>
 
-    <!-- 展开内容区域 -->
+    <!-- 展开内容区域 - 统一垂直布局 -->
     <div v-if="isExpanded" class="expanded-content">
-      <div class="content-grid">
-        <!-- 左侧内容区域 -->
-        <div class="left-panel">
-          <!-- 教育经历 -->
-          <div class="education-section">
-            <h5>教育经历</h5>
-            <div class="education-list">
-              <div
-                v-for="(edu, index) in candidate.educationHistory"
-                :key="index"
-                class="education-item"
-              >
-                <div class="education-content">
-                  <div class="education-main">
-                    <span class="degree">{{ edu.degree }}</span>
-                    <span class="duration">{{ edu.duration }}</span>
-                  </div>
-                  <div class="education-details">
-                    <span class="school">{{ edu.school }}</span>
-                    <span class="separator">·</span>
-                    <span class="major">{{ edu.major }}</span>
-                  </div>
-                </div>
+      <div class="content-container">
+        <!-- 教育经历 -->
+        <div class="education-section">
+          <h5>教育经历</h5>
+          <div class="education-list">
+            <div
+              v-for="(edu, index) in candidate.educationHistory"
+              :key="index"
+              class="education-item"
+            >
+              <div class="education-main">
+                <span class="degree">{{ edu.degree }}</span>
+                <span class="duration">{{ edu.duration }}</span>
               </div>
-            </div>
-          </div>
-
-          <!-- 推荐理由 -->
-          <div class="recommend-section">
-            <h5>推荐理由</h5>
-            <ul class="recommend-reasons">
-              <li v-for="(reason, index) in candidate.recommendReasons" :key="index">
-                {{ reason }}
-              </li>
-            </ul>
-          </div>
-
-          <!-- 关键匹配点 -->
-          <div class="highlight-section">
-            <h5>关键匹配点</h5>
-            <div class="highlights">
-              <span
-                v-for="(highlight, index) in candidate.keyHighlights"
-                :key="index"
-                class="highlight-tag"
-              >
-                {{ highlight }}
-              </span>
-            </div>
-          </div>
-
-          <!-- 技能标签 -->
-          <div class="skills-section">
-            <h5>技能标签</h5>
-            <div class="candidate-skills">
-              <span
-                v-for="skill in candidate.skills"
-                :key="skill"
-                class="skill-tag"
-              >
-                {{ skill }}
-              </span>
+              <div class="education-details">
+                <span class="school">{{ edu.school }}</span>
+                <span class="separator">·</span>
+                <span class="major">{{ edu.major }}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- 右侧内容区域 -->
-        <div class="right-panel">
-          <!-- 工作经历 -->
-          <div class="work-section">
-            <h5>过往经历</h5>
-            <div class="work-list">
-              <div
-                v-for="(work, index) in candidate.workHistory"
-                :key="index"
-                class="work-item"
-              >
-                <div class="work-content">
-                  <div class="work-main">
-                    <span class="company">{{ work.company }}</span>
-                    <span class="duration">{{ work.duration }}</span>
-                  </div>
-                  <div class="position">{{ work.position }}</div>
-                  <div v-if="work.description" class="description">
-                    {{ work.description }}
-                  </div>
-                </div>
+        <!-- 推荐理由 -->
+        <div class="recommend-section">
+          <h5>推荐理由</h5>
+          <ul class="recommend-reasons">
+            <li v-for="(reason, index) in candidate.recommendReasons" :key="index">
+              {{ reason }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- 关键匹配点 -->
+        <div class="highlight-section">
+          <h5>关键匹配点</h5>
+          <div class="highlights">
+            <span
+              v-for="(highlight, index) in candidate.keyHighlights"
+              :key="index"
+              class="highlight-tag"
+            >
+              {{ highlight }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 技能标签 -->
+        <div class="skills-section">
+          <h5>技能标签</h5>
+          <div class="candidate-skills">
+            <span
+              v-for="skill in candidate.skills"
+              :key="skill"
+              class="skill-tag"
+            >
+              {{ skill }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 过往经历 -->
+        <div class="work-section">
+          <h5>过往经历</h5>
+          <div class="work-list">
+            <div
+              v-for="(work, index) in candidate.workHistory"
+              :key="index"
+              class="work-item"
+            >
+              <div class="work-main">
+                <span class="company">{{ work.company }}</span>
+                <span class="duration">{{ work.duration }}</span>
+              </div>
+              <div class="position">{{ work.position }}</div>
+              <div v-if="work.description" class="description">
+                {{ work.description }}
               </div>
             </div>
           </div>
@@ -338,44 +328,12 @@ export default {
   min-height: 0;
 }
 
-/* 内容网格布局 */
-.content-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  flex: 1;
-  overflow: hidden;
+/* 内容容器 - 统一垂直布局 */
+.content-container {
   padding: 20px;
-}
-
-/* 左右面板 */
-.left-panel,
-.right-panel {
-  overflow-y: auto;
-  /* 自定义滚动条样式 */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
-}
-
-.left-panel::-webkit-scrollbar,
-.right-panel::-webkit-scrollbar {
-  width: 6px;
-}
-
-.left-panel::-webkit-scrollbar-track,
-.right-panel::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.left-panel::-webkit-scrollbar-thumb,
-.right-panel::-webkit-scrollbar-thumb {
-  background: rgba(102, 126, 234, 0.3);
-  border-radius: 3px;
-}
-
-.left-panel::-webkit-scrollbar-thumb:hover,
-.right-panel::-webkit-scrollbar-thumb:hover {
-  background: rgba(102, 126, 234, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 
@@ -396,16 +354,8 @@ export default {
 .highlight-section,
 .skills-section,
 .work-section {
-  padding: 0 0 20px 0;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #f1f3f4;
-  flex-shrink: 0;
-}
-
-.work-section {
-  border-bottom: none;
-  padding-bottom: 0;
   margin-bottom: 0;
+  flex-shrink: 0;
 }
 
 .education-section h5,
@@ -421,10 +371,8 @@ export default {
 
 /* 教育经历部分 */
 .education-section {
-  margin-bottom: 16px;
-  background: var(--gray-50);
-  padding: 12px;
-  border-radius: 8px;
+  background: transparent;
+  padding: 0;
 }
 
 .education-list {
@@ -437,15 +385,16 @@ export default {
   font-size: 13px;
 }
 
-.edu-header {
+.education-main {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 4px;
 }
 
 .degree {
   font-weight: 600;
-  color: var(--gray-800);
+  color: var(--gray-900);
 }
 
 .duration {
@@ -453,7 +402,7 @@ export default {
   font-size: 12px;
 }
 
-.edu-details {
+.education-details {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -668,25 +617,10 @@ export default {
     font-size: 28px;
   }
 
-  /* 移动端改为垂直布局 */
-  .content-grid {
-    grid-template-columns: 1fr;
-    gap: 0;
+  /* 移动端内容布局 */
+  .content-container {
     padding: 16px;
-  }
-
-  .education-section,
-  .recommend-section,
-  .highlight-section,
-  .skills-section,
-  .work-section {
-    padding: 0 0 16px 0;
-    margin-bottom: 16px;
-  }
-
-  .work-section {
-    margin-bottom: 0;
-    padding-bottom: 0;
+    gap: 12px;
   }
 
   .card-actions {
@@ -711,22 +645,9 @@ export default {
     padding: 12px;
   }
 
-  .content-grid {
+  .content-container {
     padding: 12px;
-  }
-  
-  .education-section,
-  .recommend-section,
-  .highlight-section,
-  .skills-section,
-  .work-section {
-    padding: 0 0 12px 0;
-    margin-bottom: 12px;
-  }
-
-  .work-section {
-    margin-bottom: 0;
-    padding-bottom: 0;
+    gap: 8px;
   }
   
   .card-actions {
