@@ -23,7 +23,7 @@
           <h2>在招岗位</h2>
           <div class="job-list">
             <JobCard
-              v-for="job in mockData.jobs"
+              v-for="job in jobs"
               :key="job.id"
               :job="job"
               :isActive="selectedJob?.id === job.id"
@@ -104,11 +104,11 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import JobCard from './components/JobCard.vue'
 import CandidateCard from './components/CandidateCard.vue'
 import JobDetail from './components/JobDetail.vue'
-import { mockData } from './data/mockData.js'
+import apiManager from './api/mockManager.js'
 
 export default {
   name: 'App',
@@ -118,13 +118,22 @@ export default {
     JobDetail
   },
   setup() {
-    const selectedJob = ref(mockData.jobs[0])
+    // 响应式数据
+    const jobs = ref([])
+    const selectedJob = ref(null)
+    const candidates = ref({
+      smart: [],
+      experience: [],
+      education: []
+    })
     const recommendType = ref('smart')
     const showJobDetail = ref(true)
     const viewMode = ref('split')
+    const loading = ref(false)
 
+    // 计算属性
     const currentCandidates = computed(() => {
-      return mockData.candidates[recommendType.value] || []
+      return candidates.value[recommendType.value] || []
     })
 
     const recommendOptions = [
@@ -133,19 +142,80 @@ export default {
       { value: 'education', label: '学历推荐' },
     ]
 
-    const setSelectedJob = (job) => {
+    // 方法
+    const setSelectedJob = async (job) => {
       selectedJob.value = job
+      await loadCandidates()
     }
 
+    // 加载职位列表
+    const loadJobs = async () => {
+      try {
+        loading.value = true
+        const response = await apiManager.getJobList()
+        if (response.success) {
+          jobs.value = response.data
+          if (jobs.value.length > 0 && !selectedJob.value) {
+            selectedJob.value = jobs.value[0]
+          }
+        }
+      } catch (error) {
+        console.error('加载职位列表失败:', error)
+      } finally {
+        loading.value = false
+      }
+    }
+
+    // 加载候选人数据
+    const loadCandidates = async () => {
+      try {
+        loading.value = true
+        
+        // 并行加载三种类型的候选人数据
+        const [smartResponse, experienceResponse, educationResponse] = await Promise.all([
+          apiManager.getSmartCandidates(),
+          apiManager.getExperienceCandidates(),
+          apiManager.getEducationCandidates()
+        ])
+
+        if (smartResponse.success) {
+          candidates.value.smart = smartResponse.data
+        }
+        if (experienceResponse.success) {
+          candidates.value.experience = experienceResponse.data
+        }
+        if (educationResponse.success) {
+          candidates.value.education = educationResponse.data
+        }
+      } catch (error) {
+        console.error('加载候选人数据失败:', error)
+      } finally {
+        loading.value = false
+      }
+    }
+
+    // 组件挂载时初始化数据
+    onMounted(async () => {
+      await loadJobs()
+      await loadCandidates()
+    })
+
     return {
+      // 数据
+      jobs,
       selectedJob,
+      candidates,
       recommendType,
       showJobDetail,
       viewMode,
+      loading,
+      // 计算属性
       currentCandidates,
       recommendOptions,
-      mockData,
-      setSelectedJob
+      // 方法
+      setSelectedJob,
+      loadJobs,
+      loadCandidates
     }
   }
 }

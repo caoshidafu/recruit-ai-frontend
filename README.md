@@ -28,6 +28,12 @@ vue3-project/
 │   ├── favicon.ico
 │   └── index.html
 ├── src/
+│   ├── api/                # API接口目录
+│   │   ├── index.js            # HTTP请求基础方法
+│   │   ├── JOBAPI.js           # 职位相关API接口
+│   │   ├── CANDIDATEAPI.js     # 候选人相关API接口
+│   │   ├── MOCKAPI.js          # Mock API接口
+│   │   └── mockManager.js      # API管理器（统一调用入口）
 │   ├── components/          # 组件目录
 │   │   ├── CandidateCard.vue    # 候选人卡片组件
 │   │   ├── JobCard.vue          # 岗位卡片组件
@@ -133,6 +139,52 @@ vue3-project/
   radarData: Object     // 雷达图数据
 }
 ```
+
+## API接口设计
+
+### API目录结构
+- `src/api/index.js`: HTTP请求基础方法（get、post、put、del）
+- `src/api/JOBAPI.js`: 职位相关API接口
+- `src/api/CANDIDATEAPI.js`: 候选人相关API接口  
+- `src/api/MOCKAPI.js`: Mock API接口实现
+- `src/api/mockManager.js`: API管理器，统一调用入口
+
+### 使用方式
+
+```javascript
+import apiManager from './api/mockManager.js'
+
+// 获取职位列表
+const response = await apiManager.getJobList()
+
+// 获取智能推荐候选人
+const candidates = await apiManager.getSmartCandidates()
+```
+
+### Mock模式配置
+
+系统支持Mock模式和真实API模式切换：
+
+- **开发环境**: 默认使用Mock数据
+- **生产环境**: 需要配置 `VUE_APP_USE_MOCK=false` 使用真实API
+- **Mock数据**: 基于 `src/data/mockData.js` 提供模拟数据
+
+### 主要API接口
+
+#### 职位相关接口
+- `getJobList()`: 获取职位列表
+- `getJobDetail(jobId)`: 获取职位详情
+- `createJob(jobData)`: 创建新职位
+- `updateJob(jobId, jobData)`: 更新职位信息
+- `getJobCandidateStats(jobId)`: 获取职位候选人统计
+
+#### 候选人相关接口
+- `getSmartCandidates()`: 获取智能推荐候选人
+- `getExperienceCandidates()`: 获取经验匹配候选人
+- `getEducationCandidates()`: 获取学历匹配候选人
+- `getCandidateDetail(candidateId)`: 获取候选人详情
+- `getCandidateRadarData(candidateId)`: 获取候选人雷达图数据
+- `searchCandidates(searchParams)`: 搜索候选人
 
 ## 推荐策略
 
