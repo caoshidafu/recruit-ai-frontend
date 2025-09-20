@@ -1,5 +1,10 @@
 <template>
-  <div class="resizable-splitter" @mousedown="startDrag" @touchstart="startDrag">
+  <div 
+    class="resizable-splitter" 
+    :class="{ dragging: isDragging }"
+    @mousedown="startDrag" 
+    @touchstart="startDrag"
+  >
     <div class="splitter-handle">
       <div class="splitter-dots">
         <div class="dot"></div>
@@ -45,6 +50,9 @@ export default {
       
       // 发送拖拽事件给父组件
       emit('resize', deltaX)
+      
+      // 更新起始位置，使拖拽跟随鼠标位置
+      startX.value = currentX
       
       event.preventDefault()
     }
