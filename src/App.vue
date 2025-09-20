@@ -18,7 +18,7 @@
     </header>
 
     <div class="app-body">
-      <aside class="sidebar">
+      <aside class="sidebar" :style="{ width: sidebarWidth + 'px' }">
         <div class="sidebar-section">
           <h2>在招岗位</h2>
           <div class="job-list">
@@ -36,6 +36,12 @@
           </button>
         </div>
       </aside>
+
+      <!-- 主分割器 - 在侧边栏和主内容区之间 -->
+      <ResizableSplitter 
+        @resize="handleMainSplitterResize"
+        class="main-splitter"
+      />
 
       <main class="main-content">
         <div class="content-header">
@@ -167,6 +173,11 @@ export default {
     const minLeftWidth = ref(300) // 最小宽度
     const maxLeftWidth = ref(800) // 最大宽度
     
+    // 主分割器相关状态（侧边栏和主内容区之间）
+    const sidebarWidth = ref(320) // 侧边栏宽度，默认320px
+    const minSidebarWidth = ref(240) // 最小宽度
+    const maxSidebarWidth = ref(480) // 最大宽度
+    
     // 无限滚动相关状态
     const pageSize = ref(5) // 每次加载5个候选人（因为每个都展开，内容更多）
     const displayedCount = ref(3) // 当前显示的候选人数量（初始显示3个完整展开的候选人）
@@ -255,6 +266,16 @@ export default {
         leftPanelWidth.value = newWidth
       }
     }
+    
+    // 处理主分割器拖拽调整（侧边栏和主内容区之间）
+    const handleMainSplitterResize = (deltaX) => {
+      const newWidth = sidebarWidth.value + deltaX
+      
+      // 限制在最小和最大宽度之间
+      if (newWidth >= minSidebarWidth.value && newWidth <= maxSidebarWidth.value) {
+        sidebarWidth.value = newWidth
+      }
+    }
 
     // 加载职位列表
     const loadJobs = async () => {
@@ -335,6 +356,9 @@ export default {
       leftPanelWidth,
       minLeftWidth,
       maxLeftWidth,
+      sidebarWidth,
+      minSidebarWidth,
+      maxSidebarWidth,
       // 计算属性
       currentCandidates,
       displayedCandidates,
@@ -348,13 +372,36 @@ export default {
       handleScroll,
       loadMoreCandidates,
       resetScrolling,
-      handleSplitterResize
+      handleSplitterResize,
+      handleMainSplitterResize
     }
   }
 }
 </script>
 
 <style>
+/* 主分割器样式 */
+.main-splitter {
+  /* 继承ResizableSplitter的样式 */
+  background: transparent;
+  border-left: 1px solid #e8ecf3;
+  border-right: 1px solid #e8ecf3;
+}
+
+.main-splitter:hover {
+  background: rgba(102, 126, 234, 0.08);
+  border-left-color: #667eea;
+  border-right-color: #667eea;
+}
+
+/* 确保侧边栏现在可以动态调整宽度 */
+.sidebar {
+  /* width现在通过内联样式动态设置 */
+  flex-shrink: 0; /* 防止收缩 */
+  min-width: 240px; /* 设置最小宽度 */
+  max-width: 480px; /* 设置最大宽度 */
+}
+
 /* 候选人网格布局 - 单列显示，支持无限滚动 */
 .candidates-grid {
   display: flex;
