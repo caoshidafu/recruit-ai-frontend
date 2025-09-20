@@ -921,25 +921,41 @@ export function mockParseJobDescription(description) {
   // 模拟AI解析延迟
   return new Promise((resolve) => {
     setTimeout(() => {
-      // 根据传入的描述内容进行简单关键词匹配
-      const hasVue = description?.toLowerCase().includes('vue');
-      const hasReact = description?.toLowerCase().includes('react');
-      const hasNode = description?.toLowerCase().includes('node');
+      const desc = description?.toLowerCase() || '';
+      
+      // 智能提取基本信息
+      const extractedInfo = {
+        title: extractTitle(description),
+        department: extractDepartment(description),
+        level: extractLevel(description),
+        location: extractLocation(description),
+        salary: extractSalary(description)
+      };
+      
+      // 技能匹配
+      const hasVue = desc.includes('vue');
+      const hasReact = desc.includes('react');
+      const hasNode = desc.includes('node');
+      const hasJava = desc.includes('java');
+      const hasPython = desc.includes('python');
       
       // 模拟AI解析结果
       const mockParsedData = {
+        extractedInfo, // 新增：提取的基本信息
         skills: [
           ...(hasVue ? ['Vue.js', 'JavaScript', 'TypeScript'] : []),
           ...(hasReact ? ['React', 'JavaScript', 'TypeScript'] : []),
           ...(hasNode ? ['Node.js', 'Express'] : []),
-          'MySQL', 'Redis', 'Git', '前端框架', 'RESTful API', '响应式设计'
+          ...(hasJava ? ['Java', 'Spring Boot', 'MyBatis'] : []),
+          ...(hasPython ? ['Python', 'Django', 'Flask'] : []),
+          'Git', 'RESTful API', '代码规范'
         ].filter(Boolean),
         requirements: [
-          '3年以上前端开发经验',
-          '熟练掌握Vue.js生态系统',
+          `${extractExperience(description)}开发经验`,
+          `熟练掌握${extractMainTech(description)}`,
           '具备良好的代码规范和团队协作能力',
-          '有大型项目开发经验',
-          '熟悉前端工程化工具'
+          '有项目开发经验',
+          '良好的学习能力和沟通能力'
         ],
         benefits: [
           '五险一金',
@@ -949,10 +965,10 @@ export function mockParseJobDescription(description) {
           '团队建设活动',
           '带薪年假'
         ],
-        experience: '3-5年',
-        education: '本科及以上',
+        experience: extractExperience(description),
+        education: extractEducation(description),
         workType: '全职',
-        analysisConfidence: 0.95,
+        analysisConfidence: 0.92,
         suggestions: [
           '建议在职位描述中明确技术栈版本要求',
           '可以增加对候选人软技能的描述',
@@ -963,6 +979,141 @@ export function mockParseJobDescription(description) {
       resolve(mockRequest(mockParsedData));
     }, 2000); // 模拟2秒AI解析时间
   });
+}
+
+// 辅助函数：提取职位标题
+function extractTitle(description) {
+  const desc = description?.toLowerCase() || '';
+  
+  if (desc.includes('前端工程师') || desc.includes('前端开发')) {
+    if (desc.includes('高级') || desc.includes('资深')) return '高级前端工程师';
+    if (desc.includes('初级') || desc.includes('junior')) return '初级前端工程师';
+    return '前端工程师';
+  }
+  if (desc.includes('后端工程师') || desc.includes('后端开发')) {
+    if (desc.includes('高级') || desc.includes('资深')) return '高级后端工程师';
+    return '后端工程师';
+  }
+  if (desc.includes('全栈工程师') || desc.includes('全栈开发')) return '全栈工程师';
+  if (desc.includes('产品经理')) return '产品经理';
+  if (desc.includes('ui设计师') || desc.includes('界面设计')) return 'UI设计师';
+  if (desc.includes('数据分析师')) return '数据分析师';
+  if (desc.includes('测试工程师')) return '测试工程师';
+  
+  return '软件工程师'; // 默认值
+}
+
+// 辅助函数：提取部门
+function extractDepartment(description) {
+  const desc = description?.toLowerCase() || '';
+  
+  if (desc.includes('技术部') || desc.includes('研发部') || desc.includes('开发部')) return '技术部';
+  if (desc.includes('产品部')) return '产品部';
+  if (desc.includes('设计部')) return '设计部';
+  if (desc.includes('运营部')) return '运营部';
+  if (desc.includes('市场部')) return '市场部';
+  if (desc.includes('销售部')) return '销售部';
+  
+  // 根据职位类型推断部门
+  if (desc.includes('工程师') || desc.includes('开发')) return '技术部';
+  if (desc.includes('产品经理')) return '产品部';
+  if (desc.includes('设计师')) return '设计部';
+  
+  return '技术部'; // 默认值
+}
+
+// 辅助函数：提取级别
+function extractLevel(description) {
+  const desc = description?.toLowerCase() || '';
+  
+  if (desc.includes('高级') || desc.includes('资深') || desc.includes('senior')) return '高级';
+  if (desc.includes('中级') || desc.includes('中等')) return '中级';
+  if (desc.includes('初级') || desc.includes('junior') || desc.includes('入门')) return '初级';
+  if (desc.includes('专家') || desc.includes('架构师') || desc.includes('技术leader')) return '专家';
+  
+  // 根据经验年限推断
+  if (desc.includes('5年以上') || desc.includes('5+年')) return '高级';
+  if (desc.includes('3-5年') || desc.includes('3年以上')) return '中级';
+  if (desc.includes('1-3年') || desc.includes('应届')) return '初级';
+  
+  return '中级'; // 默认值
+}
+
+// 辅助函数：提取工作地点
+function extractLocation(description) {
+  const cities = ['北京', '上海', '广州', '深圳', '杭州', '成都', '武汉', '西安', '南京', '苏州'];
+  const desc = description || '';
+  
+  for (const city of cities) {
+    if (desc.includes(city)) {
+      return desc.includes('区') ? 
+        desc.substring(desc.indexOf(city), desc.indexOf(city) + city.length + 3) : 
+        city;
+    }
+  }
+  
+  return '北京'; // 默认值
+}
+
+// 辅助函数：提取薪资
+function extractSalary(description) {
+  const desc = description || '';
+  
+  // 匹配各种薪资格式
+  const salaryRegex = /(\d+(?:\.\d+)?)\s*[-~到至]\s*(\d+(?:\.\d+)?)\s*[kK万]/g;
+  const match = salaryRegex.exec(desc);
+  
+  if (match) {
+    return `${match[1]}-${match[2]}K`;
+  }
+  
+  // 匹配单一薪资
+  const singleSalaryRegex = /(\d+(?:\.\d+)?)\s*[kK万]/g;
+  const singleMatch = singleSalaryRegex.exec(desc);
+  
+  if (singleMatch) {
+    const salary = parseFloat(singleMatch[1]);
+    return `${Math.max(1, salary - 2)}-${salary + 3}K`;
+  }
+  
+  return ''; // 没有找到薪资信息
+}
+
+// 辅助函数：提取经验要求
+function extractExperience(description) {
+  const desc = description?.toLowerCase() || '';
+  
+  if (desc.includes('5年以上') || desc.includes('5+年')) return '5年以上';
+  if (desc.includes('3-5年')) return '3-5年';
+  if (desc.includes('3年以上')) return '3年以上';
+  if (desc.includes('1-3年')) return '1-3年';
+  if (desc.includes('应届') || desc.includes('0-1年')) return '1年以下';
+  
+  return '3年以上'; // 默认值
+}
+
+// 辅助函数：提取主要技术
+function extractMainTech(description) {
+  const desc = description?.toLowerCase() || '';
+  
+  if (desc.includes('vue')) return 'Vue.js技术栈';
+  if (desc.includes('react')) return 'React技术栈';
+  if (desc.includes('java')) return 'Java技术栈';
+  if (desc.includes('python')) return 'Python技术栈';
+  if (desc.includes('node')) return 'Node.js技术栈';
+  
+  return '相关技术栈'; // 默认值
+}
+
+// 辅助函数：提取学历要求
+function extractEducation(description) {
+  const desc = description?.toLowerCase() || '';
+  
+  if (desc.includes('硕士') || desc.includes('研究生')) return '硕士及以上';
+  if (desc.includes('本科') || desc.includes('学士')) return '本科及以上';
+  if (desc.includes('大专') || desc.includes('专科')) return '大专及以上';
+  
+  return '本科及以上'; // 默认值
 }
 
 /**

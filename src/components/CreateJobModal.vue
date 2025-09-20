@@ -11,11 +11,11 @@
       </div>
 
       <div class="modal-body">
-        <!-- 步骤指示器 -->
+        <!-- 简化的步骤指示器 -->
         <div class="steps-indicator">
           <div class="step" :class="{ active: currentStep === 1, completed: currentStep > 1 }">
             <div class="step-number">1</div>
-            <span>基本信息</span>
+            <span>职位描述</span>
           </div>
           <div class="step-line" :class="{ completed: currentStep > 1 }"></div>
           <div class="step" :class="{ active: currentStep === 2, completed: currentStep > 2 }">
@@ -29,89 +29,48 @@
           </div>
         </div>
 
-        <!-- 步骤1: 基本信息 -->
+        <!-- 步骤1: 职位描述 -->
         <div v-if="currentStep === 1" class="step-content">
-          <form @submit.prevent="nextStep">
-            <div class="form-group">
-              <label for="jobTitle">职位名称 *</label>
-              <input 
-                id="jobTitle"
-                v-model="jobForm.title"
-                type="text" 
-                placeholder="请输入职位名称"
-                required
-              >
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="department">部门 *</label>
-                <select id="department" v-model="jobForm.department" required>
-                  <option value="">请选择部门</option>
-                  <option value="技术部">技术部</option>
-                  <option value="产品部">产品部</option>
-                  <option value="设计部">设计部</option>
-                  <option value="运营部">运营部</option>
-                  <option value="市场部">市场部</option>
-                  <option value="销售部">销售部</option>
-                  <option value="人事部">人事部</option>
-                </select>
-              </div>
-              
-              <div class="form-group">
-                <label for="level">级别 *</label>
-                <select id="level" v-model="jobForm.level" required>
-                  <option value="">请选择级别</option>
-                  <option value="初级">初级</option>
-                  <option value="中级">中级</option>
-                  <option value="高级">高级</option>
-                  <option value="专家">专家</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="location">工作地点 *</label>
-                <input 
-                  id="location"
-                  v-model="jobForm.location"
-                  type="text" 
-                  placeholder="请输入工作地点"
-                  required
-                >
-              </div>
-              
-              <div class="form-group">
-                <label for="salary">薪资范围</label>
-                <input 
-                  id="salary"
-                  v-model="jobForm.salary"
-                  type="text" 
-                  placeholder="如：15-25K"
-                >
-              </div>
-            </div>
-
+          <div class="simple-form-intro">
+            <h3>🚀 智能职位发布</h3>
+            <p>只需描述您的职位需求，AI将自动为您解析职位信息并推荐合适的候选人</p>
+          </div>
+          
+          <form @submit.prevent="handleSubmitDescription">
             <div class="form-group">
               <label for="description">职位描述 *</label>
               <textarea 
                 id="description"
                 v-model="jobForm.description"
-                rows="6"
-                placeholder="请详细描述职位要求、工作内容、任职资格等信息..."
+                rows="12"
+                placeholder="请详细描述您的职位需求，例如：
+
+我们正在招聘一名前端工程师，主要负责：
+• 使用Vue.js开发用户界面
+• 与后端团队协作完成项目开发
+• 优化前端性能和用户体验
+
+任职要求：
+• 3-5年前端开发经验
+• 熟练掌握Vue.js、JavaScript、HTML、CSS
+• 有大型项目开发经验优先
+• 本科学历，计算机相关专业
+
+工作地点：北京市朝阳区
+薪资范围：15-25K"
                 required
               ></textarea>
               <div class="textarea-hint">
-                <span>建议详细描述，AI将基于此内容进行智能解析</span>
-                <span class="char-count">{{ jobForm.description.length }}/1000</span>
+                <span class="hint-text">💡 描述越详细，AI解析越准确。建议包含：工作内容、技能要求、经验要求、学历要求、工作地点、薪资等信息</span>
+                <span class="char-count">{{ jobForm.description.length }}/2000</span>
               </div>
             </div>
 
             <div class="form-actions">
               <button type="button" class="btn btn-secondary" @click="closeModal">取消</button>
-              <button type="submit" class="btn btn-primary" :disabled="!isBasicFormValid">
-                下一步：AI解析
+              <button type="submit" class="btn btn-primary" :disabled="!jobForm.description.trim()">
+                <span class="btn-icon">🧠</span>
+                开始AI智能解析
               </button>
             </div>
           </form>
@@ -342,7 +301,7 @@
 
 <script>
 import { ref, reactive, computed, watch } from 'vue'
-import { apiManager } from '../api/mockManager.js'
+import apiManager from '../api/mockManager.js'
 
 export default {
   name: 'CreateJobModal',
@@ -417,6 +376,16 @@ export default {
       matchResult.value = null
     }
 
+    const handleSubmitDescription = async () => {
+      if (!jobForm.description.trim()) {
+        alert('请输入职位描述')
+        return
+      }
+      
+      currentStep.value = 2
+      await performAiAnalysis()
+    }
+
     const nextStep = async () => {
       if (currentStep.value === 1) {
         currentStep.value = 2
@@ -452,11 +421,35 @@ export default {
 
         if (response.success) {
           aiAnalysis.value = response.data
+          
+          // 自动填充从AI解析出的基本信息到jobForm
+          if (response.data.extractedInfo) {
+            const extracted = response.data.extractedInfo
+            
+            // 如果表单字段为空，则使用AI解析的结果
+            if (!jobForm.title && extracted.title) {
+              jobForm.title = extracted.title
+            }
+            if (!jobForm.department && extracted.department) {
+              jobForm.department = extracted.department
+            }
+            if (!jobForm.level && extracted.level) {
+              jobForm.level = extracted.level
+            }
+            if (!jobForm.location && extracted.location) {
+              jobForm.location = extracted.location
+            }
+            if (!jobForm.salary && extracted.salary) {
+              jobForm.salary = extracted.salary
+            }
+          }
         } else {
           console.error('AI分析失败:', response.message)
+          alert('AI分析失败，请检查网络连接或重试')
         }
       } catch (error) {
         console.error('AI分析错误:', error)
+        alert('AI分析出现错误，请重试')
       } finally {
         isAnalyzing.value = false
       }
@@ -565,6 +558,7 @@ export default {
       matchResult,
       closeModal,
       handleOverlayClick,
+      handleSubmitDescription,
       nextStep,
       prevStep,
       createJob,
@@ -633,6 +627,29 @@ export default {
 
 .modal-body {
   padding: 32px;
+}
+
+/* 简化表单介绍 */
+.simple-form-intro {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  color: white;
+}
+
+.simple-form-intro h3 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.simple-form-intro p {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.9;
+  line-height: 1.5;
 }
 
 /* 步骤指示器 */
@@ -752,8 +769,21 @@ export default {
   color: #6b7280;
 }
 
+.hint-text {
+  flex: 1;
+  margin-right: 16px;
+  line-height: 1.4;
+}
+
 .char-count {
   color: #9ca3af;
+  white-space: nowrap;
+}
+
+/* 按钮图标样式 */
+.btn-icon {
+  margin-right: 8px;
+  font-size: 16px;
 }
 
 /* AI分析样式 */
