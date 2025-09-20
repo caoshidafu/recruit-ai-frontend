@@ -1,39 +1,60 @@
 import { get, post, put, del } from './index.js'
 
 /**
- * 获取智能推荐候选人列表
+ * 获取推荐候选人列表（统一接口）
+ * 功能描述：根据不同推荐类型获取候选人列表，支持智能推荐、学历推荐、经验推荐
+ * 入参：{ 
+ *   type?: string,        // 推荐类型：'smart'(智能推荐-默认) | 'education'(学历推荐) | 'experience'(经验推荐)
+ *   jobId?: number,       // 职位ID（可选）
+ *   limit?: number,       // 限制数量
+ *   minExperience?: number, // 最小经验年限（经验推荐时使用）
+ *   maxExperience?: number, // 最大经验年限（经验推荐时使用）
+ *   degree?: string       // 学历要求（学历推荐时使用）
+ * }
+ * 返回参数：{ success: boolean, data: Array, message: string }
+ * url地址：/candidates/recommend
+ * 请求方式：GET
+ */
+export function getRecommendedCandidates(params = {}) {
+  // 设置默认推荐类型为智能推荐
+  const { type = 'smart', ...otherParams } = params
+  return get('/candidates/recommend', { type, ...otherParams })
+}
+
+/**
+ * 获取智能推荐候选人列表（兼容性保留）
  * 功能描述：根据算法推荐的候选人列表
  * 入参：{ jobId?: number, limit?: number } - 职位ID（可选）和限制数量
  * 返回参数：{ success: boolean, data: Array, message: string }
- * url地址：/candidates/smart
+ * url地址：/candidates/recommend?type=smart
  * 请求方式：GET
  */
 export function getSmartCandidates(params = {}) {
-  return get('/candidates/smart', params)
+  return getRecommendedCandidates({ ...params, type: 'smart' })
 }
 
 /**
- * 获取经验匹配候选人列表
+ * 获取经验匹配候选人列表（兼容性保留）
  * 功能描述：根据工作经验匹配的候选人列表
  * 入参：{ jobId?: number, minExperience?: number, maxExperience?: number } - 筛选参数
  * 返回参数：{ success: boolean, data: Array, message: string }
- * url地址：/candidates/experience
+ * url地址：/candidates/recommend?type=experience
  * 请求方式：GET
  */
 export function getExperienceCandidates(params = {}) {
-  return get('/candidates/experience', params)
+  return getRecommendedCandidates({ ...params, type: 'experience' })
 }
 
 /**
- * 获取学历匹配候选人列表
+ * 获取学历匹配候选人列表（兼容性保留）
  * 功能描述：根据学历背景匹配的候选人列表
  * 入参：{ jobId?: number, degree?: string } - 筛选参数
  * 返回参数：{ success: boolean, data: Array, message: string }
- * url地址：/candidates/education
+ * url地址：/candidates/recommend?type=education
  * 请求方式：GET
  */
 export function getEducationCandidates(params = {}) {
-  return get('/candidates/education', params)
+  return getRecommendedCandidates({ ...params, type: 'education' })
 }
 
 /**

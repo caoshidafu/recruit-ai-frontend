@@ -243,19 +243,53 @@ const candidates = await apiManager.getSmartCandidates()
 - `analyzeJobRequirements(jobId)`: 分析职位需求，生成匹配标签
 
 #### 候选人相关接口
-- `getSmartCandidates(params)`: 获取智能推荐候选人，支持jobId参数过滤
-- `getExperienceCandidates(params)`: 获取经验匹配候选人，支持jobId参数过滤
-- `getEducationCandidates(params)`: 获取学历匹配候选人，支持jobId参数过滤
+
+**统一推荐接口（推荐使用）:**
+- `getRecommendedCandidates(params)`: 获取推荐候选人列表（统一接口）
+  - 支持通过 `type` 参数区分推荐类型：
+    - `'smart'`: 智能推荐（默认）
+    - `'experience'`: 经验推荐  
+    - `'education'`: 学历推荐
+
+**兼容性接口（保留向后兼容）:**
+- `getSmartCandidates(params)`: 获取智能推荐候选人，内部调用统一接口
+- `getExperienceCandidates(params)`: 获取经验匹配候选人，内部调用统一接口
+- `getEducationCandidates(params)`: 获取学历匹配候选人，内部调用统一接口
+
+**其他候选人接口:**
 - `getCandidateDetail(candidateId)`: 获取候选人详情
 - `getCandidateRadarData(candidateId)`: 获取候选人雷达图数据
 - `searchCandidates(searchParams)`: 搜索候选人
 - `aiMatchCandidates(jobId, analysisDepth)`: AI智能匹配候选人，返回匹配度和推荐理由
 
-**参数说明:**
+**统一推荐接口参数说明:**
+- `type`: 推荐类型，可选值：'smart'(智能推荐，默认) | 'education'(学历推荐) | 'experience'(经验推荐)
 - `jobId`: 职位ID，用于筛选该职位的相关候选人
 - `limit`: 返回候选人数量限制
-- `minExperience/maxExperience`: 经验年限筛选范围
-- `degree`: 学历要求筛选
+- `minExperience`: 最小经验年限（经验推荐时使用）
+- `maxExperience`: 最大经验年限（经验推荐时使用）  
+- `degree`: 学历要求（学历推荐时使用）
+
+**使用示例:**
+```javascript
+// 智能推荐（默认）
+const smartCandidates = await apiManager.getRecommendedCandidates({ jobId: 1 })
+
+// 经验推荐
+const expCandidates = await apiManager.getRecommendedCandidates({ 
+  type: 'experience', 
+  jobId: 1, 
+  minExperience: 3, 
+  maxExperience: 8 
+})
+
+// 学历推荐
+const eduCandidates = await apiManager.getRecommendedCandidates({ 
+  type: 'education', 
+  jobId: 1, 
+  degree: '本科' 
+})
+```
 
 ## 核心功能特性
 
