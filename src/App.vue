@@ -99,6 +99,7 @@
                 v-for="candidate in displayedCandidates"
                 :key="candidate.id"
                 :candidate="candidate"
+                :defaultExpanded="true"
                 class="candidate-column"
               />
               
@@ -154,8 +155,8 @@ export default {
     const loading = ref(false)
     
     // 无限滚动相关状态
-    const pageSize = ref(10) // 每次加载10个候选人
-    const displayedCount = ref(10) // 当前显示的候选人数量
+    const pageSize = ref(5) // 每次加载5个候选人（因为每个都展开，内容更多）
+    const displayedCount = ref(3) // 当前显示的候选人数量（初始显示3个完整展开的候选人）
     const loadingMore = ref(false) // 是否正在加载更多
     const candidatesContainer = ref(null) // 容器引用
 
@@ -194,8 +195,8 @@ export default {
       const scrollHeight = container.scrollHeight
       const clientHeight = container.clientHeight
       
-      // 当滚动到底部附近（还有100px时）触发加载更多
-      if (scrollTop + clientHeight >= scrollHeight - 100 && hasMore.value && !loadingMore.value) {
+      // 当滚动到底部附近（还有200px时）触发加载更多，因为展开的卡片更高
+      if (scrollTop + clientHeight >= scrollHeight - 200 && hasMore.value && !loadingMore.value) {
         loadMoreCandidates()
       }
     }
@@ -226,7 +227,7 @@ export default {
 
     // 重置滚动状态
     const resetScrolling = () => {
-      displayedCount.value = pageSize.value
+      displayedCount.value = 3 // 重置为初始显示3个候选人
       if (candidatesContainer.value) {
         candidatesContainer.value.scrollTop = 0
       }
@@ -331,7 +332,7 @@ export default {
 .candidates-grid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px; /* 增加间距，因为每个卡片现在更高 */
   margin-bottom: 24px;
 }
 

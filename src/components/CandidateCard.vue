@@ -27,7 +27,7 @@
         </div>
         <!-- 展开/收起按钮 -->
         <div class="expand-button">
-          <i :class="['expand-icon', { 'rotated': isExpanded }]">▼</i>
+          <i :class="['expand-icon', { 'rotated': isExpanded }]">{{ isExpanded ? '▲' : '▼' }}</i>
         </div>
       </div>
     </div>
@@ -145,11 +145,15 @@ export default {
     candidate: {
       type: Object,
       required: true
+    },
+    defaultExpanded: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
     const showAIAnalysis = ref(false)
-    const isExpanded = ref(false)
+    const isExpanded = ref(props.defaultExpanded)
 
     const toggleExpanded = () => {
       isExpanded.value = !isExpanded.value
@@ -197,11 +201,10 @@ export default {
   margin-bottom: 16px;
   position: relative;
   transition: all 0.2s ease;
-  overflow: hidden;
+  overflow: visible; /* 允许内容完整显示 */
   display: flex;
   flex-direction: column;
-  /* 展开状态下限制最大高度，超出部分滚动 */
-  max-height: calc(100vh - 100px);
+  /* 移除最大高度限制，让每个候选人完整显示 */
 }
 
 .candidate-card:hover {
