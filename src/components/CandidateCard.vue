@@ -319,31 +319,32 @@ export default {
 /* 候选人卡片 - 下拉式设计 */
 .candidate-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid #e8ecf3;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   transition: all 0.3s ease;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .candidate-card:hover {
   border-color: #667eea;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.12);
+  transform: translateY(-3px);
 }
 
 .candidate-card.expanded {
   border-color: #667eea;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 8px 28px rgba(102, 126, 234, 0.18);
+  transform: translateY(-2px);
 }
 
 /* 候选人头部 - 可点击展开 */
 .candidate-header {
-  padding: 20px;
+  padding: 24px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
   cursor: pointer;
   user-select: none;
   position: relative;
@@ -427,17 +428,18 @@ export default {
 }
 
 .quick-action-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #f8f9fa;
   color: #495057;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .quick-action-btn:hover {
@@ -446,10 +448,10 @@ export default {
 }
 
 .expand-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #667eea;
   color: white;
   cursor: pointer;
@@ -457,6 +459,7 @@ export default {
   align-items: center;
   justify-content: center;
   transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
 }
 
 .expand-btn:hover {
