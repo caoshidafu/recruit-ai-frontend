@@ -5,11 +5,11 @@ import { get, put, del } from './index.js'
 * 功能描述：获取指定用户创建的所有职位信息，包括职位卡片和详情
 * 入参：userId: number
 * 返回参数：{ success: boolean, data: object, message: string }
-* url地址：/users/{userId}/jobs
+* url地址：/users/jobs?user_id={userId}
 * 请求方式：GET
 */
 export function getUserJobs(userId) {
-  return get(`/users/${userId}/jobs`)
+  return get('/users/jobs', { user_id: userId })
 }
 
 /**
@@ -27,11 +27,11 @@ export function getUserJobs(userId) {
 *   }, 
 *   message: string 
 * }
-* url地址：/users/{userId}/job-stats
+* url地址：/users/job-stats?user_id={userId}
 * 请求方式：GET
 */
 export function getUserJobStats(userId) {
-  return get(`/users/${userId}/job-stats`)
+  return get('/users/job-stats', { user_id: userId })
 }
 
 /**
@@ -81,11 +81,11 @@ export function deleteUserJobs(userId, jobIds) {
 *   }, 
 *   message: string 
 * }
-* url地址：/users/{userId}/recent-activities
+* url地址：/users/recent-activities?user_id={userId}
 * 请求方式：GET
 */
 export function getUserRecentActivities(userId, params = {}) {
-  return get(`/users/${userId}/recent-activities`, params)
+  return get('/users/recent-activities', { user_id: userId, ...params })
 }
 
 /**
@@ -101,11 +101,11 @@ export function getUserRecentActivities(userId, params = {}) {
 *   }, 
 *   message: string 
 * }
-* url地址：/users/{userId}/preferences
+* url地址：/users/preferences?user_id={userId}
 * 请求方式：GET
 */
 export function getUserPreferences(userId) {
-  return get(`/users/${userId}/preferences`)
+  return get('/users/preferences', { user_id: userId })
 }
 
 /**

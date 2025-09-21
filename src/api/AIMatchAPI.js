@@ -5,11 +5,11 @@ import { get, post } from './index.js'
 * 功能描述：根据岗位ID和用户ID获取候选人信息和岗位详情
 * 入参：jobId: string|number, userId: string|number
 * 返回参数：{ success: boolean, data: object, message: string }
-* url地址：/jobs/{jobId}/candidates
+* url地址：/jobs/candidates?job_id={jobId}
 * 请求方式：POST
 */
 export function getJobCandidatesWithMatching(jobId, userId) {
-  return post(`/jobs/${jobId}/candidates`, { userId })
+  return post('/jobs/candidates', { job_id: jobId, userId })
 }
 
 /**
@@ -139,11 +139,11 @@ export function educationMatchCandidates(description, options = {}) {
 *   }, 
 *   message: string 
 * }
-* url地址：/candidates/match-analysis/{matchId}
+* url地址：/candidates/match-analysis?match_id={matchId}
 * 请求方式：GET
 */
 export function getMatchAnalysis(matchId, analysisLevel = 'detailed') {
-  return get(`/candidates/match-analysis/${matchId}`, { analysisLevel })
+  return get('/candidates/match-analysis', { match_id: matchId, analysisLevel })
 }
 
 /**
@@ -185,11 +185,11 @@ export function saveMatchResults(data) {
 *   }, 
 *   message: string 
 * }
-* url地址：/candidates/match-history/{userId}
+* url地址：/candidates/match-history?user_id={userId}
 * 请求方式：GET
 */
 export function getUserMatchHistory(userId, params = {}) {
-  return get(`/candidates/match-history/${userId}`, params)
+  return get('/candidates/match-history', { user_id: userId, ...params })
 }
 
 /**

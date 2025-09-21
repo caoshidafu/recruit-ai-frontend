@@ -196,19 +196,19 @@
 
 **接口名称**: 根据发布新岗位id获取候选人信息以及岗位详情信息  
 **功能描述**: 根据已发布的岗位ID，获取关联的候选人列表和岗位详细信息  
-**URL地址**: `/jobs/{jobId}/candidates-and-details`  
+**URL地址**: `/jobs/candidates-and-details?job_id={jobId}`  
 **请求方式**: `GET`
 
-#### 路径参数
+#### 查询参数
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
-| jobId | string | ✅ | 职位ID |
+| job_id | string | ✅ | 职位ID |
 
 #### 请求示例
 
 ```
-GET /jobs/job_1705123456789_abc123def/candidates-and-details
+GET /jobs/candidates-and-details?job_id=job_1705123456789_abc123def
 ```
 
 #### 返回参数
@@ -286,14 +286,14 @@ GET /jobs/job_1705123456789_abc123def/candidates-and-details
 
 **接口名称**: 根据用户id返回关联的职位卡片和岗位详情list  
 **功能描述**: 获取指定用户创建的所有职位信息，包括职位卡片和详情，支持多种筛选和排序选项  
-**URL地址**: `/users/{userId}/jobs`  
+**URL地址**: `/users/jobs?user_id={userId}`  
 **请求方式**: `GET`
 
-#### 路径参数
+#### 查询参数
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
-| userId | number | ✅ | 用户ID |
+| user_id | number | ✅ | 用户ID |
 
 #### 查询参数
 
@@ -324,22 +324,22 @@ GET /jobs/job_1705123456789_abc123def/candidates-and-details
 
 **基础调用**:
 ```
-GET /users/1/jobs
+GET /users/jobs?user_id=1
 ```
 
 **获取活跃职位，按创建时间倒序**:
 ```
-GET /users/1/jobs?status=active&sortBy=createdAt&sortOrder=desc&limit=5
+GET /users/jobs?user_id=1&status=active&sortBy=createdAt&sortOrder=desc&limit=5
 ```
 
 **复合筛选查询**:
 ```
-GET /users/1/jobs?status=active&department=技术部&urgency=high&searchKeyword=前端&page=1&limit=20
+GET /users/jobs?user_id=1&status=active&department=技术部&urgency=high&searchKeyword=前端&page=1&limit=20
 ```
 
 **时间范围筛选**:
 ```
-GET /users/1/jobs?dateRange.startDate=2024-01-01&dateRange.endDate=2024-12-31&sortBy=candidateCount&sortOrder=desc
+GET /users/jobs?user_id=1&dateRange.startDate=2024-01-01&dateRange.endDate=2024-12-31&sortBy=candidateCount&sortOrder=desc
 ```
 
 #### 返回参数
@@ -446,14 +446,14 @@ GET /users/1/jobs?dateRange.startDate=2024-01-01&dateRange.endDate=2024-12-31&so
 
 **接口名称**: 获取用户职位统计信息  
 **功能描述**: 获取用户的职位创建和管理统计信息  
-**URL地址**: `/users/{userId}/job-stats`  
+**URL地址**: `/users/job-stats?user_id={userId}`  
 **请求方式**: `GET`
 
-#### 路径参数
+#### 查询参数
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
-| userId | number | ✅ | 用户ID |
+| user_id | number | ✅ | 用户ID |
 
 #### 返回参数
 
@@ -488,7 +488,7 @@ GET /users/1/jobs?dateRange.startDate=2024-01-01&dateRange.endDate=2024-12-31&so
 
 **接口名称**: 根据岗位ID和用户ID获取候选人信息和岗位详情  
 **功能描述**: 统一的候选人匹配接口，支持实时匹配和缓存匹配，后端根据forceRefresh参数决定是否需要重新匹配  
-**URL地址**: `/jobs/{jobId}/candidates`  
+**URL地址**: `/jobs/candidates?job_id={jobId}`  
 **请求方式**: `POST`
 
 #### 请求参数
@@ -860,7 +860,7 @@ GET /users/1/jobs?dateRange.startDate=2024-01-01&dateRange.endDate=2024-12-31&so
 ### 14. 获取候选人雷达图
 
 **接口名称**: 获取候选人雷达图数据  
-**URL地址**: `/candidates/{id}/radar`  
+**URL地址**: `/candidates/radar?id={id}`  
 **请求方式**: `GET`
 
 ---

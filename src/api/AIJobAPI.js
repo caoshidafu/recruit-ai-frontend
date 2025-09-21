@@ -26,11 +26,11 @@ export function createJobByDescription(description, userId) {
  * @param {number} params.limit - 每页数量
  * @param {string} params.matchType - 匹配类型
  * @returns {Promise} 返回职位详情和候选人列表
- * @url GET /api/jobs/{jobId}/candidates-and-details
+ * @url GET /api/jobs/candidates-and-details?job_id={jobId}
  * @deprecated 请使用 AIMatchAPI.getJobCandidatesWithMatching 统一接口
  */
 export function getJobCandidatesAndDetails(jobId, params = {}) {
-  return get(`/jobs/${jobId}/candidates-and-details`, params)
+  return get('/jobs/candidates-and-details', { job_id: jobId, ...params })
 }
 
 /**
@@ -75,8 +75,8 @@ export function regenerateJobByAI(jobId, options = {}) {
  * @param {string} userId - 用户ID
  * @param {Object} params - 查询参数
  * @returns {Promise} 返回生成历史
- * @url GET /api/jobs/ai-history
+ * @url GET /api/jobs/ai-history?user_id={userId}
  */
 export function getAIJobHistory(userId, params = {}) {
-  return get('/jobs/ai-history', { userId, ...params })
+  return get('/jobs/ai-history', { user_id: userId, ...params })
 }
