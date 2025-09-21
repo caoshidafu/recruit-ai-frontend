@@ -39,8 +39,8 @@
 {
   "success": true,
   "data": {
+    "id": "job_ai_001",
     "jobCard": {
-      "id": "job_ai_001",
       "title": "高级前端工程师",
       "department": "技术部",
       "location": "北京",
@@ -55,7 +55,6 @@
       "createdAt": "2024-01-15T10:00:00Z"
     },
     "jobDetails": {
-      "id": "job_ai_001",
       "basicInfo": {
         "title": "高级前端工程师",
         "department": "技术部",
@@ -293,8 +292,8 @@
 {
   "success": true,
   "data": {
+    "id": "job_ai_001",
     "jobDetails": {
-      "id": "job_ai_001",
       "basicInfo": {
         "title": "高级前端工程师",
         "department": "技术部",
@@ -442,8 +441,8 @@
     "totalPages": 2,
     "jobs": [
       {
+        "id": "job_001",
         "jobCard": {
-          "id": "job_001",
           "title": "高级前端工程师",
           "department": "技术部",
           "location": "北京",
@@ -459,7 +458,6 @@
           "status": "active"
         },
         "jobDetails": {
-          "id": "job_001",
           "basicInfo": {
             "title": "高级前端工程师",
             "department": "技术部",
@@ -496,8 +494,8 @@
         }
       },
       {
+        "id": "job_002",
         "jobCard": {
-          "id": "job_002",
           "title": "Java后端工程师",
           "department": "技术部",
           "location": "上海",
@@ -513,7 +511,6 @@
           "status": "active"
         },
         "jobDetails": {
-          "id": "job_002",
           "basicInfo": {
             "title": "Java后端工程师",
             "department": "技术部",
