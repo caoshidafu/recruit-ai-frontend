@@ -290,7 +290,7 @@ export default {
     const loadJobs = async () => {
       try {
         loading.value = true
-        const response = await apiManager.getJobList()
+        const response = await apiManager.getJobList({ user_id: '1' })
         if (response.success) {
           jobs.value = response.data
           if (jobs.value.length > 0 && !selectedJob.value) {
@@ -311,9 +311,9 @@ export default {
         
         // 并行加载三种类型的候选人数据，传入职位ID
         const [smartResponse, experienceResponse, educationResponse] = await Promise.all([
-          apiManager.getSmartCandidates({ jobId }),
-          apiManager.getExperienceCandidates({ jobId }),
-          apiManager.getEducationCandidates({ jobId })
+          apiManager.getSmartCandidates({ jobId, user_id: '1' }),
+          apiManager.getExperienceCandidates({ jobId, user_id: '1' }),
+          apiManager.getEducationCandidates({ jobId, user_id: '1' })
         ])
 
         if (smartResponse.success) {
