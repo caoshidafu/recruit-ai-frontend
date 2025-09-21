@@ -1775,7 +1775,7 @@ export function mockGetCandidateAIAnalysis(candidateId, analysisType = 'detailed
 /**
 * Mock - 根据用户输入的职位描述生成职位卡片和岗位详情
 * 功能描述：使用AI技术解析用户输入的职位描述，生成结构化的职位卡片和详细信息
-* 入参：{ description: string, userId: string, companyInfo?: object }
+* 入参：{ user_id: string, description: string, companyInfo?: object }
 * 返回参数：{ success: boolean, data: { jobId: string, jobCard: object, jobDetails: object }, message: string }
 * url地址：/jobs/ai-create
 * 请求方式：POST
@@ -1783,7 +1783,7 @@ export function mockGetCandidateAIAnalysis(candidateId, analysisType = 'detailed
 export function mockCreateJobByDescription(data) {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const { description, userId } = data;
+      const { description, user_id } = data;
       
       // 模拟AI解析生成职位信息
       const parsedInfo = mockParseJobDescription(description);
@@ -1807,7 +1807,7 @@ export function mockCreateJobByDescription(data) {
             views: 1,
             publishDays: 0
           },
-          userId: userId
+          userId: user_id
         };
         
         const jobDetails = {
@@ -1826,11 +1826,7 @@ export function mockCreateJobByDescription(data) {
           requirements: result.data.requirements,
           skills: result.data.skills,
           benefits: result.data.benefits,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          userId: userId,
-          aiGenerated: true,
-          aiConfidence: result.data.analysisConfidence
+          userId: user_id
         };
         
         resolve({
@@ -1942,7 +1938,7 @@ export function mockGetUserJobs(userId, params = {}) {
               views: 156,
               publishDays: 7
             },
-            userId: userId
+            userId: user_id
           },
           jobDetails: {
             id: "job_001",
@@ -1966,7 +1962,7 @@ export function mockGetUserJobs(userId, params = {}) {
             benefits: ["五险一金", "弹性工作", "股权激励", "技术培训"],
             createdAt: "2024-01-15T10:00:00Z",
             updatedAt: "2024-01-15T10:00:00Z",
-            userId: userId,
+            userId: user_id,
             aiGenerated: true,
             aiConfidence: 0.92
           }
@@ -1988,7 +1984,7 @@ export function mockGetUserJobs(userId, params = {}) {
               views: 89,
               publishDays: 12
             },
-            userId: userId
+            userId: user_id
           },
           jobDetails: {
             id: "job_002",
@@ -2012,7 +2008,7 @@ export function mockGetUserJobs(userId, params = {}) {
             benefits: ["五险一金", "年终奖", "培训机会"],
             createdAt: "2024-01-10T14:30:00Z",
             updatedAt: "2024-01-10T14:30:00Z",
-            userId: userId,
+            userId: user_id,
             aiGenerated: false,
             aiConfidence: null
           }

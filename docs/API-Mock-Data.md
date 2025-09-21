@@ -29,6 +29,7 @@
 
 ```json
 {
+  "user_id": "user_001",
   "description": "招聘一名高级前端工程师，负责Vue.js项目开发，需要3年以上经验，熟悉TypeScript和组件化开发"
 }
 ```

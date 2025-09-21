@@ -10,7 +10,7 @@ import { get, post, put } from './index'
  * @description 使用AI分析职位描述，自动生成职位卡片和详情信息
  * @param {Object} data - 请求数据
  * @param {string} data.description - 职位描述文本
- * @param {string} data.userId - 用户ID
+ * @param {string} data.user_id - 用户ID
  * @param {Object} data.options - 可选配置
  * @returns {Promise} 返回生成的职位信息
  * @url POST /api/jobs/ai-create
