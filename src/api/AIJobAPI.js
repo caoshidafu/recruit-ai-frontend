@@ -1,4 +1,4 @@
-import { get, post, put } from './index'
+import { get, post } from './index'
 
 /**
  * AI职位创建API
