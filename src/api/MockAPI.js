@@ -2290,5 +2290,231 @@ export function mockGetUserMatchHistory(userId, params = {}) {
   });
 }
 
+/**
+* Mock - 获取职位卡片列表
+* 功能描述：根据发布岗位id和user_id获取职位卡片列表
+* 入参：jobId: number, userId: number
+* 返回参数：{ success: boolean, data: object, message: string }
+* url地址：/jobs/cards
+* 请求方式：GET
+*/
+export function mockGetJobCards(jobId, userId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const jobCards = [
+        {
+          id: jobId,
+          title: "高级前端工程师",
+          department: "技术部",
+          location: "北京",
+          salaryRange: "25-35K",
+          experience: "3-5年",
+          education: "本科",
+          skills: ["Vue.js", "React", "TypeScript", "JavaScript"],
+          status: "active",
+          publishDate: "2024-01-15",
+          applicationCount: 25,
+          urgency: "high",
+          description: "负责公司核心产品的前端开发工作，参与技术架构设计",
+          requirements: [
+            "3年以上前端开发经验",
+            "熟练掌握Vue.js框架",
+            "熟悉TypeScript开发",
+            "具备良好的团队协作能力"
+          ]
+        }
+      ];
+      
+      resolve({
+        success: true,
+        data: {
+          jobCards,
+          total: jobCards.length,
+          userId: userId
+        },
+        message: "获取职位卡片列表成功"
+      });
+    }, 500);
+  });
+}
+
+/**
+* Mock - 根据职位描述生成职位画像和岗位详情
+* 功能描述：根据user_id和职位描述生成职位画像和岗位详情
+* 入参：{ userId: number, description: string }
+* 返回参数：{ success: boolean, data: object, message: string }
+* url地址：/jobs/generate-profile
+* 请求方式：POST
+*/
+export function mockGenerateJobProfile(userId, description) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 模拟AI分析职位描述
+      const extractedInfo = {
+        title: extractJobTitle(description),
+        skills: extractSkills(description),
+        experience: extractExperience(description),
+        education: extractEducation(description),
+        location: extractLocation(description)
+      };
+      
+      const jobProfile = {
+        id: `job_${Date.now()}`,
+        title: extractedInfo.title,
+        department: "技术部",
+        location: extractedInfo.location || "北京",
+        salaryRange: generateSalaryRange(description),
+        experience: extractedInfo.experience,
+        education: extractedInfo.education || "本科及以上",
+        skills: extractedInfo.skills,
+        responsibilities: [
+          "负责前端项目架构设计和开发",
+          "参与产品需求分析和技术方案制定",
+          "优化前端性能，提升用户体验",
+          "指导初级开发人员，提升团队技术水平"
+        ],
+        requirements: [
+          `${extractedInfo.experience}前端开发经验`,
+          `熟练掌握${extractedInfo.skills.join('、')}等技术`,
+          "具备良好的代码规范和开发习惯",
+          "优秀的团队协作和沟通能力"
+        ],
+        benefits: ["六险一金", "弹性工作", "技术培训", "带薪年假"],
+        status: "draft",
+        userId: userId
+      };
+      
+      const aiAnalysis = {
+        matchingKeywords: extractedInfo.skills,
+        suggestedSalary: generateSalaryRange(description),
+        marketDemand: "high",
+        competitiveAnalysis: "该职位在当前市场需求较高，建议适当提高薪资竞争力",
+        recommendedSkills: [...extractedInfo.skills, "Git", "Webpack", "性能优化"],
+        difficultyLevel: "medium",
+        estimatedCandidatePool: Math.floor(Math.random() * 100) + 50
+      };
+      
+      resolve({
+        success: true,
+        data: {
+          jobProfile,
+          aiAnalysis,
+          processingTime: "1.2s"
+        },
+        message: "职位画像生成成功"
+      });
+    }, 1200);
+  });
+}
+
+/**
+* Mock - 根据发布岗位id获取候选人列表
+* 功能描述：根据发布岗位id获取候选人list，携带type默认是智能匹配
+* 入参：{ jobId: number, userId: number, type?: string }
+* 返回参数：{ success: boolean, data: object, message: string }
+* url地址：/candidates/by-job
+* 请求方式：POST
+*/
+export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 模拟是否从缓存获取
+      const isFromCache = Math.random() > 0.3;
+      
+      const candidates = mockData.candidates.smart.slice(0, 15).map((candidate, index) => ({
+        ...candidate,
+        matchScore: Math.floor(Math.random() * 25) + 75 + index, // 确保有序
+        matchReasons: [
+          `技能匹配度高：${candidate.skills.slice(0, 2).join(', ')}`,
+          `工作经验符合要求：${candidate.experience}年`,
+          "地理位置匹配",
+          "薪资期望合理"
+        ].slice(0, Math.floor(Math.random() * 2) + 2),
+        status: "available"
+      })).sort((a, b) => b.matchScore - a.matchScore);
+      
+      const matchingInfo = {
+        type: type,
+        isFromCache: isFromCache,
+        processingTime: isFromCache ? '0.05s' : `${(Math.random() * 2 + 1).toFixed(2)}s`,
+        totalMatched: candidates.length,
+        highMatch: candidates.filter(c => c.matchScore >= 90).length,
+        mediumMatch: candidates.filter(c => c.matchScore >= 80 && c.matchScore < 90).length,
+        lowMatch: candidates.filter(c => c.matchScore < 80).length,
+        algorithm: type === '智能匹配' ? 'AI_SMART_MATCH_V2' : 'RULE_BASED_MATCH'
+      };
+      
+      const jobDetail = {
+        id: jobId,
+        title: "高级前端工程师",
+        department: "技术部",
+        salaryRange: "25-35K",
+        location: "北京",
+        skills: ["Vue.js", "React", "TypeScript"],
+        experience: "3-5年"
+      };
+      
+      resolve({
+        success: true,
+        data: {
+          candidates,
+          total: candidates.length,
+          matchingInfo,
+          jobDetail,
+          userId: userId
+        },
+        message: `成功获取岗位 ${jobDetail.title} 的 ${candidates.length} 个匹配候选人${isFromCache ? '（来自缓存）' : '（实时匹配）'}`
+      });
+    }, isFromCache ? 100 : 2000);
+  });
+}
+
+// 辅助函数
+function extractJobTitle(description) {
+  const titles = ["前端工程师", "后端工程师", "全栈工程师", "产品经理", "UI设计师"];
+  for (const title of titles) {
+    if (description.includes(title)) {
+      return description.includes("高级") ? `高级${title}` : title;
+    }
+  }
+  return "软件工程师";
+}
+
+function extractSkills(description) {
+  const skillKeywords = ["Vue.js", "React", "TypeScript", "JavaScript", "Node.js", "Python", "Java", "Spring Boot", "MySQL"];
+  return skillKeywords.filter(skill => description.includes(skill));
+}
+
+function extractExperience(description) {
+  const expMatch = description.match(/(\d+)年/);
+  return expMatch ? `${expMatch[1]}年以上` : "3年以上";
+}
+
+function extractEducation(description) {
+  if (description.includes("硕士")) return "硕士及以上";
+  if (description.includes("本科")) return "本科及以上";
+  return null;
+}
+
+function extractLocation(description) {
+  const locations = ["北京", "上海", "深圳", "杭州", "广州"];
+  for (const location of locations) {
+    if (description.includes(location)) return location;
+  }
+  return null;
+}
+
+function generateSalaryRange(description) {
+  const salaryMatch = description.match(/(\d+)-(\d+)K/);
+  if (salaryMatch) {
+    return `${salaryMatch[1]}-${salaryMatch[2]}K`;
+  }
+  
+  // 根据职位类型生成合理薪资
+  if (description.includes("高级")) return "25-35K";
+  if (description.includes("资深")) return "30-45K";
+  return "20-30K";
+}
+
 // 是否启用Mock模式的配置
 export const MOCK_ENABLED = process.env.VUE_APP_MOCK_ENABLED !== 'false';

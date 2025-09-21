@@ -43,11 +43,11 @@ export function getUserJobStats(userId) {
 *   status: string         // 新状态 ('active', 'inactive', 'draft')
 * }
 * 返回参数：{ success: boolean, data: object, message: string }
-* url地址：/users/{userId}/jobs/batch-update-status
+* url地址：/users/jobs/batch-update-status
 * 请求方式：PUT
 */
 export function updateUserJobsStatus(userId, jobIds, status) {
-  return put(`/users/${userId}/jobs/batch-update-status`, { jobIds, status })
+  return put('/users/jobs/batch-update-status', { user_id: userId, jobIds, status })
 }
 
 /**
@@ -58,11 +58,11 @@ export function updateUserJobsStatus(userId, jobIds, status) {
 *   jobIds: array          // 要删除的职位ID数组
 * }
 * 返回参数：{ success: boolean, message: string }
-* url地址：/users/{userId}/jobs/batch-delete
+* url地址：/users/jobs/batch-delete
 * 请求方式：DELETE
 */
 export function deleteUserJobs(userId, jobIds) {
-  return del(`/users/${userId}/jobs/batch-delete`, { jobIds })
+  return del('/users/jobs/batch-delete', { user_id: userId, jobIds })
 }
 
 /**
@@ -118,9 +118,9 @@ export function getUserPreferences(userId) {
 *   uiPreferences?: object        // 界面偏好
 * }
 * 返回参数：{ success: boolean, data: object, message: string }
-* url地址：/users/{userId}/preferences
+* url地址：/users/preferences
 * 请求方式：PUT
 */
 export function updateUserPreferences(userId, preferences) {
-  return put(`/users/${userId}/preferences`, preferences)
+  return put('/users/preferences', { user_id: userId, ...preferences })
 }

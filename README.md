@@ -232,10 +232,20 @@ recruit-ai-frontend/
 
 ### API目录结构
 - `src/api/index.js`: HTTP请求基础方法（get、post、put、del）
-- `src/api/JOBAPI.js`: 职位相关API接口
-- `src/api/CANDIDATEAPI.js`: 候选人相关API接口  
-- `src/api/MOCKAPI.js`: Mock API接口实现
+- `src/api/JobAPI.js`: 传统职位管理API接口
+- `src/api/CandidateAPI.js`: 候选人管理API接口
+- `src/api/AIJobAPI.js`: AI职位创建API接口（核心业务）
+- `src/api/UserAPI.js`: 用户管理API接口（核心业务）
+- `src/api/AIMatchAPI.js`: AI匹配API接口（核心业务）
+- `src/api/MockAPI.js`: Mock API接口实现（包含所有模拟数据）
 - `src/api/mockManager.js`: API管理器，统一调用入口
+
+### API设计规范
+- **路径参数规范**: 所有API请求路径不使用路径参数形式（如`/jobs/${jobId}/ai-regenerate`）
+- **GET请求**: 使用查询参数（query parameters）传递数据
+- **POST/PUT/DELETE请求**: 使用请求体（request body）传递数据
+- **参数命名**: 统一使用下划线命名（job_id, user_id, candidate_id等）
+- **数据类型**: 发布岗位id和user_id都是数字类型
 
 ### 全局域名配置
 - `src/config/baseURL.js`: 简单的全局域名配置文件
@@ -281,22 +291,27 @@ const candidates = await apiManager.getSmartCandidates()
 
 ### 三个核心后端接口
 
-#### 1. AI职位创建接口 (AIJobAPI.js)
-- `createJobByDescription(data)`: 根据职位描述生成职位卡片和详情
-  - 支持AI解析职位描述，自动生成结构化职位信息
-  - 支持可选的公司信息和配置选项
-  - 内置参数验证和标准化处理
+#### 1. 职位卡片列表接口 (AIJobAPI.js)
+- `getJobCards(jobId, userId)`: 获取职位卡片列表
+  - **请求方式**: GET
+  - **URL**: `/jobs/cards?job_id={jobId}&user_id={userId}`
+  - **功能**: 根据发布岗位id和user_id获取职位卡片列表
+  - **参数**: jobId (number), userId (number)
 
-#### 2. 统一候选人匹配接口 (AIMatchAPI.js)
-- `getJobCandidatesWithMatching(data)`: 统一的候选人匹配接口
-  - 支持智能匹配、技能匹配、经验匹配、学历匹配等多种匹配类型
-  - 支持实时匹配和缓存匹配机制
-  - 提供丰富的筛选和排序选项
-  - 支持分页查询和高级过滤条件
+#### 2. 候选人匹配接口 (AIMatchAPI.js)
+- `getCandidatesByJobId(jobId, userId, type)`: 根据发布岗位id获取候选人列表
+  - **请求方式**: POST
+  - **URL**: `/candidates/by-job`
+  - **功能**: 根据发布岗位id获取候选人list，携带type默认是智能匹配
+  - **参数**: { job_id: number, user_id: number, type?: string }
+  - **特性**: 后端根据type判断是否匹配过，有则数据库中返回，否则就匹配
 
-#### 3. 用户职位管理接口 (UserAPI.js)
-- `getUserJobs(userId, params)`: 获取用户关联的职位列表
-  - 支持多维度筛选：状态、部门、地点、紧急程度、时间范围
+#### 3. 职位画像生成接口 (AIJobAPI.js)
+- `generateJobProfile(userId, description)`: 根据职位描述生成职位画像和岗位详情
+  - **请求方式**: POST
+  - **URL**: `/jobs/generate-profile`
+  - **功能**: 根据user_id和职位描述生成职位画像和岗位详情
+  - **参数**: { user_id: number, description: string }
   - 支持关键词搜索和灵活排序
   - 支持分页查询和统计信息
   - 提供最近活动数据

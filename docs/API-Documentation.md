@@ -15,7 +15,7 @@
 
 ## 概述
 
-本文档描述了AI招聘系统的所有API接口，包括四个核心业务接口和扩展功能接口。系统采用RESTful API设计规范，支持JSON数据格式。
+本文档描述了AI招聘系统的所有API接口，包括三个核心业务接口和扩展功能接口。系统采用RESTful API设计规范，支持JSON数据格式。
 
 ### 基础信息
 
@@ -23,13 +23,13 @@
 - **Content-Type**: `application/json`
 - **字符编码**: `UTF-8`
 
-### 四个核心后端接口
+### 三个核心后端接口
 
-1. **根据用户输入的职位描述生成职位卡片和岗位详情**
-2. **统一候选人匹配接口（合并原接口2和3）** - 根据岗位ID和用户ID获取候选人信息和岗位详情
-3. **根据用户id返回关联的职位卡片和岗位详情list**
+1. **职位卡片列表接口** - 根据发布岗位id和user_id获取职位卡片列表
+2. **候选人匹配接口** - 根据发布岗位id获取候选人list，携带type默认是智能匹配
+3. **职位画像生成接口** - 根据user_id和职位描述生成职位画像和岗位详情
 
-> **接口整合说明**：原接口2（根据职位描述匹配候选人）和接口3（根据岗位id获取候选人信息）已合并为新的统一接口。后端通过判断是否有缓存数据来决定是否需要重新匹配，提供更高效的服务。
+> **重要说明**：所有API请求路径均不使用路径参数形式（如`/jobs/${jobId}/ai-regenerate`）。GET请求使用查询参数（query parameters），POST/PUT/DELETE请求使用请求体（request body）传递参数。
 
 ---
 
@@ -37,6 +37,12 @@
 
 ### 请求格式
 
+#### GET请求
+```
+GET /api/endpoint?param1=value1&param2=value2
+```
+
+#### POST/PUT/DELETE请求
 ```json
 {
   "参数名": "参数值"
@@ -49,434 +55,113 @@
 {
   "success": boolean,     // 请求是否成功
   "data": object|array,   // 返回的数据
-  "message": string,      // 响应消息
-  "timestamp": string     // 时间戳（可选）
+  "message": string       // 响应消息
 }
 ```
 
-### 状态码
+### 通用参数说明
 
-- `200` - 请求成功
-- `400` - 请求参数错误
-- `401` - 未授权
-- `404` - 资源不存在
-- `500` - 服务器内部错误
+- **job_id**: 发布岗位ID，数字类型
+- **user_id**: 用户ID，数字类型
+- **type**: 匹配类型，字符串类型，默认为"智能匹配"
 
 ---
 
 ## AI职位创建接口
 
-### 1. 根据职位描述生成职位卡片和详情
+### 1. 获取职位卡片列表
 
-**接口名称**: 根据用户输入的职位描述生成职位卡片和岗位详情  
-**功能描述**: 使用AI技术解析用户输入的职位描述，生成结构化的职位卡片和详细信息  
-**URL地址**: `/jobs/ai-create`  
-**请求方式**: `POST`
+**接口描述**: 根据发布岗位id和user_id获取职位卡片列表
 
-#### 请求参数
+**请求信息**:
+- **URL**: `/jobs/cards`
+- **Method**: `GET`
+- **参数**: 
+  - `job_id` (number): 发布岗位ID
+  - `user_id` (number): 用户ID
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| description | string | ✅ | 用户输入的职位描述文本 |
-| userId | number | ✅ | 用户ID |
-| companyInfo | object | ❌ | 可选的公司信息 |
-| options | object | ❌ | 可选配置选项 |
-| options.industry | string | ❌ | 行业类型，默认'tech' |
-| options.department | string | ❌ | 部门，默认'技术部' |
-| options.urgency | string | ❌ | 紧急程度 ('low', 'normal', 'high')，默认'normal' |
-| options.headcount | number | ❌ | 招聘人数，默认1 |
-
-#### 请求示例
-
-**基础调用**:
-```json
-{
-  "description": "招聘高级前端工程师，要求熟练掌握Vue.js和React，有5年以上开发经验，能够独立负责项目开发，薪资25-40K，工作地点北京",
-  "userId": 1
-}
+**请求示例**:
+```
+GET /jobs/cards?job_id=123&user_id=1
 ```
 
-**带完整选项的调用**:
-```json
-{
-  "description": "招聘高级前端工程师，要求熟练掌握Vue.js和React，有5年以上开发经验，能够独立负责项目开发，薪资25-40K，工作地点北京",
-  "userId": 1,
-  "companyInfo": {
-    "name": "科技有限公司",
-    "industry": "互联网"
-  },
-  "options": {
-    "department": "技术部",
-    "urgency": "high",
-    "headcount": 2
-  }
-}
-```
-
-#### 返回参数
-
-| 参数名 | 类型 | 说明 |
-|--------|------|------|
-| success | boolean | 请求是否成功 |
-| data | object | 返回数据 |
-| data.jobId | string | 生成的职位ID |
-| data.jobCard | object | 职位卡片信息 |
-| data.jobDetails | object | 职位详细信息 |
-| message | string | 响应消息 |
-
-#### jobCard 结构
-
-```json
-{
-  "id": "job_1705123456789_abc123def",
-  "title": "高级前端工程师",
-  "department": "技术部",
-  "level": "高级",
-  "location": "北京",
-  "salary": "25-40K",
-  "status": "active",
-  "publishedAt": "2024-01-15T10:00:00Z",
-  "urgency": "normal",
-  "tags": ["Vue.js", "React", "前端开发"],
-  "stats": {
-    "applicants": 0,
-    "views": 1,
-    "publishDays": 0
-  },
-  "userId": 1
-}
-```
-
-#### jobDetails 结构
-
-```json
-{
-  "id": "job_1705123456789_abc123def",
-  "basicInfo": {
-    "title": "高级前端工程师",
-    "department": "技术部",
-    "level": "高级",
-    "location": "北京",
-    "salary": "25-40K",
-    "workType": "全职",
-    "experience": "5年以上",
-    "education": "本科及以上"
-  },
-  "description": "招聘高级前端工程师...",
-  "requirements": [
-    "5年以上前端开发经验",
-    "精通Vue.js、React等框架",
-    "具备良好的团队协作能力"
-  ],
-  "skills": ["Vue.js", "React", "JavaScript", "TypeScript"],
-  "benefits": ["五险一金", "弹性工作", "股权激励"],
-  "createdAt": "2024-01-15T10:00:00Z",
-  "updatedAt": "2024-01-15T10:00:00Z",
-  "userId": 1,
-  "aiGenerated": true,
-  "aiConfidence": 0.92
-}
-```
-
-#### 返回示例
-
+**响应示例**:
 ```json
 {
   "success": true,
   "data": {
-    "jobId": "job_1705123456789_abc123def",
-    "jobCard": { /* jobCard结构 */ },
-    "jobDetails": { /* jobDetails结构 */ }
-  },
-  "message": "AI职位创建成功"
-}
-```
-
-### 2. 根据岗位ID获取候选人和详情
-
-**接口名称**: 根据发布新岗位id获取候选人信息以及岗位详情信息  
-**功能描述**: 根据已发布的岗位ID，获取关联的候选人列表和岗位详细信息  
-**URL地址**: `/jobs/candidates-and-details?job_id={jobId}`  
-**请求方式**: `GET`
-
-#### 查询参数
-
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| job_id | string | ✅ | 职位ID |
-
-#### 请求示例
-
-```
-GET /jobs/candidates-and-details?job_id=job_1705123456789_abc123def
-```
-
-#### 返回参数
-
-| 参数名 | 类型 | 说明 |
-|--------|------|------|
-| success | boolean | 请求是否成功 |
-| data | object | 返回数据 |
-| data.jobDetails | object | 岗位详细信息 |
-| data.candidates | array | 匹配的候选人列表 |
-| data.matchSummary | object | 匹配摘要信息 |
-| message | string | 响应消息 |
-
-#### candidates 数组元素结构
-
-```json
-{
-  "id": 1,
-  "name": "张三",
-  "avatar": "https://example.com/avatar.jpg",
-  "title": "高级前端工程师",
-  "experience": 5,
-  "location": "北京",
-  "expectedSalary": "35K",
-  "skills": ["Vue.js", "React", "JavaScript"],
-  "matchScore": 95,
-  "matchReason": [
-    "技能匹配度高",
-    "工作经验符合要求",
-    "地理位置合适"
-  ],
-  "educationHistory": [
-    {
-      "degree": "本科",
-      "school": "北京大学",
-      "major": "计算机科学与技术",
-      "duration": "2015-2019"
-    }
-  ]
-}
-```
-
-#### matchSummary 结构
-
-```json
-{
-  "totalMatched": 5,
-  "averageScore": 87,
-  "highMatch": 2,
-  "mediumMatch": 2,
-  "lowMatch": 1,
-  "lastUpdated": "2024-01-15T10:00:00Z"
-}
-```
-
-#### 返回示例
-
-```json
-{
-  "success": true,
-  "data": {
-    "jobDetails": { /* jobDetails结构 */ },
-    "candidates": [ /* candidates数组 */ ],
-    "matchSummary": { /* matchSummary结构 */ }
-  },
-  "message": "获取成功"
-}
-```
-
----
-
-## 用户管理接口
-
-### 3. 获取用户职位列表
-
-**接口名称**: 根据用户id返回关联的职位卡片和岗位详情list  
-**功能描述**: 获取指定用户创建的所有职位信息，包括职位卡片和详情，支持多种筛选和排序选项  
-**URL地址**: `/users/jobs?user_id={userId}`  
-**请求方式**: `GET`
-
-#### 查询参数
-
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| user_id | number | ✅ | 用户ID |
-
-#### 查询参数
-
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| status | string | ❌ | 职位状态筛选 ('active', 'inactive', 'draft', 'closed', 'all')，默认'all' |
-| department | string | ❌ | 部门筛选 |
-| location | string | ❌ | 地点筛选 |
-| urgency | string | ❌ | 紧急程度筛选 ('low', 'normal', 'high') |
-| dateRange.startDate | string | ❌ | 开始日期 (YYYY-MM-DD) |
-| dateRange.endDate | string | ❌ | 结束日期 (YYYY-MM-DD) |
-| searchKeyword | string | ❌ | 搜索关键词（职位标题、描述） |
-| limit | number | ❌ | 限制返回数量，默认10，最大100 |
-| offset | number | ❌ | 偏移量，默认0 |
-| page | number | ❌ | 页码，默认1（如果指定page，将覆盖offset计算） |
-| sortBy | string | ❌ | 排序字段，默认'createdAt' |
-| sortOrder | string | ❌ | 排序顺序 ('asc', 'desc')，默认'desc' |
-| includeStats | boolean | ❌ | 是否包含统计信息，默认true |
-
-#### sortBy 可选值
-
-- `title` - 职位标题
-- `department` - 部门
-- `createdAt` - 创建时间（默认）
-- `candidateCount` - 候选人数量
-
-#### 请求示例
-
-**基础调用**:
-```
-GET /users/jobs?user_id=1
-```
-
-**获取活跃职位，按创建时间倒序**:
-```
-GET /users/jobs?user_id=1&status=active&sortBy=createdAt&sortOrder=desc&limit=5
-```
-
-**复合筛选查询**:
-```
-GET /users/jobs?user_id=1&status=active&department=技术部&urgency=high&searchKeyword=前端&page=1&limit=20
-```
-
-**时间范围筛选**:
-```
-GET /users/jobs?user_id=1&dateRange.startDate=2024-01-01&dateRange.endDate=2024-12-31&sortBy=candidateCount&sortOrder=desc
-```
-
-#### 返回参数
-
-| 参数名 | 类型 | 说明 |
-|--------|------|------|
-| success | boolean | 请求是否成功 |
-| data | object | 返回数据 |
-| data.jobs | array | 职位列表，每个包含jobCard和jobDetails |
-| data.total | number | 总数量 |
-| data.currentPage | number | 当前页码 |
-| data.totalPages | number | 总页数 |
-| data.summary | object | 统计摘要信息 |
-| data.recentActivity | array | 最近活动（可选） |
-| message | string | 响应消息 |
-
-#### jobs 数组元素结构
-
-```json
-{
-  "jobCard": {
-    "title": "高级前端工程师",
-    "department": "技术部",
-    "location": "北京",
-    "urgency": "high",
-    "candidateCount": 45,
-    "status": "active"
-  },
-  "jobDetails": {
-    "basicInfo": {
-      "title": "高级前端工程师",
-      "department": "技术部",
-      "level": "高级",
-      "location": "北京",
-      "salary": "25-40K",
-      "workType": "全职",
-      "experience": "5年以上",
-      "education": "本科及以上"
-    },
-    "description": "负责公司核心产品的前端开发...",
-    "requirements": ["5年以上前端开发经验", "精通Vue.js、React等框架"],
-    "skills": ["Vue.js", "JavaScript", "TypeScript", "Node.js"],
-    "benefits": ["五险一金", "弹性工作", "股权激励"],
-    "userId": 1
-  }
-}
-```
-
-#### summary 结构
-
-```json
-{
-  "totalJobs": 15,
-  "activeJobs": 12,
-  "pausedJobs": 2,
-  "closedJobs": 1,
-  "totalCandidates": 287,
-  "totalInterviewing": 25,
-  "totalOffers": 8
-}
-```
-
-#### recentActivity 结构
-
-```json
-[
-  {
-    "type": "new_application",
-    "jobId": "job_001",
-    "jobTitle": "高级前端工程师",
-    "candidateName": "王五",
-    "timestamp": "2024-01-17T16:45:00Z"
-  },
-  {
-    "type": "interview_scheduled",
-    "jobId": "job_002",
-    "jobTitle": "Java后端工程师",
-    "candidateName": "赵六",
-    "timestamp": "2024-01-17T15:30:00Z"
-  }
-]
-```
-
-#### 返回示例
-
-```json
-{
-  "success": true,
-  "data": {
-    "jobs": [
+    "jobCards": [
       {
-        "jobCard": { /* jobCard结构 */ },
-        "jobDetails": { /* jobDetails结构 */ }
+        "id": "job_001",
+        "title": "高级前端工程师",
+        "department": "技术部",
+        "location": "北京",
+        "salaryRange": "25-35K",
+        "experience": "3-5年",
+        "education": "本科",
+        "skills": ["Vue.js", "React", "TypeScript"],
+        "status": "active",
+        "publishDate": "2024-01-15",
+        "applicationCount": 25
       }
     ],
-    "total": 12,
-    "summary": { /* summary结构 */ }
+    "total": 1
   },
-  "message": "获取用户职位成功"
+  "message": "获取职位卡片列表成功"
 }
 ```
 
-### 4. 获取用户职位统计
+### 2. 根据职位描述生成职位画像和岗位详情
 
-**接口名称**: 获取用户职位统计信息  
-**功能描述**: 获取用户的职位创建和管理统计信息  
-**URL地址**: `/users/job-stats?user_id={userId}`  
-**请求方式**: `GET`
+**接口描述**: 根据user_id和职位描述生成职位画像和岗位详情
 
-#### 查询参数
+**请求信息**:
+- **URL**: `/jobs/generate-profile`
+- **Method**: `POST`
+- **参数**: 
+  - `user_id` (number): 用户ID
+  - `description` (string): 职位描述
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| user_id | number | ✅ | 用户ID |
+**请求示例**:
+```json
+{
+  "user_id": 1,
+  "description": "招聘高级前端工程师，负责Vue.js项目开发，要求3年以上经验，熟悉TypeScript"
+}
+```
 
-#### 返回参数
-
+**响应示例**:
 ```json
 {
   "success": true,
   "data": {
-    "totalJobs": 12,
-    "activeJobs": 8,
-    "draftJobs": 2,
-    "inactiveJobs": 2,
-    "totalCandidates": 156,
-    "totalViews": 2340,
-    "avgMatchScore": 87.5,
-    "recentActivity": [
-      {
-        "type": "job_create",
-        "jobTitle": "高级前端工程师",
-        "timestamp": "2024-01-15T10:00:00Z"
-      }
-    ]
+    "jobProfile": {
+      "title": "高级前端工程师",
+      "department": "技术部",
+      "location": "北京",
+      "salaryRange": "25-35K",
+      "experience": "3-5年",
+      "education": "本科及以上",
+      "skills": ["Vue.js", "TypeScript", "JavaScript", "HTML5", "CSS3"],
+      "responsibilities": [
+        "负责前端项目架构设计和开发",
+        "参与产品需求分析和技术方案制定",
+        "优化前端性能，提升用户体验"
+      ],
+      "requirements": [
+        "3年以上前端开发经验",
+        "熟练掌握Vue.js框架",
+        "熟悉TypeScript开发"
+      ]
+    },
+    "aiAnalysis": {
+      "matchingKeywords": ["Vue.js", "TypeScript", "前端工程师"],
+      "suggestedSalary": "25-35K",
+      "marketDemand": "high",
+      "competitiveAnalysis": "该职位在当前市场需求较高"
+    }
   },
-  "message": "获取用户统计信息成功"
+  "message": "职位画像生成成功"
 }
 ```
 
@@ -484,528 +169,431 @@ GET /users/jobs?user_id=1&dateRange.startDate=2024-01-01&dateRange.endDate=2024-
 
 ## AI匹配接口
 
-### 2. 统一候选人匹配接口（推荐使用）
+### 1. 根据发布岗位id获取候选人列表
 
-**接口名称**: 根据岗位ID和用户ID获取候选人信息和岗位详情  
-**功能描述**: 统一的候选人匹配接口，支持实时匹配和缓存匹配，后端根据forceRefresh参数决定是否需要重新匹配  
-**URL地址**: `/jobs/candidates?job_id={jobId}`  
-**请求方式**: `POST`
+**接口描述**: 根据发布岗位id获取候选人list，携带type默认是智能匹配（后端根据type判断是否匹配过，有则数据库中返回，否则就匹配）
 
-#### 请求参数
+**请求信息**:
+- **URL**: `/candidates/by-job`
+- **Method**: `POST`
+- **参数**: 
+  - `job_id` (number): 发布岗位ID
+  - `user_id` (number): 用户ID
+  - `type` (string, 可选): 匹配类型，默认为"智能匹配"
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| jobId | string/number | ✅ | 岗位ID（URL参数） |
-| userId | string/number | ✅ | 用户ID |
-| matchType | string | ❌ | 匹配类型，默认'smart' |
-| forceRefresh | boolean | ❌ | 是否强制重新匹配，默认false |
-| limit | number | ❌ | 限制返回候选人数量，默认10，最大50 |
-| offset | number | ❌ | 分页偏移量，默认0 |
-| filters | object | ❌ | 额外的筛选条件 |
-| filters.minScore | number | ❌ | 最小匹配分数 |
-| filters.location | string | ❌ | 地理位置 |
-| filters.minExperience | number | ❌ | 最少工作年限 |
-| filters.maxExperience | number | ❌ | 最多工作年限 |
-| filters.skills | array | ❌ | 必需技能数组 |
-| filters.education | string | ❌ | 学历要求 |
-| sortBy | string | ❌ | 排序字段，默认'matchScore' |
-| sortOrder | string | ❌ | 排序顺序，默认'desc' |
-
-#### matchType 可选值
-
-- `smart` - 智能匹配（默认）
-- `skill` - 技能匹配
-- `experience` - 经验匹配
-- `education` - 学历匹配
-
-#### sortBy 可选值
-
-- `matchScore` - 匹配分数（默认）
-- `experience` - 工作经验
-- `education` - 学历
-- `appliedTime` - 申请时间
-
-#### 请求示例
-
-**基础调用（使用缓存）**:
+**请求示例**:
 ```json
 {
-  "userId": 1
+  "job_id": 123,
+  "user_id": 1,
+  "type": "智能匹配"
 }
 ```
 
-**智能匹配，强制刷新**:
-```json
-{
-  "userId": 1,
-  "matchType": "smart",
-  "forceRefresh": true,
-  "limit": 20
-}
-```
-
-**技能匹配，带筛选条件**:
-```json
-{
-  "userId": 1,
-  "matchType": "skill",
-  "filters": {
-    "minScore": 80,
-    "location": "北京",
-    "skills": ["Vue.js", "React"]
-  },
-  "sortBy": "matchScore",
-  "limit": 10
-}
-```
-
-**分页查询**:
-```json
-{
-  "userId": 1,
-  "matchType": "experience",
-  "filters": {
-    "minExperience": 3,
-    "maxExperience": 8
-  },
-  "limit": 10,
-  "offset": 20,
-  "sortBy": "experience",
-  "sortOrder": "desc"
-}
-```
-
-#### 返回参数
-
-| 参数名 | 类型 | 说明 |
-|--------|------|------|
-| success | boolean | 请求是否成功 |
-| data | object | 返回的数据 |
-| data.jobDetail | object | 岗位详情信息 |
-| data.candidates | array | 匹配的候选人列表 |
-| data.matchAnalysis | object | 匹配分析结果 |
-| data.pagination | object | 分页信息 |
-| data.isFromCache | boolean | 是否来自缓存 |
-| data.lastMatchTime | string | 上次匹配时间 |
-| data.processingTime | string | 处理时间 |
-| message | string | 响应消息 |
-
-#### pagination 结构
-
-```json
-{
-  "total": 45,
-  "currentPage": 1,
-  "totalPages": 5,
-  "hasNext": true,
-  "hasPrevious": false,
-  "limit": 10,
-  "offset": 0
-}
-```
-
-#### matchAnalysis 结构
-
-```json
-{
-  "totalMatched": 8,
-  "averageScore": 87,
-  "matchCriteria": {
-    "skillMatch": 92,
-    "experienceMatch": 85,
-    "educationMatch": 88
-  },
-  "scoreDistribution": {
-    "excellent": 3,
-    "good": 3,
-    "fair": 2
-  },
-  "processingTime": "0.05s",
-  "algorithmVersion": "v2.1"
-}
-```
-
-#### 返回示例
-
+**响应示例**:
 ```json
 {
   "success": true,
   "data": {
-    "jobDetail": {
-      "id": 1,
-      "title": "高级前端工程师",
-      "department": "技术部",
-      "location": "北京",
-      "salary": "25-40K",
-      "candidateCount": 8,
-      "matchingDate": "2024-01-15T10:30:00Z"
-    },
     "candidates": [
       {
         "id": 1,
         "name": "张三",
         "title": "前端工程师",
-        "experience": "5年",
+        "experience": 4,
         "education": "本科",
         "location": "北京",
-        "matchScore": 94,
-        "skills": ["Vue.js", "JavaScript", "TypeScript"],
+        "skills": ["Vue.js", "React", "TypeScript"],
+        "avatar": "https://example.com/avatar1.jpg",
+        "matchScore": 92,
         "matchReasons": [
-          "技能匹配度高：Vue.js、JavaScript、TypeScript",
-          "工作经验符合要求：5年前端开发经验"
-        ]
+          "技能匹配度高：Vue.js, TypeScript",
+          "工作经验符合要求：4年",
+          "地理位置匹配"
+        ],
+        "salary": "28K",
+        "status": "available"
       }
     ],
-    "matchAnalysis": {
-      "totalMatched": 8,
-      "averageScore": 87,
-      "matchCriteria": {
-        "skillMatch": 92,
-        "experienceMatch": 85,
-        "educationMatch": 88
-      },
-      "processingTime": "0.05s"
+    "total": 15,
+    "matchingInfo": {
+      "type": "智能匹配",
+      "isFromCache": false,
+      "processingTime": "2.3s",
+      "totalMatched": 15,
+      "highMatch": 8,
+      "mediumMatch": 5,
+      "lowMatch": 2
     },
-    "isFromCache": true,
-    "lastMatchTime": "2024-01-15T10:30:00Z"
+    "jobDetail": {
+      "id": 123,
+      "title": "高级前端工程师",
+      "department": "技术部",
+      "salaryRange": "25-35K"
+    }
   },
-  "message": "成功获取岗位 高级前端工程师 的 8 个匹配候选人（来自缓存）"
+  "message": "成功获取岗位匹配候选人（实时匹配）"
 }
 ```
 
-#### 接口逻辑说明
+### 2. 获取匹配结果详细分析
 
-1. **缓存机制**: 后端会检查是否已有该岗位的匹配缓存
-2. **智能判断**: 如果 `forceRefresh=false` 且有缓存，直接返回缓存结果
-3. **实时匹配**: 如果 `forceRefresh=true` 或无缓存，执行实时AI匹配
-4. **类型支持**: 支持多种匹配类型，满足不同筛选需求
-5. **性能优化**: 缓存响应速度更快，实时匹配提供最新结果
+**请求信息**:
+- **URL**: `/candidates/match-analysis`
+- **Method**: `GET`
+- **参数**: 
+  - `match_id` (string): 匹配结果ID
+  - `analysisLevel` (string, 可选): 分析级别，默认为"detailed"
+
+**请求示例**:
+```
+GET /candidates/match-analysis?match_id=match_123&analysisLevel=detailed
+```
+
+### 3. 保存匹配结果
+
+**请求信息**:
+- **URL**: `/candidates/save-match-results`
+- **Method**: `POST`
+
+### 4. 获取用户的匹配历史
+
+**请求信息**:
+- **URL**: `/candidates/match-history`
+- **Method**: `GET`
+- **参数**: 
+  - `user_id` (number): 用户ID
+
+### 5. 重新匹配候选人
+
+**请求信息**:
+- **URL**: `/candidates/rematch`
+- **Method**: `POST`
+- **参数**: 
+  - `saved_match_id` (string): 保存的匹配ID
+  - 其他筛选条件
+
+**请求示例**:
+```json
+{
+  "saved_match_id": "match_123",
+  "location": "上海",
+  "experience": "3-5年"
+}
+```
+
+### 6. 比较候选人匹配度
+
+**请求信息**:
+- **URL**: `/candidates/compare-match`
+- **Method**: `POST`
 
 ---
 
-  "matchDistribution": {
-    "excellent": 2,
-    "good": 2,
-    "fair": 1
-  },
-  "processingTime": "1.8s"
-}
+## 用户管理接口
+
+### 1. 根据用户id返回关联的职位卡片和岗位详情list
+
+**请求信息**:
+- **URL**: `/users/jobs`
+- **Method**: `GET`
+- **参数**: 
+  - `user_id` (number): 用户ID
+
+**请求示例**:
+```
+GET /users/jobs?user_id=1
 ```
 
-#### 返回示例
+### 2. 获取用户职位统计信息
 
+**请求信息**:
+- **URL**: `/users/job-stats`
+- **Method**: `GET`
+- **参数**: 
+  - `user_id` (number): 用户ID
+
+### 3. 更新用户职位状态
+
+**请求信息**:
+- **URL**: `/users/jobs/batch-update-status`
+- **Method**: `PUT`
+- **参数**: 
+  - `user_id` (number): 用户ID
+  - `jobIds` (array): 职位ID数组
+  - `status` (string): 新状态
+
+**请求示例**:
 ```json
 {
-  "success": true,
-  "data": {
-    "candidates": [ /* candidates数组 */ ],
-    "matchAnalysis": { /* matchAnalysis结构 */ },
-    "suggestions": [
-      "建议重点关注匹配度90分以上的候选人",
-      "可以考虑适当放宽经验要求以获得更多候选人"
-    ]
-  },
-  "message": "AI匹配完成"
+  "user_id": 1,
+  "jobIds": [123, 124, 125],
+  "status": "active"
 }
 ```
 
-### 6. 获取用户匹配历史
+### 4. 删除用户职位
 
-**接口名称**: 获取用户的匹配历史  
-**功能描述**: 获取用户的候选人匹配历史记录  
-**URL地址**: `/candidates/match-history/{userId}`  
-**请求方式**: `GET`
+**请求信息**:
+- **URL**: `/users/jobs/batch-delete`
+- **Method**: `DELETE`
+- **参数**: 
+  - `user_id` (number): 用户ID
+  - `jobIds` (array): 要删除的职位ID数组
 
-#### 路径参数
+### 5. 获取用户最近活动
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| userId | number | ✅ | 用户ID |
+**请求信息**:
+- **URL**: `/users/recent-activities`
+- **Method**: `GET`
+- **参数**: 
+  - `user_id` (number): 用户ID
 
-#### 查询参数
+### 6. 获取用户偏好设置
 
-| 参数名 | 类型 | 必填 | 说明 |
-|--------|------|------|------|
-| limit | number | ❌ | 限制数量，默认10 |
-| offset | number | ❌ | 偏移量，默认0 |
+**请求信息**:
+- **URL**: `/users/preferences`
+- **Method**: `GET`
+- **参数**: 
+  - `user_id` (number): 用户ID
 
-#### 返回示例
+### 7. 更新用户偏好设置
 
-```json
-{
-  "success": true,
-  "data": {
-    "matchHistory": [
-      {
-        "id": "match_001",
-        "jobDescription": "招聘高级前端工程师，要求熟练掌握Vue.js和React",
-        "matchType": "smart",
-        "matchedCount": 8,
-        "averageScore": 87,
-        "createdAt": "2024-01-15T10:00:00Z"
-      }
-    ],
-    "total": 2
-  },
-  "message": "获取匹配历史成功"
-}
-```
+**请求信息**:
+- **URL**: `/users/preferences`
+- **Method**: `PUT`
+- **参数**: 
+  - `user_id` (number): 用户ID
+  - 偏好设置对象
 
 ---
 
 ## 传统职位管理接口
 
-### 7. 获取职位列表
+### 1. 获取职位列表
 
-**接口名称**: 获取职位列表  
-**URL地址**: `/jobs/list`  
-**请求方式**: `GET`
+**请求信息**:
+- **URL**: `/jobs/list`
+- **Method**: `GET`
 
-### 8. 获取职位详情
+### 2. 根据ID获取职位详情
 
-**接口名称**: 根据ID获取职位详情  
-**URL地址**: `/jobs/detail/{id}`  
-**请求方式**: `GET`
+**请求信息**:
+- **URL**: `/jobs/detail`
+- **Method**: `GET`
+- **参数**: 
+  - `job_id` (number): 职位ID
 
-### 9. 创建职位
+**请求示例**:
+```
+GET /jobs/detail?job_id=123
+```
 
-**接口名称**: 创建新职位  
-**URL地址**: `/jobs/create`  
-**请求方式**: `POST`
+### 3. 创建新职位
 
-### 10. 更新职位
+**请求信息**:
+- **URL**: `/jobs/create`
+- **Method**: `POST`
 
-**接口名称**: 更新职位信息  
-**URL地址**: `/jobs/update/{id}`  
-**请求方式**: `PUT`
+### 4. 更新职位信息
 
-### 11. 删除职位
+**请求信息**:
+- **URL**: `/jobs/update`
+- **Method**: `PUT`
+- **参数**: 
+  - `job_id` (number): 职位ID
+  - 职位信息对象
 
-**接口名称**: 删除职位  
-**URL地址**: `/jobs/delete/{id}`  
-**请求方式**: `DELETE`
+**请求示例**:
+```json
+{
+  "job_id": 123,
+  "title": "高级前端工程师",
+  "department": "技术部"
+}
+```
+
+### 5. 删除职位
+
+**请求信息**:
+- **URL**: `/jobs/delete`
+- **Method**: `DELETE`
+- **参数**: 
+  - `job_id` (number): 职位ID
+
+### 6. 获取职位候选人统计
+
+**请求信息**:
+- **URL**: `/jobs/candidates/stats`
+- **Method**: `GET`
+- **参数**: 
+  - `job_id` (number): 职位ID
+
+### 7. 搜索职位
+
+**请求信息**:
+- **URL**: `/jobs/search`
+- **Method**: `GET`
+
+### 8. AI解析职位描述
+
+**请求信息**:
+- **URL**: `/jobs/ai-parse`
+- **Method**: `POST`
+
+### 9. 分析职位需求
+
+**请求信息**:
+- **URL**: `/jobs/analyze`
+- **Method**: `POST`
+- **参数**: 
+  - `job_id` (number): 职位ID
 
 ---
 
 ## 候选人管理接口
 
-### 12. 获取候选人详情
+### 1. 获取推荐候选人列表
 
-**接口名称**: 根据ID获取候选人详情  
-**URL地址**: `/candidates/detail/{id}`  
-**请求方式**: `GET`
+**请求信息**:
+- **URL**: `/candidates/recommend`
+- **Method**: `GET`
 
-### 13. 搜索候选人
+### 2. 根据ID获取候选人详情
 
-**接口名称**: 搜索候选人  
-**URL地址**: `/candidates/search`  
-**请求方式**: `GET`
+**请求信息**:
+- **URL**: `/candidates/detail`
+- **Method**: `GET`
+- **参数**: 
+  - `candidate_id` (number): 候选人ID
 
-### 14. 获取候选人雷达图
+**请求示例**:
+```
+GET /candidates/detail?candidate_id=456
+```
 
-**接口名称**: 获取候选人雷达图数据  
-**URL地址**: `/candidates/radar?id={id}`  
-**请求方式**: `GET`
+### 3. 创建候选人
+
+**请求信息**:
+- **URL**: `/candidates/create`
+- **Method**: `POST`
+
+### 4. 更新候选人信息
+
+**请求信息**:
+- **URL**: `/candidates/update`
+- **Method**: `PUT`
+- **参数**: 
+  - `candidate_id` (number): 候选人ID
+  - 候选人信息对象
+
+### 5. 删除候选人
+
+**请求信息**:
+- **URL**: `/candidates/delete`
+- **Method**: `DELETE`
+- **参数**: 
+  - `candidate_id` (number): 候选人ID
+
+### 6. 搜索候选人
+
+**请求信息**:
+- **URL**: `/candidates/search`
+- **Method**: `GET`
+
+### 7. 获取候选人雷达图数据
+
+**请求信息**:
+- **URL**: `/candidates/radar`
+- **Method**: `GET`
+- **参数**: 
+  - `candidate_id` (number): 候选人ID
+
+### 8. 匹配候选人与职位
+
+**请求信息**:
+- **URL**: `/candidates/match`
+- **Method**: `POST`
+
+### 9. AI智能匹配候选人
+
+**请求信息**:
+- **URL**: `/candidates/ai-match`
+- **Method**: `POST`
+
+### 10. 获取候选人AI分析报告
+
+**请求信息**:
+- **URL**: `/candidates/ai-analysis`
+- **Method**: `GET`
+- **参数**: 
+  - `candidate_id` (number): 候选人ID
+  - `analysisType` (string, 可选): 分析类型
 
 ---
 
 ## 错误码说明
 
-### 通用错误码
+### HTTP状态码
 
-| 错误码 | 说明 |
-|--------|------|
-| 400 | 请求参数错误 |
-| 401 | 未授权访问 |
-| 403 | 禁止访问 |
-| 404 | 资源不存在 |
-| 500 | 服务器内部错误 |
+- `200` - 请求成功
+- `400` - 请求参数错误
+- `401` - 未授权访问
+- `403` - 禁止访问
+- `404` - 资源不存在
+- `500` - 服务器内部错误
 
 ### 业务错误码
-
-| 错误码 | 说明 |
-|--------|------|
-| 10001 | 职位描述不能为空 |
-| 10002 | 用户ID不能为空 |
-| 10003 | 职位ID不存在 |
-| 10004 | 候选人ID不存在 |
-| 20001 | AI解析失败 |
-| 20002 | 匹配算法执行失败 |
-| 30001 | 数据库连接失败 |
-| 30002 | 数据保存失败 |
-
-### 错误响应示例
 
 ```json
 {
   "success": false,
-  "data": null,
-  "message": "职位描述不能为空",
   "error": {
-    "code": 10001,
-    "details": "description field is required"
-  }
+    "code": "BUSINESS_ERROR_CODE",
+    "message": "错误描述信息"
+  },
+  "data": null
 }
 ```
 
----
+**常见错误码**:
 
-## 接口使用示例
-
-### 完整的AI招聘流程
-
-```javascript
-// 1. 根据职位描述创建职位
-const jobResult = await apiManager.createJobByDescription(
-  "招聘高级前端工程师，要求熟练掌握Vue.js和React，有5年以上开发经验，薪资25-40K，工作地点北京",
-  1
-);
-
-const jobId = jobResult.data.jobId;
-
-// 2. 使用统一匹配接口获取候选人
-const matchResult = await apiManager.getJobCandidatesWithMatching(jobId, 1);
-
-// 3. 获取用户所有职位列表
-const userJobsResult = await apiManager.getUserJobs(1);
-```
-
-### 三个核心接口详细使用示例
-
-#### 接口1: 创建AI职位
-
-```javascript
-// 基础使用
-const createBasicJob = async () => {
-  try {
-    const response = await apiManager.createJobByDescription(
-      "招聘高级前端工程师...",
-      1
-    );
-    console.log('职位创建成功:', response.data.jobId);
-  } catch (error) {
-    console.error('创建失败:', error.message);
-  }
-};
-
-// 高级使用（带完整配置）
-const createAdvancedJob = async () => {
-  try {
-    const response = await apiManager.createJobByDescription(
-      "招聘资深全栈工程师，负责核心产品开发...",
-      1
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error(`职位创建失败: ${error.message}`);
-  }
-};
-```
-
-#### 接口2: 统一候选人匹配
-
-```javascript
-// 智能匹配（使用缓存）
-const smartMatch = async (jobId) => {
-  const response = await apiManager.getJobCandidatesWithMatching(jobId, 1);
-  return response.data.candidates;
-};
-
-// 技能匹配（带筛选）
-const skillMatch = async (jobId) => {
-  const response = await apiManager.getJobCandidatesWithMatching(jobId, 1);
-  return response.data;
-};
-
-// 分页查询候选人
-const paginatedMatch = async (jobId, page = 1) => {
-  const response = await apiManager.getJobCandidatesWithMatching(jobId, 1);
-  return {
-    candidates: response.data.candidates,
-    pagination: response.data.pagination,
-    isFromCache: response.data.isFromCache
-  };
-};
-```
-
-#### 接口3: 用户职位管理
-
-```javascript
-// 获取用户所有职位
-const getAllUserJobs = async (userId) => {
-  const response = await apiManager.getUserJobs(userId);
-  return response.data;
-};
-
-// 按条件筛选职位
-const filterUserJobs = async (userId) => {
-  const response = await apiManager.getUserJobs(userId);
-  return response.data.jobs;
-};
-
-// 搜索用户职位
-const searchUserJobs = async (userId, keyword) => {
-  const response = await apiManager.getUserJobs(userId);
-  return response.data.jobs;
-};
-
-// 分页获取职位
-const getPaginatedJobs = async (userId, page = 1, pageSize = 10) => {
-  const response = await apiManager.getUserJobs(userId);
-  return {
-    jobs: response.data.jobs,
-    pagination: {
-      currentPage: response.data.currentPage,
-      totalPages: response.data.totalPages,
-      total: response.data.total
-    },
-    summary: response.data.summary
-  };
-};
-```
-
-### 错误处理最佳实践
-
-```javascript
-const handleAPICall = async (apiCall) => {
-  try {
-    const response = await apiCall();
-    return response;
-  } catch (error) {
-    // 参数验证错误
-    if (error.message.includes('必填参数')) {
-      console.error('参数错误:', error.message);
-      // 显示用户友好的错误信息
-    }
-    // 网络或服务器错误
-    else if (error.response) {
-      console.error('服务器错误:', error.response.status, error.response.data);
-    } else {
-      console.error('未知错误:', error.message);
-    }
-    throw error;
-  }
-};
-
-// 使用示例
-const safeCreateJob = () => handleAPICall(() => 
-  apiManager.createJobByDescription("职位描述", 1)
-);
-```
+- `INVALID_PARAMS` - 参数验证失败
+- `USER_NOT_FOUND` - 用户不存在
+- `JOB_NOT_FOUND` - 职位不存在
+- `CANDIDATE_NOT_FOUND` - 候选人不存在
+- `MATCHING_FAILED` - 匹配失败
+- `AI_ANALYSIS_FAILED` - AI分析失败
+- `INSUFFICIENT_PERMISSIONS` - 权限不足
+- `RATE_LIMIT_EXCEEDED` - 请求频率超限
 
 ---
 
-## 版本信息
+## 附录
 
-- **文档版本**: v1.0.0
-- **API版本**: v1.0
-- **更新日期**: 2024-01-15
-- **维护者**: AI招聘系统开发团队
+### 数据字典
 
----
+#### 职位状态
+- `active` - 活跃
+- `inactive` - 非活跃
+- `draft` - 草稿
 
-## 联系方式
+#### 候选人状态
+- `available` - 可用
+- `busy` - 忙碌
+- `unavailable` - 不可用
 
-如有疑问，请联系开发团队：
-- 邮箱: dev@example.com
-- 技术支持: support@example.com
+#### 匹配类型
+- `智能匹配` - AI智能匹配（默认）
+- `技能匹配` - 基于技能匹配
+- `经验匹配` - 基于经验匹配
+- `学历匹配` - 基于学历匹配
+
+### 更新日志
+
+**v2.0.0** (2024-01-20)
+- 重构API路径，移除所有路径参数形式
+- GET请求改为使用查询参数
+- POST/PUT/DELETE请求改为使用请求体传递参数
+- 统一参数命名规范（job_id, user_id, candidate_id等）
+- 优化接口文档结构和说明

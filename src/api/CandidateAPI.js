@@ -62,11 +62,11 @@ export function getEducationCandidates(params = {}) {
  * 功能描述：根据候选人ID获取详细的候选人信息
  * 入参：{ candidateId: number } - 候选人ID
  * 返回参数：{ success: boolean, data: Object, message: string }
- * url地址：/candidates/detail/:id
+ * url地址：/candidates/detail
  * 请求方式：GET
  */
 export function getCandidateDetail(candidateId) {
-  return get(`/candidates/detail/${candidateId}`)
+  return get('/candidates/detail', { candidate_id: candidateId })
 }
 
 /**
@@ -86,11 +86,11 @@ export function createCandidate(candidateData) {
  * 功能描述：根据候选人ID更新候选人信息
  * 入参：{ candidateId: number, ...candidateData } - 候选人ID和更新的候选人信息
  * 返回参数：{ success: boolean, data: Object, message: string }
- * url地址：/candidates/update/:id
+ * url地址：/candidates/update
  * 请求方式：PUT
  */
 export function updateCandidate(candidateId, candidateData) {
-  return put(`/candidates/update/${candidateId}`, candidateData)
+  return put('/candidates/update', { candidate_id: candidateId, ...candidateData })
 }
 
 /**
@@ -98,11 +98,11 @@ export function updateCandidate(candidateId, candidateData) {
  * 功能描述：根据候选人ID删除候选人信息
  * 入参：{ candidateId: number } - 候选人ID
  * 返回参数：{ success: boolean, message: string }
- * url地址：/candidates/delete/:id
+ * url地址：/candidates/delete
  * 请求方式：DELETE
  */
 export function deleteCandidate(candidateId) {
-  return del(`/candidates/delete/${candidateId}`)
+  return del('/candidates/delete', { candidate_id: candidateId })
 }
 
 /**
@@ -122,11 +122,11 @@ export function searchCandidates(searchParams = {}) {
  * 功能描述：获取候选人的能力雷达图分析数据
  * 入参：{ candidateId: number } - 候选人ID
  * 返回参数：{ success: boolean, data: Object, message: string }
- * url地址：/candidates/:id/radar
+ * url地址：/candidates/radar
  * 请求方式：GET
  */
 export function getCandidateRadarData(candidateId) {
-  return get(`/candidates/${candidateId}/radar`)
+  return get('/candidates/radar', { candidate_id: candidateId })
 }
 
 /**
@@ -160,9 +160,9 @@ export function aiMatchCandidates(jobId, analysisDepth = 'detailed') {
  * 入参：{ candidateId: number, analysisType?: string } - 候选人ID和分析类型（'basic', 'detailed', 'comprehensive'）
  * 返回参数：{ success: boolean, data: Object, message: string }
  * data包含：{ overallScore: number, recommendation: string, strengths: Array, improvements: Array, jobMatching: Object, recommendedActions: Array }
- * url地址：/candidates/:id/ai-analysis
+ * url地址：/candidates/ai-analysis
  * 请求方式：GET
  */
 export function getCandidateAIAnalysis(candidateId, analysisType = 'detailed') {
-  return get(`/candidates/${candidateId}/ai-analysis`, { analysisType })
+  return get('/candidates/ai-analysis', { candidate_id: candidateId, analysisType })
 }

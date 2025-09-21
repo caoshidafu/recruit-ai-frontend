@@ -17,11 +17,11 @@ export function getJobList() {
  * 功能描述：根据职位ID获取详细的职位信息
  * 入参：{ jobId: number } - 职位ID
  * 返回参数：{ success: boolean, data: Object, message: string }
- * url地址：/jobs/detail/:id
+ * url地址：/jobs/detail
  * 请求方式：GET
  */
 export function getJobDetail(jobId) {
-  return get(`/jobs/detail/${jobId}`)
+  return get('/jobs/detail', { job_id: jobId })
 }
 
 /**
@@ -41,11 +41,11 @@ export function createJob(jobData) {
  * 功能描述：根据职位ID更新职位信息
  * 入参：{ jobId: number, ...jobData } - 职位ID和更新的职位信息
  * 返回参数：{ success: boolean, data: Object, message: string }
- * url地址：/jobs/update/:id
+ * url地址：/jobs/update
  * 请求方式：PUT
  */
 export function updateJob(jobId, jobData) {
-  return put(`/jobs/update/${jobId}`, jobData)
+  return put('/jobs/update', { job_id: jobId, ...jobData })
 }
 
 /**
@@ -53,11 +53,11 @@ export function updateJob(jobId, jobData) {
  * 功能描述：根据职位ID删除职位信息
  * 入参：{ jobId: number } - 职位ID
  * 返回参数：{ success: boolean, message: string }
- * url地址：/jobs/delete/:id
+ * url地址：/jobs/delete
  * 请求方式：DELETE
  */
 export function deleteJob(jobId) {
-  return del(`/jobs/delete/${jobId}`)
+  return del('/jobs/delete', { job_id: jobId })
 }
 
 /**
@@ -65,11 +65,11 @@ export function deleteJob(jobId) {
  * 功能描述：获取指定职位的候选人数量统计信息
  * 入参：{ jobId: number } - 职位ID
  * 返回参数：{ success: boolean, data: Object, message: string }
- * url地址：/jobs/:id/candidates/stats
+ * url地址：/jobs/candidates/stats
  * 请求方式：GET
  */
 export function getJobCandidateStats(jobId) {
-  return get(`/jobs/${jobId}/candidates/stats`)
+  return get('/jobs/candidates/stats', { job_id: jobId })
 }
 
 /**
@@ -103,9 +103,9 @@ export function parseJobDescription(description) {
  * 入参：{ jobId: number } - 职位ID
  * 返回参数：{ success: boolean, data: Object, message: string }
  * data包含：{ matchCriteria: Object, skillWeights: Object, recommendationStrategy: string }
- * url地址：/jobs/analyze/:id
+ * url地址：/jobs/analyze
  * 请求方式：POST
  */
 export function analyzeJobRequirements(jobId) {
-  return post(`/jobs/analyze/${jobId}`)
+  return post('/jobs/analyze', { job_id: jobId })
 }

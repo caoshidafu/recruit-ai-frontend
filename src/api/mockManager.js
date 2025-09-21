@@ -266,62 +266,25 @@ class APIManager {
   // ==================== 新增：AI职位创建相关API ====================
 
   /**
-   * 根据用户输入的职位描述生成职位卡片和岗位详情
+   * 获取职位卡片列表
    */
-  async createJobByDescription(data) {
+  async getJobCards(jobId, userId) {
     if (this.useMock) {
-      return await MockAPI.mockCreateJobByDescription(data)
+      return await MockAPI.mockGetJobCards(jobId, userId)
     } else {
-      return await AIJobAPI.createJobByDescription(data)
-    }
-  }
-
-
-  /**
-   * 批量获取职位的候选人和详情信息
-   */
-  async getBatchJobCandidatesAndDetails(jobIds) {
-    if (this.useMock) {
-      // Mock环境暂不实现批量获取功能
-      return { success: true, data: [], message: 'Mock batch get not implemented' }
-    } else {
-      return await AIJobAPI.getBatchJobCandidatesAndDetails(jobIds)
+      return await AIJobAPI.getJobCards(jobId, userId)
     }
   }
 
   /**
-   * 更新AI生成的职位信息
+   * 根据职位描述生成职位画像和岗位详情
    */
-  async updateAIGeneratedJob(jobId, updateData) {
+  async generateJobProfile(userId, description) {
     if (this.useMock) {
-      // Mock环境暂不实现更新功能
-      return { success: true, message: 'Mock AI update success' }
+      return await MockAPI.mockGenerateJobProfile(userId, description)
     } else {
-      return await AIJobAPI.updateAIGeneratedJob(jobId, updateData)
+      return await AIJobAPI.generateJobProfile(userId, description)
     }
-  }
-
-  /**
-   * 重新生成职位信息
-   */
-  async regenerateJobByAI(jobId, options = {}) {
-    if (this.useMock) {
-      // Mock环境暂不实现重新生成功能
-      return { success: true, message: 'Mock AI regenerate success' }
-    } else {
-      return await AIJobAPI.regenerateJobByAI(jobId, options)
-    }
-  }
-
-  /**
-   * 获取AI职位生成历史
-   */
-  async getAIJobGenerationHistory(params) {
-    if (this.useMock) {
-      // Mock环境暂不实现历史功能
-      return { success: true, data: { history: [], total: 0 }, message: 'Mock history not implemented' }
-    } else {
-      return await AIJobAPI.getAIJobHistory(params)
     }
   }
 
@@ -412,14 +375,14 @@ class APIManager {
   // ==================== 新增：AI匹配相关API ====================
 
   /**
-   * 统一候选人匹配接口（推荐使用）
-   * 根据岗位ID和用户ID获取候选人信息和岗位详情，支持实时匹配和缓存匹配
+   * 根据发布岗位id获取候选人列表
+   * 根据发布岗位id获取候选人list，携带type默认是智能匹配
    */
-  async getJobCandidatesWithMatching(data) {
+  async getCandidatesByJobId(jobId, userId, type = '智能匹配') {
     if (this.useMock) {
-      return await MockAPI.mockGetJobCandidatesWithMatching(data)
+      return await MockAPI.mockGetCandidatesByJobId(jobId, userId, type)
     } else {
-      return await AIMatchAPI.getJobCandidatesWithMatching(data)
+      return await AIMatchAPI.getCandidatesByJobId(jobId, userId, type)
     }
   }
 
