@@ -38,9 +38,12 @@ recruit-ai-frontend/
 ├── src/
 │   ├── api/                # API接口目录
 │   │   ├── index.js            # HTTP请求基础方法
-│   │   ├── JobAPI.js           # 职位相关API接口
-│   │   ├── CandidateAPI.js     # 候选人相关API接口
-│   │   ├── MockAPI.js          # Mock API接口（包含模拟数据）
+│   │   ├── JobAPI.js           # 传统职位管理API接口
+│   │   ├── CandidateAPI.js     # 候选人管理API接口
+│   │   ├── AIJobAPI.js         # AI职位创建API接口（核心业务）
+│   │   ├── UserAPI.js          # 用户管理API接口（核心业务）
+│   │   ├── AIMatchAPI.js       # AI匹配API接口（核心业务）
+│   │   ├── MockAPI.js          # Mock API接口（包含所有模拟数据）
 │   │   └── mockManager.js      # API管理器（统一调用入口）
 │   ├── components/          # 组件目录
 │   │   ├── CandidateCard.vue              # 候选人卡片组件

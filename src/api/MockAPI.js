@@ -1770,5 +1770,454 @@ export function mockGetCandidateAIAnalysis(candidateId, analysisType = 'detailed
   });
 }
 
+// ==================== 新增：AI职位创建相关Mock API ====================
+
+/**
+* Mock - 根据用户输入的职位描述生成职位卡片和岗位详情
+* 功能描述：使用AI技术解析用户输入的职位描述，生成结构化的职位卡片和详细信息
+* 入参：{ description: string, userId: string, companyInfo?: object }
+* 返回参数：{ success: boolean, data: { jobId: string, jobCard: object, jobDetails: object }, message: string }
+* url地址：/jobs/ai-create
+* 请求方式：POST
+*/
+export function mockCreateJobByDescription(data) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const { description, userId } = data;
+      
+      // 模拟AI解析生成职位信息
+      const parsedInfo = mockParseJobDescription(description);
+      
+      parsedInfo.then(result => {
+        const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        const jobCard = {
+          id: jobId,
+          title: result.data.extractedInfo.title,
+          department: result.data.extractedInfo.department,
+          level: result.data.extractedInfo.level,
+          location: result.data.extractedInfo.location,
+          salary: result.data.extractedInfo.salary,
+          status: 'active',
+          publishedAt: new Date().toISOString(),
+          urgency: 'normal',
+          tags: extractJobTags(description),
+          stats: {
+            applicants: 0,
+            views: 1,
+            publishDays: 0
+          },
+          userId: userId
+        };
+        
+        const jobDetails = {
+          id: jobId,
+          basicInfo: {
+            title: result.data.extractedInfo.title,
+            department: result.data.extractedInfo.department,
+            level: result.data.extractedInfo.level,
+            location: result.data.extractedInfo.location,
+            salary: result.data.extractedInfo.salary,
+            workType: result.data.workType,
+            experience: result.data.experience,
+            education: result.data.education
+          },
+          description: description,
+          requirements: result.data.requirements,
+          skills: result.data.skills,
+          benefits: result.data.benefits,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          userId: userId,
+          aiGenerated: true,
+          aiConfidence: result.data.analysisConfidence
+        };
+        
+        resolve({
+          success: true,
+          data: {
+            jobId: jobId,
+            jobCard: jobCard,
+            jobDetails: jobDetails
+          },
+          message: 'AI职位创建成功'
+        });
+      });
+    }, 2500); // 模拟AI处理时间
+  });
+}
+
+/**
+* Mock - 根据发布新岗位id获取候选人信息以及岗位详情信息
+* 功能描述：根据已发布的岗位ID，获取关联的候选人列表和岗位详细信息
+* 入参：{ jobId: string }
+* 返回参数：{ success: boolean, data: { jobDetails: object, candidates: array, matchSummary: object }, message: string }
+* url地址：/jobs/{jobId}/candidates-and-details
+* 请求方式：GET
+*/
+export function mockGetJobCandidatesAndDetails(jobId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 模拟根据jobId获取职位详情
+      const jobDetails = {
+        id: jobId,
+        title: "高级前端工程师",
+        department: "技术部",
+        level: "高级",
+        location: "北京",
+        salary: "25-40K",
+        description: "负责公司核心产品的前端开发工作",
+        requirements: [
+          "5年以上前端开发经验",
+          "精通Vue.js、React等主流框架",
+          "具备良好的代码规范意识"
+        ],
+        skills: ["Vue.js", "JavaScript", "TypeScript", "Node.js"],
+        benefits: ["五险一金", "弹性工作", "技术培训"],
+        createdAt: new Date().toISOString()
+      };
+      
+      // 获取匹配的候选人（使用现有的智能推荐数据）
+      const candidates = mockData.candidates.smart.slice(0, 5).map(candidate => ({
+        ...candidate,
+        matchScore: Math.floor(Math.random() * 20) + 80, // 80-100分
+        matchReason: [
+          "技能匹配度高",
+          "工作经验符合要求", 
+          "地理位置合适"
+        ].slice(0, Math.floor(Math.random() * 3) + 1)
+      }));
+      
+      const matchSummary = {
+        totalMatched: candidates.length,
+        averageScore: Math.floor(candidates.reduce((sum, c) => sum + c.matchScore, 0) / candidates.length),
+        highMatch: candidates.filter(c => c.matchScore >= 90).length,
+        mediumMatch: candidates.filter(c => c.matchScore >= 80 && c.matchScore < 90).length,
+        lowMatch: candidates.filter(c => c.matchScore < 80).length,
+        lastUpdated: new Date().toISOString()
+      };
+      
+      resolve({
+        success: true,
+        data: {
+          jobDetails: jobDetails,
+          candidates: candidates,
+          matchSummary: matchSummary
+        },
+        message: '获取成功'
+      });
+    }, 1000);
+  });
+}
+
+// ==================== 新增：用户相关Mock API ====================
+
+/**
+* Mock - 根据用户id返回关联的职位卡片和岗位详情list
+* 功能描述：获取指定用户创建的所有职位信息，包括职位卡片和详情
+* 入参：{ userId: string, status?: string, limit?: number, offset?: number }
+* 返回参数：{ success: boolean, data: { jobs: array, total: number, summary: object }, message: string }
+* url地址：/users/{userId}/jobs
+* 请求方式：GET
+*/
+export function mockGetUserJobs(userId, params = {}) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 模拟用户的职位数据
+      const userJobs = [
+        {
+          jobCard: {
+            id: "job_001",
+            title: "高级前端工程师",
+            department: "技术部",
+            level: "高级",
+            location: "北京",
+            salary: "25-40K",
+            status: "active",
+            publishedAt: "2024-01-15T10:00:00Z",
+            urgency: "high",
+            tags: ["Vue.js", "React", "TypeScript"],
+            stats: {
+              applicants: 23,
+              views: 156,
+              publishDays: 7
+            },
+            userId: userId
+          },
+          jobDetails: {
+            id: "job_001",
+            basicInfo: {
+              title: "高级前端工程师",
+              department: "技术部",
+              level: "高级",
+              location: "北京",
+              salary: "25-40K",
+              workType: "全职",
+              experience: "5年以上",
+              education: "本科及以上"
+            },
+            description: "负责公司核心产品的前端开发，参与技术架构设计",
+            requirements: [
+              "5年以上前端开发经验",
+              "精通Vue.js、React等框架",
+              "具备良好的团队协作能力"
+            ],
+            skills: ["Vue.js", "JavaScript", "TypeScript", "Node.js"],
+            benefits: ["五险一金", "弹性工作", "股权激励", "技术培训"],
+            createdAt: "2024-01-15T10:00:00Z",
+            updatedAt: "2024-01-15T10:00:00Z",
+            userId: userId,
+            aiGenerated: true,
+            aiConfidence: 0.92
+          }
+        },
+        {
+          jobCard: {
+            id: "job_002", 
+            title: "产品经理",
+            department: "产品部",
+            level: "中级",
+            location: "上海",
+            salary: "20-30K",
+            status: "active",
+            publishedAt: "2024-01-10T14:30:00Z",
+            urgency: "normal",
+            tags: ["产品设计", "用户研究", "数据分析"],
+            stats: {
+              applicants: 15,
+              views: 89,
+              publishDays: 12
+            },
+            userId: userId
+          },
+          jobDetails: {
+            id: "job_002",
+            basicInfo: {
+              title: "产品经理",
+              department: "产品部", 
+              level: "中级",
+              location: "上海",
+              salary: "20-30K",
+              workType: "全职",
+              experience: "3-5年",
+              education: "本科及以上"
+            },
+            description: "负责产品规划和设计，推动产品功能迭代",
+            requirements: [
+              "3-5年产品管理经验",
+              "具备良好的需求分析能力",
+              "熟悉用户体验设计"
+            ],
+            skills: ["产品设计", "用户研究", "数据分析", "项目管理"],
+            benefits: ["五险一金", "年终奖", "培训机会"],
+            createdAt: "2024-01-10T14:30:00Z",
+            updatedAt: "2024-01-10T14:30:00Z",
+            userId: userId,
+            aiGenerated: false,
+            aiConfidence: null
+          }
+        }
+      ];
+      
+      // 根据参数筛选
+      let filteredJobs = userJobs;
+      if (params.status) {
+        filteredJobs = filteredJobs.filter(job => job.jobCard.status === params.status);
+      }
+      
+      // 分页处理
+      const total = filteredJobs.length;
+      const offset = params.offset || 0;
+      const limit = params.limit || 10;
+      filteredJobs = filteredJobs.slice(offset, offset + limit);
+      
+      const summary = {
+        totalJobs: total,
+        activeJobs: userJobs.filter(job => job.jobCard.status === 'active').length,
+        draftJobs: userJobs.filter(job => job.jobCard.status === 'draft').length,
+        totalCandidates: userJobs.reduce((sum, job) => sum + job.jobCard.stats.applicants, 0),
+        avgMatchScore: 85
+      };
+      
+      resolve({
+        success: true,
+        data: {
+          jobs: filteredJobs,
+          total: total,
+          summary: summary
+        },
+        message: '获取用户职位成功'
+      });
+    }, 800);
+  });
+}
+
+/**
+* Mock - 获取用户职位统计信息
+* 功能描述：获取用户的职位创建和管理统计信息
+* 入参：{ userId: string }
+* 返回参数：{ success: boolean, data: object, message: string }
+* url地址：/users/{userId}/job-stats
+* 请求方式：GET
+*/
+export function mockGetUserJobStats(userId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const stats = {
+        totalJobs: 12,
+        activeJobs: 8,
+        draftJobs: 2,
+        inactiveJobs: 2,
+        totalCandidates: 156,
+        totalViews: 2340,
+        avgMatchScore: 87.5,
+        recentActivity: [
+          {
+            type: 'job_create',
+            jobTitle: '高级前端工程师',
+            timestamp: '2024-01-15T10:00:00Z'
+          },
+          {
+            type: 'candidate_match',
+            jobTitle: '产品经理',
+            candidateCount: 5,
+            timestamp: '2024-01-14T16:30:00Z'
+          }
+        ]
+      };
+      
+      resolve({
+        success: true,
+        data: stats,
+        message: '获取用户统计信息成功'
+      });
+    }, 500);
+  });
+}
+
+// ==================== 新增：AI匹配相关Mock API ====================
+
+/**
+* Mock - 根据用户输入的职位描述匹配候选人
+* 功能描述：基于用户输入的职位描述，使用AI技术匹配最适合的候选人
+* 入参：{ description: string, matchType?: string, limit?: number, filters?: object }
+* 返回参数：{ success: boolean, data: { candidates: array, matchAnalysis: object, suggestions: array }, message: string }
+* url地址：/candidates/ai-match-by-description
+* 请求方式：POST
+*/
+export function mockMatchCandidatesByDescription(data) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const { description, matchType = 'smart', limit = 10 } = data;
+      
+      // 根据匹配类型选择候选人池
+      let candidatePool = [];
+      switch (matchType) {
+        case 'skill':
+          candidatePool = mockData.candidates.smart.filter(c => 
+            c.skills.some(skill => description.toLowerCase().includes(skill.toLowerCase()))
+          );
+          break;
+        case 'experience':
+          candidatePool = mockData.candidates.experience;
+          break;
+        case 'education':
+          candidatePool = mockData.candidates.education;
+          break;
+        default:
+          candidatePool = mockData.candidates.smart;
+      }
+      
+      // 模拟AI匹配分析
+      const matchedCandidates = candidatePool.slice(0, limit).map(candidate => ({
+        ...candidate,
+        matchScore: Math.floor(Math.random() * 25) + 75, // 75-100分
+        matchReasons: [
+          "职位描述与候选人技能高度匹配",
+          "工作经验符合岗位要求",
+          "教育背景与职位需求相符"
+        ].slice(0, Math.floor(Math.random() * 3) + 1),
+        confidenceScore: Math.random() * 0.3 + 0.7, // 0.7-1.0
+        riskFactors: Math.random() > 0.7 ? ["薪资期望可能偏高"] : []
+      }));
+      
+      const matchAnalysis = {
+        totalAnalyzed: 245,
+        matchedCount: matchedCandidates.length,
+        averageScore: Math.floor(matchedCandidates.reduce((sum, c) => sum + c.matchScore, 0) / matchedCandidates.length),
+        matchDistribution: {
+          excellent: matchedCandidates.filter(c => c.matchScore >= 90).length,
+          good: matchedCandidates.filter(c => c.matchScore >= 80 && c.matchScore < 90).length,
+          fair: matchedCandidates.filter(c => c.matchScore < 80).length
+        },
+        processingTime: '1.8s'
+      };
+      
+      const suggestions = [
+        "建议重点关注匹配度90分以上的候选人",
+        "可以考虑适当放宽经验要求以获得更多候选人",
+        "建议在职位描述中更明确地描述技能要求"
+      ];
+      
+      resolve({
+        success: true,
+        data: {
+          candidates: matchedCandidates,
+          matchAnalysis: matchAnalysis,
+          suggestions: suggestions
+        },
+        message: 'AI匹配完成'
+      });
+    }, 2000); // 模拟AI匹配处理时间
+  });
+}
+
+/**
+* Mock - 获取用户的匹配历史
+* 功能描述：获取用户的候选人匹配历史记录
+* 入参：{ userId: string, limit?: number, offset?: number }
+* 返回参数：{ success: boolean, data: { matchHistory: array, total: number }, message: string }
+* url地址：/candidates/match-history/{userId}
+* 请求方式：GET
+*/
+export function mockGetUserMatchHistory(userId, params = {}) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const matchHistory = [
+        {
+          id: "match_001",
+          jobDescription: "招聘高级前端工程师，要求熟练掌握Vue.js和React",
+          matchType: "smart",
+          matchedCount: 8,
+          averageScore: 87,
+          createdAt: "2024-01-15T10:00:00Z"
+        },
+        {
+          id: "match_002", 
+          jobDescription: "寻找有经验的产品经理，负责移动端产品",
+          matchType: "experience",
+          matchedCount: 5,
+          averageScore: 82,
+          createdAt: "2024-01-12T14:30:00Z"
+        }
+      ];
+      
+      const total = matchHistory.length;
+      const offset = params.offset || 0;
+      const limit = params.limit || 10;
+      const paginatedHistory = matchHistory.slice(offset, offset + limit);
+      
+      resolve({
+        success: true,
+        data: {
+          matchHistory: paginatedHistory,
+          total: total
+        },
+        message: '获取匹配历史成功'
+      });
+    }, 600);
+  });
+}
+
 // 是否启用Mock模式的配置
 export const MOCK_ENABLED = process.env.VUE_APP_MOCK_ENABLED !== 'false';

@@ -1,6 +1,9 @@
 // API管理器 - 统一管理真实API和Mock API的调用
 import * as JobAPI from './JobAPI.js'
 import * as CandidateAPI from './CandidateAPI.js'
+import * as AIJobAPI from './AIJobAPI.js'
+import * as UserAPI from './UserAPI.js'
+import * as AIMatchAPI from './AIMatchAPI.js'
 import * as MockAPI from './MockAPI.js'
 
 // ==================== API配置 ====================
@@ -260,6 +263,294 @@ class APIManager {
     }
   }
 
+  // ==================== 新增：AI职位创建相关API ====================
+
+  /**
+   * 根据用户输入的职位描述生成职位卡片和岗位详情
+   */
+  async createJobByDescription(data) {
+    if (this.useMock) {
+      return await MockAPI.mockCreateJobByDescription(data)
+    } else {
+      return await AIJobAPI.createJobByDescription(data)
+    }
+  }
+
+  /**
+   * 根据发布新岗位id获取候选人信息以及岗位详情信息
+   */
+  async getJobCandidatesAndDetails(jobId) {
+    if (this.useMock) {
+      return await MockAPI.mockGetJobCandidatesAndDetails(jobId)
+    } else {
+      return await AIJobAPI.getJobCandidatesAndDetails(jobId)
+    }
+  }
+
+  /**
+   * 批量获取职位的候选人和详情信息
+   */
+  async getBatchJobCandidatesAndDetails(jobIds) {
+    if (this.useMock) {
+      // Mock环境暂不实现批量获取功能
+      return { success: true, data: [], message: 'Mock batch get not implemented' }
+    } else {
+      return await AIJobAPI.getBatchJobCandidatesAndDetails(jobIds)
+    }
+  }
+
+  /**
+   * 更新AI生成的职位信息
+   */
+  async updateAIGeneratedJob(jobId, updateData) {
+    if (this.useMock) {
+      // Mock环境暂不实现更新功能
+      return { success: true, message: 'Mock AI update success' }
+    } else {
+      return await AIJobAPI.updateAIGeneratedJob(jobId, updateData)
+    }
+  }
+
+  /**
+   * 重新生成职位信息
+   */
+  async regenerateJobByAI(jobId, options = {}) {
+    if (this.useMock) {
+      // Mock环境暂不实现重新生成功能
+      return { success: true, message: 'Mock AI regenerate success' }
+    } else {
+      return await AIJobAPI.regenerateJobByAI(jobId, options)
+    }
+  }
+
+  /**
+   * 获取AI职位生成历史
+   */
+  async getAIJobGenerationHistory(params) {
+    if (this.useMock) {
+      // Mock环境暂不实现历史功能
+      return { success: true, data: { history: [], total: 0 }, message: 'Mock history not implemented' }
+    } else {
+      return await AIJobAPI.getAIJobGenerationHistory(params)
+    }
+  }
+
+  // ==================== 新增：用户相关API ====================
+
+  /**
+   * 根据用户id返回关联的职位卡片和岗位详情list
+   */
+  async getUserJobs(userId, params = {}) {
+    if (this.useMock) {
+      return await MockAPI.mockGetUserJobs(userId, params)
+    } else {
+      return await UserAPI.getUserJobs(userId, params)
+    }
+  }
+
+  /**
+   * 获取用户职位统计信息
+   */
+  async getUserJobStats(userId) {
+    if (this.useMock) {
+      return await MockAPI.mockGetUserJobStats(userId)
+    } else {
+      return await UserAPI.getUserJobStats(userId)
+    }
+  }
+
+  /**
+   * 更新用户职位状态
+   */
+  async updateUserJobsStatus(userId, jobIds, status) {
+    if (this.useMock) {
+      // Mock环境暂不实现更新功能
+      return { success: true, message: 'Mock status update success' }
+    } else {
+      return await UserAPI.updateUserJobsStatus(userId, jobIds, status)
+    }
+  }
+
+  /**
+   * 删除用户职位
+   */
+  async deleteUserJobs(userId, jobIds) {
+    if (this.useMock) {
+      // Mock环境暂不实现删除功能
+      return { success: true, message: 'Mock delete success' }
+    } else {
+      return await UserAPI.deleteUserJobs(userId, jobIds)
+    }
+  }
+
+  /**
+   * 获取用户最近活动
+   */
+  async getUserRecentActivities(userId, params = {}) {
+    if (this.useMock) {
+      // Mock环境暂不实现活动功能
+      return { success: true, data: { activities: [], hasMore: false }, message: 'Mock activities not implemented' }
+    } else {
+      return await UserAPI.getUserRecentActivities(userId, params)
+    }
+  }
+
+  /**
+   * 获取用户偏好设置
+   */
+  async getUserPreferences(userId) {
+    if (this.useMock) {
+      // Mock环境暂不实现偏好功能
+      return { success: true, data: {}, message: 'Mock preferences not implemented' }
+    } else {
+      return await UserAPI.getUserPreferences(userId)
+    }
+  }
+
+  /**
+   * 更新用户偏好设置
+   */
+  async updateUserPreferences(userId, preferences) {
+    if (this.useMock) {
+      // Mock环境暂不实现偏好功能
+      return { success: true, message: 'Mock preferences update success' }
+    } else {
+      return await UserAPI.updateUserPreferences(userId, preferences)
+    }
+  }
+
+  // ==================== 新增：AI匹配相关API ====================
+
+  /**
+   * 根据用户输入的职位描述匹配候选人
+   */
+  async matchCandidatesByDescription(data) {
+    if (this.useMock) {
+      return await MockAPI.mockMatchCandidatesByDescription(data)
+    } else {
+      return await AIMatchAPI.matchCandidatesByDescription(data)
+    }
+  }
+
+  /**
+   * 智能匹配候选人（快捷方法）
+   */
+  async smartMatchCandidates(description, options = {}) {
+    if (this.useMock) {
+      return await MockAPI.mockMatchCandidatesByDescription({
+        description,
+        matchType: 'smart',
+        ...options
+      })
+    } else {
+      return await AIMatchAPI.smartMatchCandidates(description, options)
+    }
+  }
+
+  /**
+   * 技能匹配候选人
+   */
+  async skillMatchCandidates(description, options = {}) {
+    if (this.useMock) {
+      return await MockAPI.mockMatchCandidatesByDescription({
+        description,
+        matchType: 'skill',
+        ...options
+      })
+    } else {
+      return await AIMatchAPI.skillMatchCandidates(description, options)
+    }
+  }
+
+  /**
+   * 经验匹配候选人
+   */
+  async experienceMatchCandidates(description, options = {}) {
+    if (this.useMock) {
+      return await MockAPI.mockMatchCandidatesByDescription({
+        description,
+        matchType: 'experience',
+        ...options
+      })
+    } else {
+      return await AIMatchAPI.experienceMatchCandidates(description, options)
+    }
+  }
+
+  /**
+   * 学历匹配候选人
+   */
+  async educationMatchCandidates(description, options = {}) {
+    if (this.useMock) {
+      return await MockAPI.mockMatchCandidatesByDescription({
+        description,
+        matchType: 'education',
+        ...options
+      })
+    } else {
+      return await AIMatchAPI.educationMatchCandidates(description, options)
+    }
+  }
+
+  /**
+   * 获取匹配结果详细分析
+   */
+  async getMatchAnalysis(matchId, analysisLevel = 'detailed') {
+    if (this.useMock) {
+      // Mock环境暂不实现分析功能
+      return { success: true, data: {}, message: 'Mock analysis not implemented' }
+    } else {
+      return await AIMatchAPI.getMatchAnalysis(matchId, analysisLevel)
+    }
+  }
+
+  /**
+   * 保存匹配结果
+   */
+  async saveMatchResults(data) {
+    if (this.useMock) {
+      // Mock环境暂不实现保存功能
+      return { success: true, data: { savedMatchId: 'mock_match_' + Date.now() }, message: 'Mock save success' }
+    } else {
+      return await AIMatchAPI.saveMatchResults(data)
+    }
+  }
+
+  /**
+   * 获取用户的匹配历史
+   */
+  async getUserMatchHistory(userId, params = {}) {
+    if (this.useMock) {
+      return await MockAPI.mockGetUserMatchHistory(userId, params)
+    } else {
+      return await AIMatchAPI.getUserMatchHistory(userId, params)
+    }
+  }
+
+  /**
+   * 重新匹配候选人
+   */
+  async rematchCandidates(savedMatchId, newFilters = {}) {
+    if (this.useMock) {
+      // Mock环境暂不实现重新匹配功能
+      return { success: true, data: {}, message: 'Mock rematch not implemented' }
+    } else {
+      return await AIMatchAPI.rematchCandidates(savedMatchId, newFilters)
+    }
+  }
+
+  /**
+   * 比较候选人匹配度
+   */
+  async compareCandidateMatch(jobDescription, candidateIds) {
+    if (this.useMock) {
+      // Mock环境暂不实现比较功能
+      return { success: true, data: { comparison: [], ranking: [] }, message: 'Mock compare not implemented' }
+    } else {
+      return await AIMatchAPI.compareCandidateMatch(jobDescription, candidateIds)
+    }
+  }
+
   // ==================== 工具方法 ====================
 
   /**
@@ -284,4 +575,4 @@ const apiManager = new APIManager()
 export default apiManager
 
 // 同时导出各个API模块，供需要直接调用的场景使用
-export { JobAPI, CandidateAPI, MockAPI }
+export { JobAPI, CandidateAPI, AIJobAPI, UserAPI, AIMatchAPI, MockAPI }
