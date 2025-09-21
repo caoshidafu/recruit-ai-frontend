@@ -78,7 +78,7 @@
         <!-- 步骤2: AI解析 -->
         <div v-if="currentStep === 2" class="step-content">
           <div class="ai-analysis-container">
-            <div v-if="isAnalyzing" class="analysis-loading">
+            <div class="analysis-loading">
               <div class="loading-icon">
                 <svg width="40" height="40" viewBox="0 0 40 40">
                   <circle cx="20" cy="20" r="18" stroke="#e6e6e6" stroke-width="4" fill="none"/>
@@ -86,66 +86,21 @@
                           stroke-dasharray="113" stroke-dashoffset="0" class="rotating-circle"/>
                 </svg>
               </div>
-              <h3>AI正在分析职位描述...</h3>
-              <p>正在解析技能要求、经验需求和岗位职责</p>
+              <h3>AI正在处理职位信息...</h3>
+              <p>正在解析并创建职位，请稍候</p>
               <div class="progress-steps">
                 <div class="progress-step" :class="{ completed: analysisProgress >= 1 }">
-                  <span>解析技能要求</span>
+                  <span>解析职位要求</span>
                 </div>
                 <div class="progress-step" :class="{ completed: analysisProgress >= 2 }">
-                  <span>分析经验需求</span>
+                  <span>创建职位信息</span>
                 </div>
                 <div class="progress-step" :class="{ completed: analysisProgress >= 3 }">
-                  <span>生成岗位标签</span>
+                  <span>准备智能匹配</span>
                 </div>
               </div>
             </div>
 
-            <div v-if="!isAnalyzing && aiAnalysis" class="analysis-result">
-              <h3>AI解析结果</h3>
-              
-              <div class="analysis-cards">
-                <div class="analysis-card">
-                  <h4>核心技能要求</h4>
-                  <div class="skills-tags">
-                    <span v-for="skill in aiAnalysis.skills" :key="skill" class="skill-tag">
-                      {{ skill }}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="analysis-card">
-                  <h4>经验要求</h4>
-                  <ul class="experience-list">
-                    <li v-for="exp in aiAnalysis.experience" :key="exp">{{ exp }}</li>
-                  </ul>
-                </div>
-
-                <div class="analysis-card">
-                  <h4>工作职责</h4>
-                  <ul class="responsibilities-list">
-                    <li v-for="resp in aiAnalysis.responsibilities" :key="resp">{{ resp }}</li>
-                  </ul>
-                </div>
-
-                <div class="analysis-card">
-                  <h4>匹配标签</h4>
-                  <div class="tags-grid">
-                    <span v-for="tag in aiAnalysis.tags" :key="tag" class="match-tag">
-                      {{ tag }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="confidence-score">
-                <h4>解析置信度</h4>
-                <div class="confidence-bar">
-                  <div class="confidence-fill" :style="{ width: aiAnalysis.confidence * 100 + '%' }"></div>
-                </div>
-                <span class="confidence-text">{{ Math.round(aiAnalysis.confidence * 100) }}%</span>
-              </div>
-            </div>
           </div>
 
         </div>
@@ -264,7 +219,6 @@ export default {
 
 
     const performAiAnalysis = async () => {
-      isAnalyzing.value = true
       analysisProgress.value = 0
 
       try {
@@ -317,8 +271,6 @@ export default {
       } catch (error) {
         console.error('AI分析错误:', error)
         alert('AI分析出现错误，请重试')
-      } finally {
-        isAnalyzing.value = false
       }
     }
 
