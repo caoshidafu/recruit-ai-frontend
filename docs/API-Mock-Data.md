@@ -50,9 +50,7 @@
       "headcount": 1,
       "candidateCount": 0,
       "newCandidates": 0,
-      "interviewingCount": 0,
-      "aiGenerated": true,
-      "createdAt": "2024-01-15T10:00:00Z"
+      "interviewingCount": 0
     },
     "jobDetails": {
       "basicInfo": {
@@ -89,11 +87,7 @@
         "团队建设活动",
         "带薪年假"
       ],
-      "createdAt": "2024-01-15T10:00:00Z",
-      "updatedAt": "2024-01-15T10:00:00Z",
-      "userId": "user_001",
-      "aiGenerated": true,
-      "aiConfidence": 0.92
+      "userId": "user_001"
     }
   },
   "message": "职位解析成功"
@@ -507,11 +501,7 @@
         "团队建设活动",
         "带薪年假"
       ],
-      "createdAt": "2024-01-15T10:00:00Z",
-      "updatedAt": "2024-01-15T10:00:00Z",
       "userId": "user_001",
-      "aiGenerated": true,
-      "aiConfidence": 0.92,
       "status": "active",
       "candidateCount": 25,
       "interviewCount": 5,
@@ -594,7 +584,6 @@
   "userId": "user_001",
   "filters": {
     "status": "all",
-    "aiGenerated": true,
     "dateRange": {
       "startDate": "2024-01-01",
       "endDate": "2024-12-31"
@@ -604,8 +593,8 @@
     "page": 1,
     "limit": 10
   },
-  "sortBy": "createdAt",
-  "sortOrder": "desc"
+  "sortBy": "title",
+  "sortOrder": "asc"
 }
 ```
 
@@ -632,8 +621,6 @@
           "candidateCount": 45,
           "newCandidates": 8,
           "interviewingCount": 5,
-          "aiGenerated": true,
-          "createdAt": "2024-01-15T10:00:00Z",
           "status": "active"
         },
         "jobDetails": {
@@ -665,11 +652,7 @@
             "股权激励",
             "技术培训"
           ],
-          "createdAt": "2024-01-15T10:00:00Z",
-          "updatedAt": "2024-01-15T10:00:00Z",
-          "userId": "user_001",
-          "aiGenerated": true,
-          "aiConfidence": 0.92
+          "userId": "user_001"
         }
       },
       {
@@ -685,8 +668,6 @@
           "candidateCount": 32,
           "newCandidates": 5,
           "interviewingCount": 3,
-          "aiGenerated": true,
-          "createdAt": "2024-01-10T14:30:00Z",
           "status": "active"
         },
         "jobDetails": {
@@ -719,11 +700,7 @@
             "技术培训",
             "弹性工作"
           ],
-          "createdAt": "2024-01-10T14:30:00Z",
-          "updatedAt": "2024-01-10T14:30:00Z",
-          "userId": "user_001",
-          "aiGenerated": true,
-          "aiConfidence": 0.88
+          "userId": "user_001"
         }
       }
     ],
@@ -732,8 +709,6 @@
       "activeJobs": 12,
       "pausedJobs": 2,
       "closedJobs": 1,
-      "aiGeneratedJobs": 10,
-      "manualJobs": 5,
       "totalCandidates": 287,
       "totalInterviewing": 25,
       "totalOffers": 8
@@ -786,13 +761,13 @@
   - 稳定性 (0-100)
   - 发展潜力 (0-100)
 
-### AI生成置信度说明
+### 职位状态说明
 
-- **aiConfidence**: AI生成内容的置信度 (0-1)
-  - 0.9-1.0: 高置信度
-  - 0.7-0.9: 中等置信度
-  - 0.5-0.7: 低置信度
-  - <0.5: 需要人工审核
+- **status**: 职位状态
+  - active: 活跃招聘中
+  - paused: 暂停招聘
+  - closed: 已关闭
+  - draft: 草稿状态
 
 ---
 
