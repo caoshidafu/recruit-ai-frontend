@@ -290,9 +290,9 @@ export default {
     const loadJobs = async () => {
       try {
         loading.value = true
-        const response = await apiManager.getJobList({ user_id: 1 })
+        const response = await apiManager.getJobCardsList(1)
         if (response.success) {
-          jobs.value = response.data
+          jobs.value = response.data.jobCards
           if (jobs.value.length > 0 && !selectedJob.value) {
             selectedJob.value = jobs.value[0]
           }
@@ -309,21 +309,17 @@ export default {
       try {
         loading.value = true
         
-        // 并行加载三种类型的候选人数据，传入职位ID
-        const [smartResponse, experienceResponse, educationResponse] = await Promise.all([
-          apiManager.getSmartCandidates({ jobId, user_id: 1 }),
-          apiManager.getExperienceCandidates({ jobId, user_id: 1 }),
-          apiManager.getEducationCandidates({ jobId, user_id: 1 })
-        ])
+        // 使用新的统一API接口获取候选人数据
+        const response = await apiManager.getCandidatesByJobId(jobId, 1, '智能匹配')
 
-        if (smartResponse.success) {
-          candidates.value.smart = smartResponse.data
-        }
-        if (experienceResponse.success) {
-          candidates.value.experience = experienceResponse.data
-        }
-        if (educationResponse.success) {
-          candidates.value.education = educationResponse.data
+        if (response.success) {
+          // 将候选人数据分配到不同的类型中
+          const candidatesData = response.data.candidates
+          
+          // 根据匹配分数和经验分配到不同类别
+          candidates.value.smart = candidatesData.filter(c => c.matchScore >= 80)
+          candidates.value.experience = candidatesData.filter(c => c.experience >= 5)
+          candidates.value.education = candidatesData.filter(c => c.education === '本科' || c.education === '硕士' || c.education === '博士')
         }
       } catch (error) {
         console.error('加载候选人数据失败:', error)

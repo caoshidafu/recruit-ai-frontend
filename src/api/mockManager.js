@@ -69,6 +69,148 @@ class APIManager {
     }
   }
 
+  // ==================== 向后兼容方法 ====================
+  
+  /**
+   * 向后兼容：旧的获取职位列表方法
+   * @deprecated 请使用 getJobCardsList 方法
+   */
+  async getJobList(params) {
+    return await this.getJobCardsList(params.user_id)
+  }
+
+  /**
+   * 向后兼容：智能候选人
+   * @deprecated 请使用 getCandidatesByJobId 方法
+   */
+  async getSmartCandidates(params) {
+    return await this.getCandidatesByJobId(params.jobId, params.user_id, '智能匹配')
+  }
+
+  /**
+   * 向后兼容：经验候选人
+   * @deprecated 请使用 getCandidatesByJobId 方法
+   */
+  async getExperienceCandidates(params) {
+    return await this.getCandidatesByJobId(params.jobId, params.user_id, '经验匹配')
+  }
+
+  /**
+   * 向后兼容：学历候选人
+   * @deprecated 请使用 getCandidatesByJobId 方法
+   */
+  async getEducationCandidates(params) {
+    return await this.getCandidatesByJobId(params.jobId, params.user_id, '学历匹配')
+  }
+
+  /**
+   * 向后兼容：解析职位描述
+   * 实际上应该使用 generateJobProfile 方法
+   */
+  async parseJobDescription(description, params) { // eslint-disable-line no-unused-vars
+    // 模拟职位描述解析，返回解析结果
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          success: true,
+          data: {
+            extractedInfo: {
+              title: "高级前端工程师",
+              department: "技术部",
+              level: "高级",
+              location: "北京",
+              salary: "25-35K"
+            },
+            analysisResult: {
+              keySkills: ["Vue.js", "React", "TypeScript"],
+              requirements: ["3年以上前端开发经验", "熟练掌握主流框架"],
+              responsibilities: ["负责前端项目架构设计", "参与产品需求分析"],
+              benefits: ["六险一金", "弹性工作", "技术培训"]
+            }
+          },
+          message: "职位描述解析成功"
+        });
+      }, 1000);
+    });
+  }
+
+  /**
+   * 向后兼容：AI匹配候选人
+   * 实际上应该使用 getCandidatesByJobId 方法
+   */
+  async aiMatchCandidates(jobId, type) { // eslint-disable-line no-unused-vars
+    return await this.getCandidatesByJobId(jobId, 1, '智能匹配')
+  }
+
+  /**
+   * 向后兼容：创建职位
+   * 模拟创建职位功能
+   */
+  async createJob(jobData) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const newJob = {
+          id: Date.now(),
+          ...jobData,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        resolve({
+          success: true,
+          data: newJob,
+          message: "职位创建成功"
+        });
+      }, 800);
+    });
+  }
+
+  /**
+   * 向后兼容：获取候选人AI分析
+   * 模拟AI分析功能
+   */
+  async getCandidateAIAnalysis(candidateId, params) { // eslint-disable-line no-unused-vars
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          success: true,
+          data: {
+            overallScore: 85,
+            recommendation: '该候选人整体素质优秀，建议优先考虑',
+            strengths: [
+              "技术能力突出，掌握多种前端框架",
+              "有丰富的项目实战经验",
+              "学习能力强，能快速适应新技术"
+            ],
+            improvements: [
+              "可以加强后端技术栈的了解",
+              "团队管理经验有待提升"
+            ],
+            jobMatching: {
+              skillMatch: 90,
+              experienceMatch: 85,
+              educationMatch: 80,
+              cultureMatch: 85
+            },
+            recommendedActions: [
+              {
+                action: "安排技术面试",
+                priority: "high",
+                description: "重点考察Vue.js和React技能"
+              },
+              {
+                action: "了解项目经验",
+                priority: "medium", 
+                description: "详细了解之前项目的技术架构"
+              }
+            ]
+          },
+          message: "AI分析完成"
+        });
+      }, 1500);
+    });
+  }
+
   // ==================== 工具方法 ====================
 
   /**
