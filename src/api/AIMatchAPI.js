@@ -12,115 +12,10 @@ export function getJobCandidatesWithMatching(jobId, userId) {
   return post('/jobs/candidates', { job_id: jobId, userId })
 }
 
-/**
-* 根据用户输入的职位描述匹配候选人（兼容旧接口）
-* 功能描述：基于用户输入的职位描述，使用AI技术匹配最适合的候选人
-* 入参：{ 
-*   description: string,   // 职位描述文本
-*   matchType?: string,    // 匹配类型：'smart'(默认智能匹配) | 'skill' | 'experience' | 'education'
-*   limit?: number,        // 限制返回候选人数量，默认10
-*   filters?: object       // 额外的筛选条件
-* }
-* 返回参数：{ 
-*   success: boolean, 
-*   data: {
-*     candidates: array,     // 匹配的候选人列表
-*     matchAnalysis: object, // 匹配分析结果
-*     suggestions: array     // 优化建议
-*   }, 
-*   message: string 
-* }
-* url地址：/candidates/ai-match-by-description
-* 请求方式：POST
-* @deprecated 推荐使用 getJobCandidatesWithMatching 统一接口
-*/
-export function matchCandidatesByDescription(data) {
-  const { matchType = 'smart', ...otherData } = data
-  return post('/candidates/ai-match-by-description', { 
-    matchType, 
-    ...otherData 
-  })
-}
 
-/**
-* 智能匹配候选人（快捷方法）
-* 功能描述：使用智能算法匹配候选人的快捷方法
-* 入参：{ 
-*   description: string,   // 职位描述
-*   limit?: number,        // 限制数量
-*   filters?: object       // 筛选条件
-* }
-* 返回参数：同 matchCandidatesByDescription
-* url地址：/candidates/ai-match-by-description
-* 请求方式：POST
-*/
-export function smartMatchCandidates(description, options = {}) {
-  return matchCandidatesByDescription({
-    description,
-    matchType: 'smart',
-    ...options
-  })
-}
 
-/**
-* 技能匹配候选人
-* 功能描述：基于技能要求匹配候选人
-* 入参：{ 
-*   description: string,   // 职位描述
-*   requiredSkills?: array,// 必需技能
-*   limit?: number         // 限制数量
-* }
-* 返回参数：同 matchCandidatesByDescription
-* url地址：/candidates/ai-match-by-description
-* 请求方式：POST
-*/
-export function skillMatchCandidates(description, options = {}) {
-  return matchCandidatesByDescription({
-    description,
-    matchType: 'skill',
-    ...options
-  })
-}
 
-/**
-* 经验匹配候选人
-* 功能描述：基于工作经验匹配候选人
-* 入参：{ 
-*   description: string,   // 职位描述
-*   experienceRange?: object, // 经验年限范围
-*   limit?: number         // 限制数量
-* }
-* 返回参数：同 matchCandidatesByDescription
-* url地址：/candidates/ai-match-by-description
-* 请求方式：POST
-*/
-export function experienceMatchCandidates(description, options = {}) {
-  return matchCandidatesByDescription({
-    description,
-    matchType: 'experience',
-    ...options
-  })
-}
 
-/**
-* 学历匹配候选人
-* 功能描述：基于学历背景匹配候选人
-* 入参：{ 
-*   description: string,   // 职位描述
-*   educationRequirement?: string, // 学历要求
-*   limit?: number         // 限制数量
-* }
-* 返回参数：同 matchCandidatesByDescription
-* url地址：/candidates/ai-match-by-description
-* 请求方式：POST
-*/
-export function educationMatchCandidates(description, options = {}) {
-  return matchCandidatesByDescription({
-    description,
-    matchType: 'education',
-    ...options
-  })
-}
 
 /**
 * 获取匹配结果详细分析
@@ -199,7 +94,7 @@ export function getUserMatchHistory(userId, params = {}) {
 *   savedMatchId: string,  // 保存的匹配ID
 *   newFilters?: object    // 新的筛选条件
 * }
-* 返回参数：同 matchCandidatesByDescription
+* 返回参数：{ success: boolean, data: object, message: string }
 * url地址：/candidates/rematch/{savedMatchId}
 * 请求方式：POST
 */

@@ -17,21 +17,6 @@ export function createJobByDescription(description, userId) {
   return post('/jobs/ai-create', { description, userId })
 }
 
-/**
- * 获取职位候选人和详情（已废弃，请使用统一接口）
- * @description 根据职位ID获取关联的候选人列表和职位详情信息
- * @param {string} jobId - 职位ID
- * @param {Object} params - 查询参数
- * @param {number} params.page - 页码
- * @param {number} params.limit - 每页数量
- * @param {string} params.matchType - 匹配类型
- * @returns {Promise} 返回职位详情和候选人列表
- * @url GET /api/jobs/candidates-and-details?job_id={jobId}
- * @deprecated 请使用 AIMatchAPI.getJobCandidatesWithMatching 统一接口
- */
-export function getJobCandidatesAndDetails(jobId, params = {}) {
-  return get('/jobs/candidates-and-details', { job_id: jobId, ...params })
-}
 
 /**
  * 批量获取职位信息

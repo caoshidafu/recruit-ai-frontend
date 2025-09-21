@@ -276,16 +276,6 @@ class APIManager {
     }
   }
 
-  /**
-   * 根据发布新岗位id获取候选人信息以及岗位详情信息
-   */
-  async getJobCandidatesAndDetails(jobId) {
-    if (this.useMock) {
-      return await MockAPI.mockGetJobCandidatesAndDetails(jobId)
-    } else {
-      return await AIJobAPI.getJobCandidatesAndDetails(jobId)
-    }
-  }
 
   /**
    * 批量获取职位的候选人和详情信息
@@ -433,76 +423,10 @@ class APIManager {
     }
   }
 
-  /**
-   * 根据用户输入的职位描述匹配候选人（兼容旧接口）
-   */
-  async matchCandidatesByDescription(data) {
-    if (this.useMock) {
-      return await MockAPI.mockMatchCandidatesByDescription(data)
-    } else {
-      return await AIMatchAPI.matchCandidatesByDescription(data)
-    }
-  }
 
-  /**
-   * 智能匹配候选人（快捷方法）
-   */
-  async smartMatchCandidates(description, options = {}) {
-    if (this.useMock) {
-      return await MockAPI.mockMatchCandidatesByDescription({
-        description,
-        matchType: 'smart',
-        ...options
-      })
-    } else {
-      return await AIMatchAPI.smartMatchCandidates(description, options)
-    }
-  }
 
-  /**
-   * 技能匹配候选人
-   */
-  async skillMatchCandidates(description, options = {}) {
-    if (this.useMock) {
-      return await MockAPI.mockMatchCandidatesByDescription({
-        description,
-        matchType: 'skill',
-        ...options
-      })
-    } else {
-      return await AIMatchAPI.skillMatchCandidates(description, options)
-    }
-  }
 
-  /**
-   * 经验匹配候选人
-   */
-  async experienceMatchCandidates(description, options = {}) {
-    if (this.useMock) {
-      return await MockAPI.mockMatchCandidatesByDescription({
-        description,
-        matchType: 'experience',
-        ...options
-      })
-    } else {
-      return await AIMatchAPI.experienceMatchCandidates(description, options)
-    }
-  }
 
-  /**
-   * 学历匹配候选人
-   */
-  async educationMatchCandidates(description, options = {}) {
-    if (this.useMock) {
-      return await MockAPI.mockMatchCandidatesByDescription({
-        description,
-        matchType: 'education',
-        ...options
-      })
-    } else {
-      return await AIMatchAPI.educationMatchCandidates(description, options)
-    }
-  }
 
   /**
    * 获取匹配结果详细分析

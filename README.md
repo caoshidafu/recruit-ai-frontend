@@ -324,14 +324,14 @@ const candidates = await apiManager.getSmartCandidates()
     - `limit`: 限制返回候选人数量
     - `filters`: 额外的筛选条件
 
-**兼容旧接口（保留向后兼容）:**
+**候选人推荐接口:**
 - `getRecommendedCandidates(params)`: 获取推荐候选人列表（统一接口）
   - 支持通过 `type` 参数区分推荐类型：
     - `'smart'`: 智能推荐（默认）
     - `'experience'`: 经验推荐  
     - `'education'`: 学历推荐
 
-**兼容性接口（保留向后兼容）:**
+**候选人推荐快捷方法:**
 - `getSmartCandidates(params)`: 获取智能推荐候选人，内部调用统一接口
 - `getExperienceCandidates(params)`: 获取经验匹配候选人，内部调用统一接口
 - `getEducationCandidates(params)`: 获取学历匹配候选人，内部调用统一接口
@@ -416,7 +416,7 @@ const experienceResult = await apiManager.getJobCandidatesWithMatching({
 })
 ```
 
-**兼容旧接口:**
+**候选人推荐接口:**
 ```javascript
 // 智能推荐（默认）
 const smartCandidates = await apiManager.getRecommendedCandidates({ jobId: 1 })
