@@ -2060,7 +2060,7 @@ export function mockGetUserJobs(userId, params = {}) {
 * url地址：/users/{userId}/job-stats
 * 请求方式：GET
 */
-export function mockGetUserJobStats(userId) {
+export function mockGetUserJobStats() {
   return new Promise((resolve) => {
     setTimeout(() => {
       const stats = {

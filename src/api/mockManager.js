@@ -331,7 +331,7 @@ class APIManager {
       // Mock环境暂不实现历史功能
       return { success: true, data: { history: [], total: 0 }, message: 'Mock history not implemented' }
     } else {
-      return await AIJobAPI.getAIJobGenerationHistory(params)
+      return await AIJobAPI.getAIJobHistory(params)
     }
   }
 

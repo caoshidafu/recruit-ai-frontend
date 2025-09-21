@@ -1,4 +1,4 @@
-import { get, post, put, del } from './index.js'
+import { get, put, del } from './index.js'
 
 /**
 * 根据用户id返回关联的职位卡片和岗位详情list

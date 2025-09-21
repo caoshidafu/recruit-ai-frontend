@@ -1,4 +1,4 @@
-import { get, post, put, del } from './index.js'
+import { get, post } from './index.js'
 
 /**
 * 根据用户输入的职位描述匹配候选人（默认智能匹配，携带type）
