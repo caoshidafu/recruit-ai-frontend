@@ -104,12 +104,21 @@
 
 ## 接口2：根据职位描述匹配候选人
 
+### Type 枚举说明
+
+后端定义的匹配类型枚举值：
+- **1** - 智能推荐（AI综合匹配，默认类型）
+- **2** - 技能匹配（基于技能要求匹配）
+- **3** - 经验匹配（基于工作经验匹配）
+
 ### 请求参数
+
+#### 智能推荐示例 (type: 1)
 
 ```json
 {
   "description": "招聘一名高级前端工程师，负责Vue.js项目开发，需要3年以上经验",
-  "type": "smart",
+  "type": 1,
   "limit": 10,
   "filters": {
     "experience": "3年以上",
@@ -119,13 +128,46 @@
 }
 ```
 
+#### 技能匹配示例 (type: 2)
+
+```json
+{
+  "description": "熟练掌握Vue.js、TypeScript、Node.js等技术栈",
+  "type": 2,
+  "limit": 8,
+  "filters": {
+    "requiredSkills": ["Vue.js", "TypeScript", "Node.js"],
+    "skillLevel": "熟练",
+    "location": "北京"
+  }
+}
+```
+
+#### 经验匹配示例 (type: 3)
+
+```json
+{
+  "description": "需要5-8年前端开发经验，有大型项目架构经验",
+  "type": 3,
+  "limit": 12,
+  "filters": {
+    "minExperience": 5,
+    "maxExperience": 8,
+    "experienceType": "前端开发",
+    "projectScale": "大型项目"
+  }
+}
+```
+
 ### 响应数据
+
+#### 智能推荐响应 (type: 1)
 
 ```json
 {
   "success": true,
   "data": {
-    "matchType": "smart",
+    "matchType": 1,
     "totalCount": 25,
     "matchedCount": 10,
     "candidates": [
@@ -249,11 +291,174 @@
       "experienceWeight": 0.3,
       "educationWeight": 0.2,
       "locationWeight": 0.1
+    },
+    "aiAnalysis": {
+      "confidence": 0.92,
+      "processingTime": "1.2s",
+      "algorithmVersion": "v2.1",
+      "matchingStrategy": "综合智能匹配"
     }
   },
-  "message": "候选人匹配成功"
+  "message": "智能推荐匹配成功"
 }
 ```
+
+#### 技能匹配响应 (type: 2)
+
+```json
+{
+  "success": true,
+  "data": {
+    "matchType": 2,
+    "totalCount": 18,
+    "matchedCount": 8,
+    "candidates": [
+      {
+        "id": 3,
+        "name": "王五",
+        "avatar": "https://i.pravatar.cc/150?img=3",
+        "title": "Vue.js专家",
+        "experience": 6,
+        "skills": [
+          "Vue.js",
+          "TypeScript",
+          "Node.js",
+          "Vite",
+          "Pinia",
+          "Vue Router"
+        ],
+        "matchScore": 96,
+        "skillMatchDetails": {
+          "Vue.js": {
+            "required": true,
+            "level": "专家级",
+            "score": 98,
+            "evidence": ["6年Vue.js开发经验", "Vue.js源码贡献者"]
+          },
+          "TypeScript": {
+            "required": true,
+            "level": "熟练",
+            "score": 95,
+            "evidence": ["大型TS项目经验", "类型系统设计"]
+          },
+          "Node.js": {
+            "required": false,
+            "level": "熟练",
+            "score": 90,
+            "evidence": ["全栈开发经验", "API设计"]
+          }
+        },
+        "recommendReasons": [
+          "Vue.js技能匹配度100%",
+          "TypeScript深度应用经验",
+          "技术栈完全符合要求"
+        ]
+      }
+    ],
+    "skillAnalysis": {
+      "requiredSkillsMatch": 100,
+      "preferredSkillsMatch": 85,
+      "bonusSkillsMatch": 70,
+      "overallSkillScore": 92
+    },
+    "matchCriteria": {
+      "skillsWeight": 0.8,
+      "experienceWeight": 0.15,
+      "educationWeight": 0.05
+    }
+  },
+  "message": "技能匹配成功"
+}
+```
+
+#### 经验匹配响应 (type: 3)
+
+```json
+{
+  "success": true,
+  "data": {
+    "matchType": 3,
+    "totalCount": 32,
+    "matchedCount": 12,
+    "candidates": [
+      {
+        "id": 4,
+        "name": "赵六",
+        "avatar": "https://i.pravatar.cc/150?img=4",
+        "title": "资深前端架构师",
+        "experience": 7,
+        "experienceDetails": {
+          "totalYears": 7,
+          "frontendYears": 7,
+          "seniorYears": 4,
+          "architectureYears": 2
+        },
+        "projectExperience": [
+          {
+            "projectName": "大型电商平台",
+            "role": "前端架构师",
+            "teamSize": 15,
+            "duration": "2年",
+            "technologies": ["Vue.js", "微前端", "Node.js"],
+            "achievements": ["架构设计", "性能优化", "团队管理"]
+          },
+          {
+            "projectName": "企业级管理系统",
+            "role": "技术负责人",
+            "teamSize": 8,
+            "duration": "1.5年",
+            "technologies": ["React", "TypeScript", "GraphQL"],
+            "achievements": ["技术选型", "代码规范", "CI/CD"]
+          }
+        ],
+        "matchScore": 93,
+        "experienceMatchDetails": {
+          "yearRequirement": "5-8年",
+          "actualYears": 7,
+          "matchLevel": "完全匹配",
+          "experienceQuality": "优秀",
+          "projectComplexity": "大型项目",
+          "leadershipExperience": true
+        },
+        "recommendReasons": [
+          "7年经验完全符合要求",
+          "有大型项目架构经验",
+          "技术深度和广度俱佳"
+        ]
+      }
+    ],
+    "experienceAnalysis": {
+      "averageExperience": 6.8,
+      "experienceDistribution": {
+        "5-6年": 4,
+        "6-7年": 5,
+        "7-8年": 3
+      },
+      "seniorLevelRatio": 0.75,
+      "architectureExperienceRatio": 0.42
+    },
+    "matchCriteria": {
+      "experienceWeight": 0.6,
+      "projectComplexityWeight": 0.25,
+      "skillsWeight": 0.15
+    }
+  },
+  "message": "经验匹配成功"
+}
+```
+
+#### Type 枚举使用说明
+
+| Type值 | 匹配类型 | 说明 | 权重分配 |
+|--------|----------|------|----------|
+| 1 | 智能推荐 | AI综合匹配，综合考虑技能、经验、学历等因素 | 技能40% + 经验30% + 学历20% + 位置10% |
+| 2 | 技能匹配 | 主要基于技能要求进行匹配，适合技术岗位 | 技能80% + 经验15% + 学历5% |
+| 3 | 经验匹配 | 主要基于工作经验进行匹配，适合管理岗位 | 经验60% + 项目复杂度25% + 技能15% |
+
+**使用建议：**
+- **type: 1** - 适合大多数场景，提供最均衡的匹配结果
+- **type: 2** - 适合技术要求高的岗位，如架构师、专家级工程师
+- **type: 3** - 适合管理岗位或对经验有严格要求的职位
 
 ---
 
