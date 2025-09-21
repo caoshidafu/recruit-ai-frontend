@@ -15,7 +15,30 @@ const candidates = [
     status: "在职-看机会",
     skills: ["Vue.js", "React", "TypeScript", "Node.js"],
     matchScore: 95,
-    recommendReasons: ["技术栈高度匹配", "有电商平台开发经验"],
+    recommendReasons: ["技术栈高度匹配", "有电商平台开发经验", "大型项目经验丰富"],
+    keyHighlights: ["Vue.js专家", "React熟练", "TypeScript", "电商经验"],
+    educationHistory: [
+      {
+        degree: "本科",
+        school: "北京理工大学",
+        major: "计算机科学与技术",
+        duration: "2015-2019"
+      }
+    ],
+    workHistory: [
+      {
+        company: "某知名电商公司",
+        position: "高级前端工程师",
+        duration: "2021-至今",
+        description: "负责电商平台前端架构设计，主导多个核心功能模块开发"
+      },
+      {
+        company: "某互联网公司",
+        position: "前端工程师",
+        duration: "2019-2021",
+        description: "参与多个Web应用开发，积累丰富的前端开发经验"
+      }
+    ]
   },
   {
     id: 2,
@@ -30,7 +53,30 @@ const candidates = [
     status: "在职-看机会",
     skills: ["Vue.js", "React", "Angular", "架构设计"],
     matchScore: 88,
-    recommendReasons: ["丰富的架构设计经验", "带领过技术团队"],
+    recommendReasons: ["丰富的架构设计经验", "带领过技术团队", "跨框架开发能力"],
+    keyHighlights: ["架构专家", "团队Leader", "多框架精通", "技术深度"],
+    educationHistory: [
+      {
+        degree: "硕士",
+        school: "清华大学",
+        major: "软件工程",
+        duration: "2014-2017"
+      }
+    ],
+    workHistory: [
+      {
+        company: "某大型互联网公司",
+        position: "前端技术专家",
+        duration: "2020-至今",
+        description: "负责前端技术架构设计，带领10人前端团队，制定技术标准"
+      },
+      {
+        company: "某知名科技公司",
+        position: "高级前端工程师",
+        duration: "2017-2020",
+        description: "参与多个大型项目架构设计，积累丰富的技术管理经验"
+      }
+    ]
   },
   {
     id: 3,
@@ -45,7 +91,24 @@ const candidates = [
     status: "在职-看机会",
     skills: ["Vue.js", "JavaScript", "CSS3", "Webpack"],
     matchScore: 82,
-    recommendReasons: ["Vue.js经验丰富", "学习能力强"],
+    recommendReasons: ["Vue.js经验丰富", "学习能力强", "快速适应新技术"],
+    keyHighlights: ["Vue.js熟练", "工程化经验", "学习能力", "创业公司经验"],
+    educationHistory: [
+      {
+        degree: "本科",
+        school: "北京邮电大学",
+        major: "软件工程",
+        duration: "2017-2021"
+      }
+    ],
+    workHistory: [
+      {
+        company: "某创业公司",
+        position: "前端工程师",
+        duration: "2021-至今",
+        description: "负责公司核心产品前端开发，参与从0到1的产品构建"
+      }
+    ]
   },
   {
     id: 4,
@@ -60,7 +123,30 @@ const candidates = [
     status: "在职-看机会",
     skills: ["React", "TypeScript", "Next.js", "GraphQL"],
     matchScore: 85,
-    recommendReasons: ["React技术栈熟练", "有金融行业经验"],
+    recommendReasons: ["React技术栈熟练", "有金融行业经验", "TypeScript深度应用"],
+    keyHighlights: ["React专家", "TypeScript", "金融行业", "GraphQL"],
+    educationHistory: [
+      {
+        degree: "本科",
+        school: "复旦大学",
+        major: "计算机科学与技术",
+        duration: "2014-2018"
+      }
+    ],
+    workHistory: [
+      {
+        company: "某金融科技公司",
+        position: "资深前端工程师",
+        duration: "2020-至今",
+        description: "负责金融产品前端开发，熟悉金融业务流程和合规要求"
+      },
+      {
+        company: "某互联网公司",
+        position: "前端工程师",
+        duration: "2018-2020",
+        description: "参与多个B端产品开发，积累丰富的React开发经验"
+      }
+    ]
   },
   {
     id: 5,
@@ -75,7 +161,24 @@ const candidates = [
     status: "离职-随时到岗",
     skills: ["Vue.js", "JavaScript", "HTML5", "CSS3"],
     matchScore: 75,
-    recommendReasons: ["基础扎实", "可立即入职"],
+    recommendReasons: ["基础扎实", "可立即入职", "学习意愿强烈"],
+    keyHighlights: ["基础扎实", "立即到岗", "Vue.js经验", "成本优势"],
+    educationHistory: [
+      {
+        degree: "专科",
+        school: "北京信息职业技术学院",
+        major: "计算机应用技术",
+        duration: "2019-2022"
+      }
+    ],
+    workHistory: [
+      {
+        company: "某外包公司",
+        position: "前端开发工程师",
+        duration: "2022-2024",
+        description: "参与多个中小型项目开发，熟悉Vue.js开发流程"
+      }
+    ]
   },
   {
     id: 6,
@@ -90,7 +193,24 @@ const candidates = [
     status: "在职-看机会",
     skills: ["Vue.js", "React", "Node.js", "Python"],
     matchScore: 90,
-    recommendReasons: ["全栈能力", "AI行业背景"],
+    recommendReasons: ["全栈能力", "AI行业背景", "技术视野广阔"],
+    keyHighlights: ["全栈开发", "AI背景", "多语言精通", "创新能力"],
+    educationHistory: [
+      {
+        degree: "硕士",
+        school: "中山大学",
+        major: "人工智能",
+        duration: "2018-2021"
+      }
+    ],
+    workHistory: [
+      {
+        company: "某AI公司",
+        position: "全栈工程师",
+        duration: "2021-至今",
+        description: "负责AI产品的全栈开发，包括前端界面和后端算法集成"
+      }
+    ]
   }
 ];
 
@@ -132,6 +252,11 @@ export function mockGetJobCardsList(userId) {
       publishDate: "2024-01-15",
       applicationCount: 25,
       urgency: "high",
+      // 职位卡片统计数据
+      candidateCount: 42,    // 候选人总数
+      newCandidates: 8,      // 新推荐候选人数
+      interviewingCount: 5,  // 面试中人数
+      headcount: 3,          // 需求人数
       responsibilities: [
         "负责前端项目架构设计和开发",
         "参与产品需求分析和技术方案制定",
@@ -156,7 +281,12 @@ export function mockGetJobCardsList(userId) {
       status: "active",
       publishDate: "2024-01-10",
       applicationCount: 18,
-      urgency: "medium",
+      urgency: "normal",
+      // 职位卡片统计数据
+      candidateCount: 28,    // 候选人总数
+      newCandidates: 6,      // 新推荐候选人数
+      interviewingCount: 3,  // 面试中人数
+      headcount: 2,          // 需求人数
       responsibilities: [
         "负责后端服务架构设计和开发",
         "参与数据库设计和优化",
