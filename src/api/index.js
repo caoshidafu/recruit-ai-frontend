@@ -1,13 +1,12 @@
 // API基础配置文件
-import { API_CONFIG } from '../config/index.js';
-
-// 全局域名配置 - 默认localhost:8080，前缀recruit/ai
-const BASE_URL = API_CONFIG.BASE_URL;
+import BASE_URL from '../config/baseURL.js';
 
 // 通用请求配置
 const defaultConfig = {
-  headers: API_CONFIG.DEFAULT_HEADERS,
-  timeout: API_CONFIG.TIMEOUT
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 10000
 };
 
 /**

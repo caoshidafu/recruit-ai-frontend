@@ -237,19 +237,27 @@ recruit-ai-frontend/
 - `src/api/MOCKAPI.js`: Mock API接口实现
 - `src/api/mockManager.js`: API管理器，统一调用入口
 
-### 全局配置管理
-- `src/config/index.js`: 全局配置管理文件，统一管理域名、API等配置
-- `src/config/env.example.js`: 环境变量配置示例文件
+### 全局域名配置
+- `src/config/baseURL.js`: 简单的全局域名配置文件
+- `src/config/README.md`: 域名配置使用说明
 
-#### 域名配置
-项目支持灵活的域名配置，默认配置：
-- **域名**: localhost:8080
-- **API前缀**: /recruit/ai
+#### 后端接口域名配置
+项目使用简单的域名配置方式，默认配置：
 - **完整API地址**: http://localhost:8080/recruit/ai
 
 **配置方式：**
-1. **环境变量配置（推荐）**：在项目根目录创建 `.env.development` 或 `.env.production` 文件
-2. **代码配置**：修改 `src/config/index.js` 中的默认配置
+1. 打开 `src/config/baseURL.js` 文件
+2. 修改 `BASE_URL` 的值为你的后端服务器地址
+3. 保存文件即可生效
+
+**示例：**
+```javascript
+// 开发环境
+const BASE_URL = 'http://localhost:8080/recruit/ai';
+
+// 生产环境
+const BASE_URL = 'https://api.your-domain.com/recruit/ai';
+```
 
 ### 使用方式
 
