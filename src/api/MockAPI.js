@@ -1938,7 +1938,7 @@ export function mockGetUserJobs(userId, params = {}) {
               views: 156,
               publishDays: 7
             },
-            userId: user_id
+            userId: 1
           },
           jobDetails: {
             id: "job_001",
@@ -1962,7 +1962,7 @@ export function mockGetUserJobs(userId, params = {}) {
             benefits: ["五险一金", "弹性工作", "股权激励", "技术培训"],
             createdAt: "2024-01-15T10:00:00Z",
             updatedAt: "2024-01-15T10:00:00Z",
-            userId: user_id,
+            userId: 1,
             aiGenerated: true,
             aiConfidence: 0.92
           }
@@ -1984,7 +1984,7 @@ export function mockGetUserJobs(userId, params = {}) {
               views: 89,
               publishDays: 12
             },
-            userId: user_id
+            userId: 1
           },
           jobDetails: {
             id: "job_002",
@@ -2008,7 +2008,7 @@ export function mockGetUserJobs(userId, params = {}) {
             benefits: ["五险一金", "年终奖", "培训机会"],
             createdAt: "2024-01-10T14:30:00Z",
             updatedAt: "2024-01-10T14:30:00Z",
-            userId: user_id,
+            userId: 1,
             aiGenerated: false,
             aiConfidence: null
           }
