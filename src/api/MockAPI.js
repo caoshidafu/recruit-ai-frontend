@@ -2103,11 +2103,12 @@ export function mockGetUserJobStats() {
 */
 export function mockGetJobCandidatesWithMatching(data) {
   return new Promise((resolve) => {
+    const { jobId, matchType = 'smart', forceRefresh = false, limit = 10 } = data;
+    
+    // 模拟检查是否使用缓存
+    const isFromCache = !forceRefresh && Math.random() > 0.3; // 70%概率使用缓存
+    
     setTimeout(() => {
-      const { jobId, userId, matchType = 'smart', forceRefresh = false, limit = 10 } = data;
-      
-      // 模拟检查是否使用缓存
-      const isFromCache = !forceRefresh && Math.random() > 0.3; // 70%概率使用缓存
       const lastMatchTime = isFromCache ? 
         new Date(Date.now() - Math.random() * 60 * 60 * 1000).toISOString() : // 1小时内的随机时间
         new Date().toISOString();
