@@ -57,6 +57,9 @@ recruit-ai-frontend/
 │   │   └── global.css          # 全局样式
 │   ├── App.vue             # 主应用组件
 │   └── main.js             # 入口文件
+├── docs/                  # 文档目录
+│   ├── API-Documentation.md   # API接口文档
+│   └── API-Mock-Data.md       # API Mock数据文档（四个核心接口）
 ├── .gitignore
 ├── babel.config.js
 ├── jsconfig.json
