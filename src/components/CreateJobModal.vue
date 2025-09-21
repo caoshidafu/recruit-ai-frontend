@@ -150,7 +150,6 @@
           </div>
 
           <div class="form-actions">
-            <button type="button" class="btn btn-secondary" @click="prevStep">上一步</button>
             <button 
               type="button" 
               class="btn btn-primary" 
@@ -284,11 +283,6 @@ export default {
       }
     }
 
-    const prevStep = () => {
-      if (currentStep.value > 1) {
-        currentStep.value--
-      }
-    }
 
     const performAiAnalysis = async () => {
       isAnalyzing.value = true
@@ -509,7 +503,6 @@ export default {
       handleOverlayClick,
       handleSubmitDescription,
       nextStep,
-      prevStep,
       createJob,
       createJobAndMatch,
       performMatching,
