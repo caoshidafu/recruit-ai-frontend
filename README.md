@@ -36,15 +36,12 @@ recruit-ai-frontend/
 │   ├── favicon.ico
 │   └── index.html
 ├── src/
-│   ├── api/                # API接口目录
+│   ├── api/                # API接口目录（精简版）
 │   │   ├── index.js            # HTTP请求基础方法
-│   │   ├── JobAPI.js           # 传统职位管理API接口
-│   │   ├── CandidateAPI.js     # 候选人管理API接口
 │   │   ├── AIJobAPI.js         # AI职位创建API接口（核心业务）
-│   │   ├── UserAPI.js          # 用户管理API接口（核心业务）
 │   │   ├── AIMatchAPI.js       # AI匹配API接口（核心业务）
-│   │   ├── MockAPI.js          # Mock API接口（包含所有模拟数据）
-│   │   └── mockManager.js      # API管理器（统一调用入口）
+│   │   ├── MockAPI.js          # Mock API接口（精简版）
+│   │   └── mockManager.js      # API管理器（统一调用入口，精简版）
 │   ├── config/             # 配置目录
 │   │   ├── index.js            # 全局配置管理（域名、API等）
 │   │   └── env.example.js      # 环境变量配置示例
@@ -61,8 +58,7 @@ recruit-ai-frontend/
 │   ├── App.vue             # 主应用组件
 │   └── main.js             # 入口文件
 ├── docs/                  # 文档目录
-│   ├── API-Documentation.md   # API接口文档
-│   └── API-Mock-Data.md       # API Mock数据文档（四个核心接口）
+│   └── API-Documentation.md   # API接口文档（精简版）
 ├── .gitignore
 ├── babel.config.js
 ├── jsconfig.json
@@ -71,174 +67,14 @@ recruit-ai-frontend/
 └── vue.config.js
 ```
 
-## 组件说明
-
-### CandidateCard.vue
-候选人卡片组件，采用折叠/展开设计，默认显示关键信息，支持点击展开查看详细内容。
-
-**Props:**
-- `candidate`: 候选人对象，包含姓名、经验、学历、技能等信息
-
-**功能:**
-- **折叠状态**: 默认显示候选人头像、姓名、经验、职位、地点和匹配度
-- **展开状态**: 点击头部区域展开，显示完整的教育经历、推荐理由、关键匹配点、技能标签、工作经历
-- **交互设计**: 统一的展开/收起按钮，流畅的动画效果
-- **操作按钮**: 展开状态下提供查看详情、联系候选人、AI分析等操作选项
-- **AI分析功能**: 点击AI分析按钮显示候选人的AI分析模态框，包含雷达图和详细分析报告
-- **现代化设计**: 圆角卡片、柔和阴影、悬停效果
-- **响应式设计**: 移动端、平板、桌面端优化布局
-
-**布局特点:**
-- **紧凑展示**: 折叠状态下卡片紧凑，便于快速浏览多个候选人
-- **一键展开**: 点击头部任意位置即可展开查看详细信息
-- **匹配度突出**: 右侧绿色匹配度指示器，数值突出显示
-- **展开按钮**: 圆形展开按钮，带有旋转动画指示状态
-- **动画效果**: 展开内容使用slideDown动画，视觉体验流畅
-- **双栏布局**: 展开状态下采用左右分栏设计，信息分布更加合理
-- **左侧面板**: 显示教育经历、推荐理由、关键匹配点、技能标签
-- **右侧面板**: 专门展示工作经历详情，便于深入了解候选人背景
-- **智能滚动**: 左右面板独立滚动，自定义滚动条样式
-- **响应式布局**: 移动端自动切换为垂直堆叠布局，确保最佳浏览体验
-- **无限滚动**: 支持下拉自动加载更多候选人，无需手动翻页
-
-### JobCard.vue
-岗位卡片组件，在侧边栏显示岗位列表。
-
-**Props:**
-- `job`: 岗位对象
-- `isActive`: 是否为当前选中岗位
-
-**功能:**
-- 岗位基本信息展示（标题、部门、地点、经验要求）
-- 可视化选中状态（左侧彩色边框、背景渐变、选中图标）
-- 候选人统计数据展示（候选人数、推荐数、面试中、需求人数）
-- 优雅的动画效果（选中时的缩放、阴影变化）
-- 点击选择岗位，自动加载对应候选人
-
-### JobDetail.vue
-岗位详情组件，显示完整的岗位信息。
-
-**Props:**
-- `job`: 岗位对象
-- `showDetail`: 是否显示详情
-
-**功能:**
-- 岗位详细描述
-- 任职要求
-- 薪资福利
-- 可折叠展示
-
-### CandidateAIAnalysisModal.vue
-候选人AI分析模态框组件，提供深度的AI分析报告和雷达图可视化。
-
-**Props:**
-- `visible`: 是否显示模态框
-- `candidate`: 候选人对象
-
-**功能:**
-- **AI智能分析**: 使用AI技术分析候选人的综合能力和潜力
-- **雷达图展示**: 集成RadarChart组件，可视化候选人各维度能力
-- **详细分析报告**: 包含优势分析、改进建议、岗位匹配度等
-- **推荐行动**: 基于AI分析结果提供具体的行动建议
-- **现代化设计**: 优雅的模态框设计，支持渐变背景和动画效果
-- **响应式布局**: 适配移动端和桌面端
-
-### RadarChart.vue
-雷达图组件，用于可视化候选人能力维度。
-
-**Props:**
-- `data`: 雷达图数据
-- `width`: 图表宽度（默认300）
-- `height`: 图表高度（默认300）
-
-**功能:**
-- 6个维度能力展示
-- 响应式图表
-- 平滑动画效果
-
-### ResizableSplitter.vue
-可拖拽分割器组件，用于调整面板的宽度比例。
-
-**Props:**
-- 无需传入props，通过事件回调传递拖拽距离
-
-**事件:**
-- `@resize`: 拖拽时触发，参数为deltaX（拖拽距离）
-
-**功能:**
-- **双重分割器支持**: 
-  - 主分割器：调整侧边栏（岗位列表）和主内容区的宽度比例
-  - 内容分割器：在分栏视图下调整岗位详情和候选人列表的宽度比例
-- **智能拖拽**: 支持鼠标和触摸拖拽，带有视觉反馈
-- **宽度限制**: 自动限制最小/最大宽度，防止面板过小或过大
-- **平滑动画**: 悬停和拖拽时的平滑过渡效果
-- **响应式设计**: 移动端增大触摸区域，优化交互体验
-
-**使用方式:**
-```vue
-<!-- 主分割器 - 侧边栏和主内容区之间 -->
-<ResizableSplitter 
-  @resize="handleMainSplitterResize"
-  class="main-splitter"
-/>
-
-<!-- 内容分割器 - 岗位详情和候选人列表之间 -->
-<ResizableSplitter 
-  v-if="viewMode === 'split'" 
-  @resize="handleSplitterResize"
-/>
-```
-
-**技术特点:**
-- **宽度控制**: 主分割器控制侧边栏宽度（240px-480px），内容分割器控制左侧面板宽度（300px-800px）
-- **拖拽限制**: 实时计算并限制拖拽范围，确保界面布局合理
-- **用户体验**: 拖拽时显示虚线指示器，悬停时高亮显示可拖拽区域
-
-## 数据结构
-
-### 岗位数据 (Job)
-```javascript
-{
-  id: String,           // 岗位ID
-  title: String,        // 岗位标题
-  department: String,   // 部门
-  location: String,     // 工作地点
-  salary: String,       // 薪资范围
-  experience: String,   // 经验要求
-  education: String,    // 学历要求
-  description: String,  // 岗位描述
-  requirements: Array,  // 任职要求
-  benefits: Array       // 薪资福利
-}
-```
-
-### 候选人数据 (Candidate)
-```javascript
-{
-  id: String,           // 候选人ID
-  name: String,         // 姓名
-  avatar: String,       // 头像URL
-  title: String,        // 职位标题
-  experience: String,   // 工作经验
-  education: String,    // 学历信息
-  location: String,     // 所在地
-  matchScore: Number,   // 匹配度 (0-100)
-  skills: Array,        // 技能标签
-  radarData: Object     // 雷达图数据
-}
-```
-
-## API接口设计
+## API接口设计（精简版）
 
 ### API目录结构
 - `src/api/index.js`: HTTP请求基础方法（get、post、put、del）
-- `src/api/JobAPI.js`: 传统职位管理API接口
-- `src/api/CandidateAPI.js`: 候选人管理API接口
 - `src/api/AIJobAPI.js`: AI职位创建API接口（核心业务）
-- `src/api/UserAPI.js`: 用户管理API接口（核心业务）
 - `src/api/AIMatchAPI.js`: AI匹配API接口（核心业务）
-- `src/api/MockAPI.js`: Mock API接口实现（包含所有模拟数据）
-- `src/api/mockManager.js`: API管理器，统一调用入口
+- `src/api/MockAPI.js`: Mock API接口实现（精简版，只包含AI解析相关数据）
+- `src/api/mockManager.js`: API管理器，统一调用入口（精简版）
 
 ### API设计规范
 - **路径参数规范**: 所有API请求路径不使用路径参数形式（如`/jobs/${jobId}/ai-regenerate`）
@@ -247,49 +83,7 @@ recruit-ai-frontend/
 - **参数命名**: 统一使用下划线命名（job_id, user_id, candidate_id等）
 - **数据类型**: 发布岗位id和user_id都是数字类型
 
-### 全局域名配置
-- `src/config/baseURL.js`: 简单的全局域名配置文件
-- `src/config/README.md`: 域名配置使用说明
-
-#### 后端接口域名配置
-项目使用简单的域名配置方式，默认配置：
-- **完整API地址**: http://localhost:8080/recruit/ai
-
-**配置方式：**
-1. 打开 `src/config/baseURL.js` 文件
-2. 修改 `BASE_URL` 的值为你的后端服务器地址
-3. 保存文件即可生效
-
-**示例：**
-```javascript
-// 开发环境
-const BASE_URL = 'http://localhost:8080/recruit/ai';
-
-// 生产环境
-const BASE_URL = 'https://api.your-domain.com/recruit/ai';
-```
-
-### 使用方式
-
-```javascript
-import apiManager from './api/mockManager.js'
-
-// 获取职位列表
-const response = await apiManager.getJobList()
-
-// 获取智能推荐候选人
-const candidates = await apiManager.getSmartCandidates()
-```
-
-### Mock模式配置
-
-系统支持Mock模式和真实API模式切换：
-
-- **开发环境**: 默认使用Mock数据
-- **生产环境**: 需要配置 `VUE_APP_USE_MOCK=false` 使用真实API
-- **Mock数据**: 基于 `src/data/mockData.js` 提供模拟数据
-
-### 三个核心后端接口
+### 三个核心AI解析接口
 
 #### 1. 职位卡片列表接口 (AIJobAPI.js)
 - `getJobCards(jobId, userId)`: 获取职位卡片列表
@@ -312,265 +106,67 @@ const candidates = await apiManager.getSmartCandidates()
   - **URL**: `/jobs/generate-profile`
   - **功能**: 根据user_id和职位描述生成职位画像和岗位详情
   - **参数**: { user_id: number, description: string }
-  - 支持关键词搜索和灵活排序
-  - 支持分页查询和统计信息
-  - 提供最近活动数据
 
-### 扩展API接口
+### 接口简化说明
 
-#### 职位相关接口
-- `getJobList()`: 获取职位列表
-- `getJobDetail(jobId)`: 获取职位详情
-- `createJob(jobData)`: 创建新职位
-- `updateJob(jobId, jobData)`: 更新职位信息
-- `getJobCandidateStats(jobId)`: 获取职位候选人统计
+系统已进行接口精简，删除了以下多余接口：
+- 传统职位管理接口（JobAPI.js）
+- 候选人管理接口（CandidateAPI.js）  
+- 用户管理接口（UserAPI.js）
+- 其他非AI解析相关的扩展接口
 
-#### 候选人相关接口
+**保留的核心功能**：
+- AI职位画像生成
+- AI候选人智能匹配
+- 职位卡片数据管理
 
-**统一候选人匹配接口（推荐使用）:**
-- `getJobCandidatesWithMatching(params)`: 统一候选人匹配接口（合并原接口2和3）
-  - 根据岗位ID和用户ID获取候选人信息和岗位详情
-  - 支持实时匹配和缓存匹配机制
-  - 参数说明：
-    - `jobId`: 岗位ID（必填）
-    - `userId`: 用户ID（必填）
-    - `matchType`: 匹配类型 - 'smart'(默认) | 'skill' | 'experience' | 'education'
-    - `forceRefresh`: 是否强制重新匹配（默认false，使用缓存）
-    - `limit`: 限制返回候选人数量
-    - `filters`: 额外的筛选条件
+### Mock数据配置（精简版）
 
-**候选人推荐接口:**
-- `getRecommendedCandidates(params)`: 获取推荐候选人列表（统一接口）
-  - 支持通过 `type` 参数区分推荐类型：
-    - `'smart'`: 智能推荐（默认）
-    - `'experience'`: 经验推荐  
-    - `'education'`: 学历推荐
+系统现在只提供AI解析相关的Mock接口：
 
-**候选人推荐快捷方法:**
-- `getSmartCandidates(params)`: 获取智能推荐候选人，内部调用统一接口
-- `getExperienceCandidates(params)`: 获取经验匹配候选人，内部调用统一接口
-- `getEducationCandidates(params)`: 获取学历匹配候选人，内部调用统一接口
+#### AI职位创建接口
+- `mockGetJobCards(jobId, userId)`: 获取职位卡片列表
+- `mockGenerateJobProfile(userId, description)`: 生成职位画像和岗位详情
 
-**其他候选人接口:**
-- `getCandidateDetail(candidateId)`: 获取候选人详情
-- `getCandidateRadarData(candidateId)`: 获取候选人雷达图数据
-- `getCandidateAIAnalysis(candidateId, analysisType)`: 获取候选人AI分析报告，包含优势、改进建议、匹配度等
-- `searchCandidates(searchParams)`: 搜索候选人
-- `aiMatchCandidates(jobId, analysisDepth)`: AI智能匹配候选人，返回匹配度和推荐理由
+#### AI匹配接口
+- `mockGetCandidatesByJobId(jobId, userId, type)`: 根据发布岗位id获取候选人列表
 
-**统一推荐接口参数说明:**
-- `type`: 推荐类型，可选值：'smart'(智能推荐，默认) | 'education'(学历推荐) | 'experience'(经验推荐)
-- `jobId`: 职位ID，用于筛选该职位的相关候选人
-- `limit`: 返回候选人数量限制
-- `minExperience`: 最小经验年限（经验推荐时使用）
-- `maxExperience`: 最大经验年限（经验推荐时使用）  
-- `degree`: 学历要求（学历推荐时使用）
+#### 配置说明
+- **开发环境**: 默认使用Mock数据
+- **生产环境**: 设置 `VUE_APP_USE_MOCK=false` 使用真实API
+- **Mock数据**: 精简版只包含AI解析必需的候选人和职位数据
 
-**使用示例:**
+### 使用示例
 
-**三个核心接口使用示例:**
 ```javascript
-// 1. 创建AI职位
-const jobResult = await apiManager.createJobByDescription({
-  description: "招聘高级前端工程师，要求熟练掌握Vue.js和React，有5年以上开发经验",
-  userId: 1,
-  options: {
-    department: "技术部",
-    urgency: "high"
-  }
-})
+import apiManager from '@/api/mockManager.js'
 
-// 2. 统一候选人匹配 - 智能匹配（使用缓存）
-const smartResult = await apiManager.getJobCandidatesWithMatching({
-  jobId: jobResult.data.jobId,
-  userId: 1,
-  matchType: 'smart',
-  forceRefresh: false,
-  limit: 10
-})
+// 1. 获取职位卡片列表
+const jobCards = await apiManager.getJobCards(123, 1)
 
-// 3. 获取用户职位列表
-const userJobsResult = await apiManager.getUserJobs(1, {
-  status: 'active',
-  sortBy: 'createdAt',
-  sortOrder: 'desc',
-  limit: 10
-})
+// 2. 生成职位画像
+const jobProfile = await apiManager.generateJobProfile(1, '招聘高级前端工程师，要求熟练掌握Vue.js...')
+
+// 3. 获取匹配候选人
+const candidates = await apiManager.getCandidatesByJobId(123, 1, '智能匹配')
 ```
 
-**高级匹配示例:**
-```javascript
-// 技能匹配，带筛选条件
-const skillResult = await apiManager.getJobCandidatesWithMatching({
-  jobId: 2,
-  userId: 1,
-  matchType: 'skill',
-  forceRefresh: true,
-  filters: {
-    minScore: 85,
-    skills: ['Vue.js', 'React', 'TypeScript'],
-    location: '北京',
-    minExperience: 3
-  },
-  sortBy: 'matchScore',
-  limit: 15
-})
+## 项目总结
 
-// 经验匹配，分页查询
-const experienceResult = await apiManager.getJobCandidatesWithMatching({
-  jobId: 3,
-  userId: 1,
-  matchType: 'experience',
-  filters: {
-    minExperience: 3,
-    maxExperience: 8
-  },
-  limit: 10,
-  offset: 20,
-  sortBy: 'experience'
-})
-```
+本项目专注于AI招聘系统的核心功能，通过三个核心接口实现：
 
-**候选人推荐接口:**
-```javascript
-// 智能推荐（默认）
-const smartCandidates = await apiManager.getRecommendedCandidates({ jobId: 1 })
+1. **职位画像生成**: 基于AI技术解析职位描述，生成结构化职位信息
+2. **智能候选人匹配**: 根据职位要求智能匹配最合适的候选人
+3. **职位卡片管理**: 提供职位信息的展示和管理功能
 
-// 经验推荐
-const expCandidates = await apiManager.getRecommendedCandidates({ 
-  type: 'experience', 
-  jobId: 1, 
-  minExperience: 3, 
-  maxExperience: 8 
-})
+### 技术特点
 
-// 学历推荐
-const eduCandidates = await apiManager.getRecommendedCandidates({ 
-  type: 'education', 
-  jobId: 1, 
-  degree: '本科' 
-})
-```
+- **Vue 3 + Composition API**: 现代化前端框架
+- **AI驱动**: 核心功能基于AI技术实现
+- **Mock数据支持**: 完整的开发环境Mock数据
+- **接口规范**: 统一的API设计规范，易于维护和扩展
 
-## 核心功能特性
+---
 
-### AI智能分析功能
-- **深度候选人分析**: 使用AI技术对候选人进行多维度分析
-- **雷达图可视化**: 直观展示候选人在不同能力维度的表现
-- **智能推荐建议**: 基于AI分析结果提供具体的行动建议
-- **岗位匹配度**: 分析候选人与当前岗位的匹配程度
-- **个性化报告**: 为每个候选人生成定制化的分析报告
-
-## 其他核心功能
-
-### 无限滚动分页
-- **下拉加载**: 当用户滚动到底部附近时自动加载更多候选人
-- **加载指示器**: 提供优雅的加载动画和状态提示
-- **性能优化**: 分批次加载数据，避免一次性加载大量数据
-- **用户体验**: 无需手动点击翻页，流畅的浏览体验
-
-### 职位选择交互
-- **可视化选中状态**: 选中的职位卡片具有特殊的视觉效果
-  - 左侧彩色边框指示器
-  - 背景渐变效果
-  - 右上角选中图标
-  - 阴影和缩放动画
-- **实时数据加载**: 切换职位时自动调用API获取对应候选人
-- **数据筛选**: 不同职位显示不同的候选人组合
-
-### 候选人展示优化
-- **单列布局**: 改为垂直单列布局，提升信息可读性
-- **匹配度突出**: 右侧绿色高亮显示匹配度分数
-- **响应式滚动**: 自定义滚动条样式，流畅滚动体验
-
-### 智能职位发布系统
-- **三步发布流程**:
-  1. **基本信息**: 职位名称、部门、级别、地点、薪资、职位描述填写
-  2. **AI解析**: 自动解析职位描述，提取技能要求、经验需求、工作职责和匹配标签
-  3. **智能匹配**: AI自动匹配候选人，展示匹配度、置信度和详细推荐理由
-
-- **AI解析功能**:
-  - 智能识别核心技能要求（如Vue.js、JavaScript、TypeScript等）
-  - 自动提取经验需求和工作年限要求
-  - 生成岗位匹配标签和关键词
-  - 分析置信度评估，确保解析准确性
-
-- **智能匹配算法**:
-  - 基于岗位要求匹配最合适候选人
-  - 多维度评分：技能匹配、经验匹配、学历匹配
-  - 风险因素识别（如地理位置、经验不足等）
-  - AI推荐建议：优先联系、潜力培养、培训提升
-
-- **用户体验优化**:
-  - 步骤指示器显示发布进度
-  - 简洁匹配界面：去除复杂统计，专注核心匹配过程
-  - 候选人匹配结果可视化展示
-  - 一键确认发布，自动刷新职位列表
-  - 流畅的动画效果和进度指示
-
-## 推荐策略
-
-系统支持三种候选人推荐策略：
-
-1. **智能推荐**: 基于综合匹配度的智能算法推荐
-2. **经验推荐**: 优先推荐工作经验匹配的候选人
-3. **学历推荐**: 优先推荐学历背景匹配的候选人
-
-每种推荐策略都会根据当前选中的职位ID返回相应的候选人数据，实现精准匹配。
-
-## 安装和运行
-
-### 环境要求
-- Node.js >= 14.0.0
-- npm >= 6.0.0
-
-### 安装依赖
-```bash
-npm install
-```
-
-### 开发模式
-```bash
-# 使用serve命令启动（原始）
-npm run serve
-
-# 使用dev命令启动（新增别名）
-npm run dev
-```
-
-### 生产构建
-```bash
-npm run build
-```
-
-### 代码检查
-```bash
-npm run lint
-```
-
-## 浏览器支持
-
-- Chrome >= 88
-- Firefox >= 85
-- Safari >= 14
-- Edge >= 88
-
-## 开发规范
-
-- 使用Vue 3 Composition API
-- 组件采用单文件组件(SFC)格式
-- 遵循Vue官方风格指南
-- 使用语义化的CSS类名
-- 支持响应式设计
-
-## 贡献指南
-
-1. Fork 项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-## 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+**项目版本**: v1.0.0 (精简版)  
+**最后更新**: 2024-01-15
