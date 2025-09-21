@@ -14,6 +14,8 @@
 
 本文档提供AI招聘系统四个核心后端接口的详细Mock数据示例，包括请求参数和响应数据的完整JSON格式。
 
+> **更新说明**：从2024年1月起，所有GET请求接口已改为使用查询参数(Query Parameters)的形式，不再使用路径参数。参数命名统一采用下划线分隔格式（如 `user_id`, `job_id`）。
+
 ### 四个核心接口
 
 1. **根据用户输入的职位描述生成职位卡片和岗位详情**
@@ -88,7 +90,7 @@
         "团队建设活动",
         "带薪年假"
       ],
-      "userId": 1
+      "user_id": 1
     }
   },
   "message": "职位解析成功"
@@ -448,17 +450,16 @@
 
 ### 请求参数
 
-```json
-{
-  "jobId": "job_ai_001",
-  "candidateFilters": {
-    "status": "all",
-    "minScore": 70,
-    "limit": 20,
-    "sortBy": "matchScore"
-  }
-}
-```
+根据我们的API规范，接口3现在使用查询参数的形式：
+
+**URL**: `GET /jobs/candidates-and-details?job_id=job_ai_001&status=all&minScore=70&limit=20&sortBy=matchScore`
+
+**查询参数说明**:
+- `job_id`: 职位ID (必需)
+- `status`: 候选人状态筛选 (可选，默认"all") 
+- `minScore`: 最小匹配分数 (可选，默认0)
+- `limit`: 返回数量限制 (可选，默认20)
+- `sortBy`: 排序字段 (可选，默认"matchScore")
 
 ### 响应数据
 
@@ -502,7 +503,7 @@
         "团队建设活动",
         "带薪年假"
       ],
-      "userId": 1,
+      "user_id": 1,
       "status": "active",
       "candidateCount": 25,
       "interviewCount": 5,
@@ -580,24 +581,19 @@
 
 ### 请求参数
 
-```json
-{
-  "userId": 1,
-  "filters": {
-    "status": "all",
-    "dateRange": {
-      "startDate": "2024-01-01",
-      "endDate": "2024-12-31"
-    }
-  },
-  "pagination": {
-    "page": 1,
-    "limit": 10
-  },
-  "sortBy": "title",
-  "sortOrder": "asc"
-}
-```
+根据我们的API规范，接口4现在使用查询参数的形式：
+
+**URL**: `GET /users/jobs?user_id=1&status=all&startDate=2024-01-01&endDate=2024-12-31&page=1&limit=10&sortBy=title&sortOrder=asc`
+
+**查询参数说明**:
+- `user_id`: 用户ID (必需)
+- `status`: 职位状态筛选 (可选，默认"all")
+- `startDate`: 开始日期 (可选)
+- `endDate`: 结束日期 (可选) 
+- `page`: 页码 (可选，默认1)
+- `limit`: 每页数量 (可选，默认10)
+- `sortBy`: 排序字段 (可选，默认"createdAt")
+- `sortOrder`: 排序方向 (可选，默认"desc")
 
 ### 响应数据
 
@@ -653,7 +649,7 @@
             "股权激励",
             "技术培训"
           ],
-          "userId": 1
+          "user_id": 1
         }
       },
       {
@@ -701,7 +697,7 @@
             "技术培训",
             "弹性工作"
           ],
-          "userId": 1
+          "user_id": 1
         }
       }
     ],
@@ -717,14 +713,14 @@
     "recentActivity": [
       {
         "type": "new_application",
-        "jobId": "job_001",
+        "job_id": "job_001",
         "jobTitle": "高级前端工程师",
         "candidateName": "王五",
         "timestamp": "2024-01-17T16:45:00Z"
       },
       {
         "type": "interview_scheduled",
-        "jobId": "job_002",
+        "job_id": "job_002",
         "jobTitle": "Java后端工程师",
         "candidateName": "赵六",
         "timestamp": "2024-01-17T15:30:00Z"
