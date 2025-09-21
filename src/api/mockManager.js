@@ -20,26 +20,26 @@ class APIManager {
   // ==================== AI职位创建相关API ====================
 
   /**
-   * 获取职位卡片列表
-   * 功能描述：根据发布岗位id和user_id获取职位卡片列表
-   * 入参：jobId: number, userId: number
-   * 返回参数：{ success: boolean, data: object, message: string }
-   * url地址：/jobs/cards
+   * 接口一：获取职位卡片列表
+   * 功能描述：根据user_id获取职位卡片和岗位详情列表
+   * 入参：userId: number
+   * 返回参数：{ success: boolean, data: { jobCards: array, total: number, userId: number }, message: string }
+   * url地址：/jobs/list
    * 请求方式：GET
    */
-  async getJobCards(jobId, userId) {
+  async getJobCardsList(userId) {
     if (this.useMock) {
-      return await MockAPI.mockGetJobCards(jobId, userId)
+      return await MockAPI.mockGetJobCardsList(userId)
     } else {
-      return await AIJobAPI.getJobCards(jobId, userId)
+      return await AIJobAPI.getJobCardsList(userId)
     }
   }
 
   /**
-   * 根据职位描述生成职位画像和岗位详情
-   * 功能描述：根据user_id和职位描述生成职位画像和岗位详情
+   * 接口二：根据职位描述生成职位画像和岗位详情
+   * 功能描述：根据user_id和职位描述生成职位画像和岗位详情，返回发布岗位id
    * 入参：{ userId: number, description: string }
-   * 返回参数：{ success: boolean, data: object, message: string }
+   * 返回参数：{ success: boolean, data: { jobProfile: object, jobId: number }, message: string }
    * url地址：/jobs/generate-profile
    * 请求方式：POST
    */
@@ -54,11 +54,11 @@ class APIManager {
   // ==================== AI匹配相关API ====================
 
   /**
-   * 根据发布岗位id获取候选人列表
+   * 接口三：根据发布岗位id获取候选人列表
    * 功能描述：根据发布岗位id获取候选人list，携带type默认是智能匹配（后端根据type判断是否匹配过，有则数据库中返回，否则就匹配）
    * 入参：{ jobId: number, userId: number, type?: string }
-   * 返回参数：{ success: boolean, data: object, message: string }
-   * url地址：/candidates/by-job
+   * 返回参数：{ success: boolean, data: { candidates: array, total: number, matchingInfo: object, jobDetail: object, userId: number }, message: string }
+   * url地址：/candidates/match
    * 请求方式：POST
    */
   async getCandidatesByJobId(jobId, userId, type = '智能匹配') {

@@ -6,13 +6,13 @@ import { post } from './index.js'
  */
 
 /**
-* 根据发布岗位id获取候选人列表
-* 功能描述：根据发布岗位id获取候选人list，携带type默认是智能匹配（后端根据type判断是否匹配过，有则数据库中返回，否则就匹配）
-* 入参：{ jobId: number, userId: number, type?: string }
-* 返回参数：{ success: boolean, data: object, message: string }
-* url地址：/candidates/by-job
-* 请求方式：POST
-*/
+ * 接口三：根据发布岗位id获取候选人列表
+ * 功能描述：根据发布岗位id获取候选人list，携带type默认是智能匹配（后端根据type判断是否匹配过，有则数据库中返回，否则就匹配）
+ * 入参：{ jobId: number, userId: number, type?: string }
+ * 返回参数：{ success: boolean, data: { candidates: array, total: number, matchingInfo: object, jobDetail: object, userId: number }, message: string }
+ * url地址：/candidates/match
+ * 请求方式：POST
+ */
 export function getCandidatesByJobId(jobId, userId, type = '智能匹配') {
-  return post('/candidates/by-job', { job_id: jobId, user_id: userId, type })
+  return post('/candidates/match', { job_id: jobId, user_id: userId, type })
 }

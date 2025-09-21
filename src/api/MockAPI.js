@@ -48,23 +48,66 @@ function mockRequest(data, delay = MOCK_DELAY) {
 }
 
 /**
-* Mock - 获取职位卡片列表
-* 功能描述：根据发布岗位id和user_id获取职位卡片列表
-* 入参：jobId: number, userId: number
-* 返回参数：{ success: boolean, data: object, message: string }
-* url地址：/jobs/cards
+* Mock - 接口一：获取职位卡片列表
+* 功能描述：根据user_id获取职位卡片和岗位详情列表
+* 入参：userId: number
+* 返回参数：{ success: boolean, data: { jobCards: array, total: number, userId: number }, message: string }
+* url地址：/jobs/list
 * 请求方式：GET
 */
-export function mockGetJobCards(jobId, userId) {
-  const jobCards = [{
-    id: jobId,
-    title: "高级前端工程师",
-    department: "技术部",
-    location: "北京",
-    salaryRange: "25-35K",
-    skills: ["Vue.js", "React", "TypeScript"],
-    status: "active"
-  }];
+export function mockGetJobCardsList(userId) {
+  const jobCards = [
+    {
+      id: 123,
+      title: "高级前端工程师",
+      department: "技术部",
+      location: "北京",
+      salaryRange: "25-35K",
+      experience: "3-5年",
+      education: "本科",
+      skills: ["Vue.js", "React", "TypeScript"],
+      status: "active",
+      publishDate: "2024-01-15",
+      applicationCount: 25,
+      urgency: "high",
+      responsibilities: [
+        "负责前端项目架构设计和开发",
+        "参与产品需求分析和技术方案制定",
+        "优化前端性能，提升用户体验"
+      ],
+      requirements: [
+        "3年以上前端开发经验",
+        "熟练掌握Vue.js、React等框架",
+        "具备良好的团队协作能力"
+      ],
+      benefits: ["六险一金", "弹性工作", "技术培训", "年终奖金"]
+    },
+    {
+      id: 124,
+      title: "Java后端工程师",
+      department: "技术部",
+      location: "上海",
+      salaryRange: "20-30K",
+      experience: "2-4年",
+      education: "本科",
+      skills: ["Java", "Spring Boot", "MySQL", "Redis"],
+      status: "active",
+      publishDate: "2024-01-10",
+      applicationCount: 18,
+      urgency: "medium",
+      responsibilities: [
+        "负责后端服务架构设计和开发",
+        "参与数据库设计和优化",
+        "确保系统稳定性和安全性"
+      ],
+      requirements: [
+        "2年以上Java开发经验",
+        "熟练掌握Spring Boot框架",
+        "熟悉MySQL数据库操作"
+      ],
+      benefits: ["五险一金", "带薪年假", "团建活动", "技能培训"]
+    }
+  ];
   
   return mockRequest({
     jobCards,
@@ -74,34 +117,51 @@ export function mockGetJobCards(jobId, userId) {
 }
 
 /**
-* Mock - 根据职位描述生成职位画像和岗位详情
-* 功能描述：根据user_id和职位描述生成职位画像和岗位详情
+* Mock - 接口二：根据职位描述生成职位画像和岗位详情
+* 功能描述：根据user_id和职位描述生成职位画像和岗位详情，返回发布岗位id
 * 入参：{ userId: number, description: string }
-* 返回参数：{ success: boolean, data: object, message: string }
+* 返回参数：{ success: boolean, data: { jobProfile: object, jobId: number }, message: string }
 * url地址：/jobs/generate-profile
 * 请求方式：POST
 */
 export function mockGenerateJobProfile(userId, description) {
   return new Promise((resolve) => {
     setTimeout(() => {
+      const jobId = Date.now(); // 生成新的发布岗位id
       const jobProfile = {
-        id: `job_${Date.now()}`,
+        id: jobId,
         title: "高级前端工程师",
         department: "技术部",
         location: "北京",
         salaryRange: "25-35K",
+        experience: "3-5年",
+        education: "本科",
         skills: ["Vue.js", "React", "TypeScript"],
+        responsibilities: [
+          "负责前端项目架构设计和开发",
+          "参与产品需求分析和技术方案制定",
+          "优化前端性能，提升用户体验"
+        ],
         requirements: [
           "3年以上前端开发经验",
-          "熟练掌握Vue.js框架",
+          "熟练掌握Vue.js、React等框架",
           "具备良好的团队协作能力"
         ],
-        userId: userId
+        benefits: ["六险一金", "弹性工作", "技术培训", "年终奖金"],
+        status: "draft",
+        publishDate: new Date().toISOString().split('T')[0],
+        applicationCount: 0,
+        urgency: "high",
+        userId: userId,
+        description: description
       };
       
       resolve({
         success: true,
-        data: { jobProfile },
+        data: { 
+          jobProfile,
+          jobId: jobId // 返回发布岗位id，供后续调用接口三使用
+        },
         message: "职位画像生成成功"
       });
     }, 1200);
@@ -109,11 +169,11 @@ export function mockGenerateJobProfile(userId, description) {
 }
 
 /**
-* Mock - 根据发布岗位id获取候选人列表
-* 功能描述：根据发布岗位id获取候选人list，携带type默认是智能匹配
+* Mock - 接口三：根据发布岗位id获取候选人列表
+* 功能描述：根据发布岗位id获取候选人list，携带type默认是智能匹配（后端根据type判断是否匹配过，有则数据库中返回，否则就匹配）
 * 入参：{ jobId: number, userId: number, type?: string }
-* 返回参数：{ success: boolean, data: object, message: string }
-* url地址：/candidates/by-job
+* 返回参数：{ success: boolean, data: { candidates: array, total: number, matchingInfo: object, jobDetail: object, userId: number }, message: string }
+* url地址：/candidates/match
 * 请求方式：POST
 */
 export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
@@ -130,12 +190,16 @@ export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
           matchingInfo: {
             type: type,
             isFromCache: isFromCache,
-            processingTime: isFromCache ? '0.05s' : '1.5s'
+            processingTime: isFromCache ? '0.05s' : '1.5s',
+            totalMatched: candidates.length,
+            algorithm: "AI_SMART_MATCH_V2"
           },
           jobDetail: {
             id: jobId,
             title: "高级前端工程师",
-            department: "技术部"
+            department: "技术部",
+            location: "北京",
+            salaryRange: "25-35K"
           },
           userId: userId
         },
