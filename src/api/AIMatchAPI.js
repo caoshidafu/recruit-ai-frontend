@@ -1,7 +1,41 @@
 import { get, post } from './index.js'
 
 /**
-* 根据用户输入的职位描述匹配候选人（默认智能匹配，携带type）
+* 统一候选人匹配接口（接口2和3的合并版本）
+* 功能描述：根据岗位ID和用户ID获取候选人信息和岗位详情，支持实时匹配和缓存匹配
+* 入参：{ 
+*   jobId: string|number,  // 岗位ID（必填）
+*   userId: string|number, // 用户ID（必填）
+*   matchType?: string,    // 匹配类型：'smart'(默认智能匹配) | 'skill' | 'experience' | 'education'
+*   forceRefresh?: boolean,// 是否强制重新匹配，默认false（使用缓存）
+*   limit?: number,        // 限制返回候选人数量，默认10
+*   filters?: object       // 额外的筛选条件
+* }
+* 返回参数：{ 
+*   success: boolean, 
+*   data: {
+*     jobDetail: object,     // 岗位详情信息
+*     candidates: array,     // 匹配的候选人列表
+*     matchAnalysis: object, // 匹配分析结果
+*     isFromCache: boolean,  // 是否来自缓存
+*     lastMatchTime: string  // 上次匹配时间
+*   }, 
+*   message: string 
+* }
+* url地址：/jobs/{jobId}/candidates
+* 请求方式：POST
+*/
+export function getJobCandidatesWithMatching(data) {
+  const { jobId, matchType = 'smart', forceRefresh = false, ...otherData } = data
+  return post(`/jobs/${jobId}/candidates`, { 
+    matchType, 
+    forceRefresh,
+    ...otherData 
+  })
+}
+
+/**
+* 根据用户输入的职位描述匹配候选人（兼容旧接口）
 * 功能描述：基于用户输入的职位描述，使用AI技术匹配最适合的候选人
 * 入参：{ 
 *   description: string,   // 职位描述文本
@@ -20,6 +54,7 @@ import { get, post } from './index.js'
 * }
 * url地址：/candidates/ai-match-by-description
 * 请求方式：POST
+* @deprecated 推荐使用 getJobCandidatesWithMatching 统一接口
 */
 export function matchCandidatesByDescription(data) {
   const { matchType = 'smart', ...otherData } = data

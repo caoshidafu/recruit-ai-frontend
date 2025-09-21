@@ -1,11 +1,13 @@
 // API基础配置文件
-const BASE_URL = process.env.VUE_APP_API_BASE_URL || 'http://localhost:3000/api';
+import { API_CONFIG } from '../config/index.js';
+
+// 全局域名配置 - 默认localhost:8080，前缀recruit/ai
+const BASE_URL = API_CONFIG.BASE_URL;
 
 // 通用请求配置
 const defaultConfig = {
-  headers: {
-    'Content-Type': 'application/json',
-  }
+  headers: API_CONFIG.DEFAULT_HEADERS,
+  timeout: API_CONFIG.TIMEOUT
 };
 
 /**

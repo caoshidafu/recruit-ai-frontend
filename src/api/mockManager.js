@@ -422,7 +422,19 @@ class APIManager {
   // ==================== 新增：AI匹配相关API ====================
 
   /**
-   * 根据用户输入的职位描述匹配候选人
+   * 统一候选人匹配接口（推荐使用）
+   * 根据岗位ID和用户ID获取候选人信息和岗位详情，支持实时匹配和缓存匹配
+   */
+  async getJobCandidatesWithMatching(data) {
+    if (this.useMock) {
+      return await MockAPI.mockGetJobCandidatesWithMatching(data)
+    } else {
+      return await AIMatchAPI.getJobCandidatesWithMatching(data)
+    }
+  }
+
+  /**
+   * 根据用户输入的职位描述匹配候选人（兼容旧接口）
    */
   async matchCandidatesByDescription(data) {
     if (this.useMock) {

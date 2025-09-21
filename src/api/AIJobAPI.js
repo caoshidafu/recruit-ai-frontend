@@ -20,7 +20,7 @@ export function createJobByDescription(data) {
 }
 
 /**
- * 获取职位候选人和详情
+ * 获取职位候选人和详情（已废弃，请使用统一接口）
  * @description 根据职位ID获取关联的候选人列表和职位详情信息
  * @param {string} jobId - 职位ID
  * @param {Object} params - 查询参数
@@ -29,6 +29,7 @@ export function createJobByDescription(data) {
  * @param {string} params.matchType - 匹配类型
  * @returns {Promise} 返回职位详情和候选人列表
  * @url GET /api/jobs/{jobId}/candidates-and-details
+ * @deprecated 请使用 AIMatchAPI.getJobCandidatesWithMatching 统一接口
  */
 export function getJobCandidatesAndDetails(jobId, params = {}) {
   return get(`/jobs/${jobId}/candidates-and-details`, params)

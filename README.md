@@ -45,6 +45,9 @@ recruit-ai-frontend/
 │   │   ├── AIMatchAPI.js       # AI匹配API接口（核心业务）
 │   │   ├── MockAPI.js          # Mock API接口（包含所有模拟数据）
 │   │   └── mockManager.js      # API管理器（统一调用入口）
+│   ├── config/             # 配置目录
+│   │   ├── index.js            # 全局配置管理（域名、API等）
+│   │   └── env.example.js      # 环境变量配置示例
 │   ├── components/          # 组件目录
 │   │   ├── CandidateCard.vue              # 候选人卡片组件
 │   │   ├── CandidateAIAnalysisModal.vue   # 候选人AI分析模态框组件
@@ -234,6 +237,20 @@ recruit-ai-frontend/
 - `src/api/MOCKAPI.js`: Mock API接口实现
 - `src/api/mockManager.js`: API管理器，统一调用入口
 
+### 全局配置管理
+- `src/config/index.js`: 全局配置管理文件，统一管理域名、API等配置
+- `src/config/env.example.js`: 环境变量配置示例文件
+
+#### 域名配置
+项目支持灵活的域名配置，默认配置：
+- **域名**: localhost:8080
+- **API前缀**: /recruit/ai
+- **完整API地址**: http://localhost:8080/recruit/ai
+
+**配置方式：**
+1. **环境变量配置（推荐）**：在项目根目录创建 `.env.development` 或 `.env.production` 文件
+2. **代码配置**：修改 `src/config/index.js` 中的默认配置
+
 ### 使用方式
 
 ```javascript
@@ -267,7 +284,19 @@ const candidates = await apiManager.getSmartCandidates()
 
 #### 候选人相关接口
 
-**统一推荐接口（推荐使用）:**
+**统一候选人匹配接口（推荐使用）:**
+- `getJobCandidatesWithMatching(params)`: 统一候选人匹配接口（合并原接口2和3）
+  - 根据岗位ID和用户ID获取候选人信息和岗位详情
+  - 支持实时匹配和缓存匹配机制
+  - 参数说明：
+    - `jobId`: 岗位ID（必填）
+    - `userId`: 用户ID（必填）
+    - `matchType`: 匹配类型 - 'smart'(默认) | 'skill' | 'experience' | 'education'
+    - `forceRefresh`: 是否强制重新匹配（默认false，使用缓存）
+    - `limit`: 限制返回候选人数量
+    - `filters`: 额外的筛选条件
+
+**兼容旧接口（保留向后兼容）:**
 - `getRecommendedCandidates(params)`: 获取推荐候选人列表（统一接口）
   - 支持通过 `type` 参数区分推荐类型：
     - `'smart'`: 智能推荐（默认）
@@ -295,6 +324,42 @@ const candidates = await apiManager.getSmartCandidates()
 - `degree`: 学历要求（学历推荐时使用）
 
 **使用示例:**
+
+**新版统一接口（推荐）:**
+```javascript
+// 智能匹配（使用缓存）
+const result = await apiManager.getJobCandidatesWithMatching({
+  jobId: 1,
+  userId: 1,
+  matchType: 'smart',
+  forceRefresh: false,
+  limit: 10
+})
+
+// 强制刷新的经验匹配
+const expResult = await apiManager.getJobCandidatesWithMatching({
+  jobId: 2,
+  userId: 1,
+  matchType: 'experience',
+  forceRefresh: true,
+  filters: {
+    minExperience: 3,
+    location: '北京'
+  }
+})
+
+// 学历匹配
+const eduResult = await apiManager.getJobCandidatesWithMatching({
+  jobId: 3,
+  userId: 1,
+  matchType: 'education',
+  filters: {
+    degree: '本科'
+  }
+})
+```
+
+**兼容旧接口:**
 ```javascript
 // 智能推荐（默认）
 const smartCandidates = await apiManager.getRecommendedCandidates({ jobId: 1 })

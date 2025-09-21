@@ -2094,7 +2094,81 @@ export function mockGetUserJobStats() {
 // ==================== 新增：AI匹配相关Mock API ====================
 
 /**
-* Mock - 根据用户输入的职位描述匹配候选人
+* Mock - 统一候选人匹配接口
+* 功能描述：根据岗位ID和用户ID获取候选人信息和岗位详情，支持实时匹配和缓存匹配
+* 入参：{ jobId: string|number, userId: string|number, matchType?: string, forceRefresh?: boolean, limit?: number, filters?: object }
+* 返回参数：{ success: boolean, data: { jobDetail: object, candidates: array, matchAnalysis: object, isFromCache: boolean, lastMatchTime: string }, message: string }
+* url地址：/jobs/{jobId}/candidates
+* 请求方式：POST
+*/
+export function mockGetJobCandidatesWithMatching(data) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const { jobId, userId, matchType = 'smart', forceRefresh = false, limit = 10 } = data;
+      
+      // 模拟检查是否使用缓存
+      const isFromCache = !forceRefresh && Math.random() > 0.3; // 70%概率使用缓存
+      const lastMatchTime = isFromCache ? 
+        new Date(Date.now() - Math.random() * 60 * 60 * 1000).toISOString() : // 1小时内的随机时间
+        new Date().toISOString();
+      
+      // 获取岗位详情
+      const jobDetail = mockData.jobs.find(job => job.id == jobId) || mockData.jobs[0];
+      
+      // 根据匹配类型选择候选人池
+      let candidatePool = [];
+      switch (matchType) {
+        case 'skill':
+          candidatePool = mockData.candidates.smart.filter(c => 
+            c.skills.some(skill => jobDetail.requirements.some(req => req.toLowerCase().includes(skill.toLowerCase())))
+          );
+          break;
+        case 'experience':
+          candidatePool = mockData.candidates.experience;
+          break;
+        case 'education':
+          candidatePool = mockData.candidates.education;
+          break;
+        default:
+          candidatePool = mockData.candidates.smart;
+      }
+      
+      // 限制返回数量
+      const selectedCandidates = candidatePool.slice(0, limit);
+      
+      // 模拟匹配分析结果
+      const matchAnalysis = {
+        totalMatched: selectedCandidates.length,
+        averageScore: selectedCandidates.reduce((sum, c) => sum + c.matchScore, 0) / selectedCandidates.length,
+        matchCriteria: {
+          skillMatch: Math.floor(Math.random() * 20) + 80,
+          experienceMatch: Math.floor(Math.random() * 15) + 75,
+          educationMatch: Math.floor(Math.random() * 25) + 70
+        },
+        processingTime: isFromCache ? '0.05s' : `${(Math.random() * 2 + 1).toFixed(2)}s`
+      };
+      
+      resolve({
+        success: true,
+        data: {
+          jobDetail: {
+            ...jobDetail,
+            candidateCount: selectedCandidates.length,
+            matchingDate: lastMatchTime
+          },
+          candidates: selectedCandidates,
+          matchAnalysis,
+          isFromCache,
+          lastMatchTime
+        },
+        message: `成功获取岗位 ${jobDetail.title} 的 ${selectedCandidates.length} 个匹配候选人${isFromCache ? '（来自缓存）' : '（实时匹配）'}`
+      });
+    }, isFromCache ? 200 : 800); // 缓存响应更快
+  });
+}
+
+/**
+* Mock - 根据用户输入的职位描述匹配候选人（兼容旧接口）
 * 功能描述：基于用户输入的职位描述，使用AI技术匹配最适合的候选人
 * 入参：{ description: string, matchType?: string, limit?: number, filters?: object }
 * 返回参数：{ success: boolean, data: { candidates: array, matchAnalysis: object, suggestions: array }, message: string }

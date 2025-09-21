@@ -19,16 +19,17 @@
 
 ### 基础信息
 
-- **Base URL**: `http://localhost:3000/api`
+- **Base URL**: `http://localhost:8080/recruit/ai`
 - **Content-Type**: `application/json`
 - **字符编码**: `UTF-8`
 
 ### 四个核心后端接口
 
 1. **根据用户输入的职位描述生成职位卡片和岗位详情**
-2. **根据用户输入的职位描述匹配候选人（默认智能匹配，携带type）**
-3. **根据发布新岗位id获取候选人信息以及岗位详情信息**
-4. **根据用户id返回关联的职位卡片和岗位详情list**
+2. **统一候选人匹配接口（合并原接口2和3）** - 根据岗位ID和用户ID获取候选人信息和岗位详情
+3. **根据用户id返回关联的职位卡片和岗位详情list**
+
+> **接口整合说明**：原接口2（根据职位描述匹配候选人）和接口3（根据岗位id获取候选人信息）已合并为新的统一接口。后端通过判断是否有缓存数据来决定是否需要重新匹配，提供更高效的服务。
 
 ---
 
@@ -382,12 +383,124 @@ GET /users/user_12345/jobs?status=active&limit=5&offset=0
 
 ## AI匹配接口
 
-### 5. 根据职位描述匹配候选人
+### 2. 统一候选人匹配接口（推荐使用）
+
+**接口名称**: 根据岗位ID和用户ID获取候选人信息和岗位详情  
+**功能描述**: 统一的候选人匹配接口，支持实时匹配和缓存匹配，后端根据type参数决定是否需要重新匹配  
+**URL地址**: `/jobs/{jobId}/candidates`  
+**请求方式**: `POST`
+
+#### 请求参数
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| jobId | string/number | ✅ | 岗位ID（URL参数） |
+| userId | string/number | ✅ | 用户ID |
+| matchType | string | ❌ | 匹配类型，默认'smart' |
+| forceRefresh | boolean | ❌ | 是否强制重新匹配，默认false |
+| limit | number | ❌ | 限制返回候选人数量，默认10 |
+| filters | object | ❌ | 额外的筛选条件 |
+
+#### matchType 可选值
+
+- `smart` - 智能匹配（默认）
+- `skill` - 技能匹配
+- `experience` - 经验匹配
+- `education` - 学历匹配
+
+#### 请求示例
+
+```json
+{
+  "userId": 1,
+  "matchType": "smart",
+  "forceRefresh": false,
+  "limit": 10,
+  "filters": {
+    "minExperience": 3,
+    "location": "北京"
+  }
+}
+```
+
+#### 返回参数
+
+| 参数名 | 类型 | 说明 |
+|--------|------|------|
+| success | boolean | 请求是否成功 |
+| data | object | 返回的数据 |
+| data.jobDetail | object | 岗位详情信息 |
+| data.candidates | array | 匹配的候选人列表 |
+| data.matchAnalysis | object | 匹配分析结果 |
+| data.isFromCache | boolean | 是否来自缓存 |
+| data.lastMatchTime | string | 上次匹配时间 |
+| message | string | 响应消息 |
+
+#### 返回示例
+
+```json
+{
+  "success": true,
+  "data": {
+    "jobDetail": {
+      "id": 1,
+      "title": "高级前端工程师",
+      "department": "技术部",
+      "location": "北京",
+      "salary": "25-40K",
+      "candidateCount": 8,
+      "matchingDate": "2024-01-15T10:30:00Z"
+    },
+    "candidates": [
+      {
+        "id": 1,
+        "name": "张三",
+        "title": "前端工程师",
+        "experience": "5年",
+        "education": "本科",
+        "location": "北京",
+        "matchScore": 94,
+        "skills": ["Vue.js", "JavaScript", "TypeScript"],
+        "matchReasons": [
+          "技能匹配度高：Vue.js、JavaScript、TypeScript",
+          "工作经验符合要求：5年前端开发经验"
+        ]
+      }
+    ],
+    "matchAnalysis": {
+      "totalMatched": 8,
+      "averageScore": 87,
+      "matchCriteria": {
+        "skillMatch": 92,
+        "experienceMatch": 85,
+        "educationMatch": 88
+      },
+      "processingTime": "0.05s"
+    },
+    "isFromCache": true,
+    "lastMatchTime": "2024-01-15T10:30:00Z"
+  },
+  "message": "成功获取岗位 高级前端工程师 的 8 个匹配候选人（来自缓存）"
+}
+```
+
+#### 接口逻辑说明
+
+1. **缓存机制**: 后端会检查是否已有该岗位的匹配缓存
+2. **智能判断**: 如果 `forceRefresh=false` 且有缓存，直接返回缓存结果
+3. **实时匹配**: 如果 `forceRefresh=true` 或无缓存，执行实时AI匹配
+4. **类型支持**: 支持多种匹配类型，满足不同筛选需求
+5. **性能优化**: 缓存响应速度更快，实时匹配提供最新结果
+
+---
+
+### 5. 根据职位描述匹配候选人（兼容旧接口）
 
 **接口名称**: 根据用户输入的职位描述匹配候选人（默认智能匹配，携带type）  
 **功能描述**: 基于用户输入的职位描述，使用AI技术匹配最适合的候选人  
 **URL地址**: `/candidates/ai-match-by-description`  
-**请求方式**: `POST`
+**请求方式**: `POST`  
+**状态**: `已废弃` - 推荐使用统一候选人匹配接口
 
 #### 请求参数
 
