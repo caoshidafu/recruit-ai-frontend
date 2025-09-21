@@ -279,7 +279,29 @@ const candidates = await apiManager.getSmartCandidates()
 - **生产环境**: 需要配置 `VUE_APP_USE_MOCK=false` 使用真实API
 - **Mock数据**: 基于 `src/data/mockData.js` 提供模拟数据
 
-### 主要API接口
+### 三个核心后端接口
+
+#### 1. AI职位创建接口 (AIJobAPI.js)
+- `createJobByDescription(data)`: 根据职位描述生成职位卡片和详情
+  - 支持AI解析职位描述，自动生成结构化职位信息
+  - 支持可选的公司信息和配置选项
+  - 内置参数验证和标准化处理
+
+#### 2. 统一候选人匹配接口 (AIMatchAPI.js)
+- `getJobCandidatesWithMatching(data)`: 统一的候选人匹配接口
+  - 支持智能匹配、技能匹配、经验匹配、学历匹配等多种匹配类型
+  - 支持实时匹配和缓存匹配机制
+  - 提供丰富的筛选和排序选项
+  - 支持分页查询和高级过滤条件
+
+#### 3. 用户职位管理接口 (UserAPI.js)
+- `getUserJobs(userId, params)`: 获取用户关联的职位列表
+  - 支持多维度筛选：状态、部门、地点、紧急程度、时间范围
+  - 支持关键词搜索和灵活排序
+  - 支持分页查询和统计信息
+  - 提供最近活动数据
+
+### 扩展API接口
 
 #### 职位相关接口
 - `getJobList()`: 获取职位列表
@@ -287,8 +309,6 @@ const candidates = await apiManager.getSmartCandidates()
 - `createJob(jobData)`: 创建新职位
 - `updateJob(jobId, jobData)`: 更新职位信息
 - `getJobCandidateStats(jobId)`: 获取职位候选人统计
-- `parseJobDescription(description)`: AI解析职位描述，提取技能要求和工作职责
-- `analyzeJobRequirements(jobId)`: 分析职位需求，生成匹配标签
 
 #### 候选人相关接口
 
@@ -333,37 +353,66 @@ const candidates = await apiManager.getSmartCandidates()
 
 **使用示例:**
 
-**新版统一接口（推荐）:**
+**三个核心接口使用示例:**
 ```javascript
-// 智能匹配（使用缓存）
-const result = await apiManager.getJobCandidatesWithMatching({
-  jobId: 1,
+// 1. 创建AI职位
+const jobResult = await apiManager.createJobByDescription({
+  description: "招聘高级前端工程师，要求熟练掌握Vue.js和React，有5年以上开发经验",
+  userId: 1,
+  options: {
+    department: "技术部",
+    urgency: "high"
+  }
+})
+
+// 2. 统一候选人匹配 - 智能匹配（使用缓存）
+const smartResult = await apiManager.getJobCandidatesWithMatching({
+  jobId: jobResult.data.jobId,
   userId: 1,
   matchType: 'smart',
   forceRefresh: false,
   limit: 10
 })
 
-// 强制刷新的经验匹配
-const expResult = await apiManager.getJobCandidatesWithMatching({
+// 3. 获取用户职位列表
+const userJobsResult = await apiManager.getUserJobs(1, {
+  status: 'active',
+  sortBy: 'createdAt',
+  sortOrder: 'desc',
+  limit: 10
+})
+```
+
+**高级匹配示例:**
+```javascript
+// 技能匹配，带筛选条件
+const skillResult = await apiManager.getJobCandidatesWithMatching({
   jobId: 2,
   userId: 1,
-  matchType: 'experience',
+  matchType: 'skill',
   forceRefresh: true,
   filters: {
-    minExperience: 3,
-    location: '北京'
-  }
+    minScore: 85,
+    skills: ['Vue.js', 'React', 'TypeScript'],
+    location: '北京',
+    minExperience: 3
+  },
+  sortBy: 'matchScore',
+  limit: 15
 })
 
-// 学历匹配
-const eduResult = await apiManager.getJobCandidatesWithMatching({
+// 经验匹配，分页查询
+const experienceResult = await apiManager.getJobCandidatesWithMatching({
   jobId: 3,
   userId: 1,
-  matchType: 'education',
+  matchType: 'experience',
   filters: {
-    degree: '本科'
-  }
+    minExperience: 3,
+    maxExperience: 8
+  },
+  limit: 10,
+  offset: 20,
+  sortBy: 'experience'
 })
 ```
 
