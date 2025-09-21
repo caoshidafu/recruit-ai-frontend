@@ -113,18 +113,14 @@
 
 ### 请求参数
 
+接口2通过接口1返回的职位ID和匹配类型来获取候选人匹配结果。
+
 #### 智能推荐示例 (type: 1)
 
 ```json
 {
-  "description": "招聘一名高级前端工程师，负责Vue.js项目开发，需要3年以上经验",
-  "type": 1,
-  "limit": 10,
-  "filters": {
-    "experience": "3年以上",
-    "location": "北京",
-    "expectedSalary": "20-40K"
-  }
+  "id": 1,
+  "type": 1
 }
 ```
 
@@ -132,14 +128,8 @@
 
 ```json
 {
-  "description": "熟练掌握Vue.js、TypeScript、Node.js等技术栈",
-  "type": 2,
-  "limit": 8,
-  "filters": {
-    "requiredSkills": ["Vue.js", "TypeScript", "Node.js"],
-    "skillLevel": "熟练",
-    "location": "北京"
-  }
+  "id": 1,
+  "type": 2
 }
 ```
 
@@ -147,17 +137,14 @@
 
 ```json
 {
-  "description": "需要5-8年前端开发经验，有大型项目架构经验",
-  "type": 3,
-  "limit": 12,
-  "filters": {
-    "minExperience": 5,
-    "maxExperience": 8,
-    "experienceType": "前端开发",
-    "projectScale": "大型项目"
-  }
+  "id": 1,
+  "type": 3
 }
 ```
+
+**参数说明：**
+- `id`: 职位ID（从接口1返回的职位ID）
+- `type`: 匹配类型枚举值（1=智能推荐，2=技能匹配，3=经验匹配）
 
 ### 响应数据
 
