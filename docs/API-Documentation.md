@@ -77,7 +77,7 @@
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
 | description | string | ✅ | 用户输入的职位描述文本 |
-| userId | string | ✅ | 用户ID |
+| userId | number | ✅ | 用户ID |
 | companyInfo | object | ❌ | 可选的公司信息 |
 
 #### 请求示例
@@ -85,7 +85,7 @@
 ```json
 {
   "description": "招聘高级前端工程师，要求熟练掌握Vue.js和React，有5年以上开发经验，能够独立负责项目开发，薪资25-40K，工作地点北京",
-  "userId": "user_12345",
+  "userId": 1,
   "companyInfo": {
     "name": "科技有限公司",
     "industry": "互联网"
@@ -123,7 +123,7 @@
     "views": 1,
     "publishDays": 0
   },
-  "userId": "user_12345"
+  "userId": 1
 }
 ```
 
@@ -152,7 +152,7 @@
   "benefits": ["五险一金", "弹性工作", "股权激励"],
   "createdAt": "2024-01-15T10:00:00Z",
   "updatedAt": "2024-01-15T10:00:00Z",
-  "userId": "user_12345",
+  "userId": 1,
   "aiGenerated": true,
   "aiConfidence": 0.92
 }
@@ -273,7 +273,7 @@ GET /jobs/job_1705123456789_abc123def/candidates-and-details
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
-| userId | string | ✅ | 用户ID |
+| userId | number | ✅ | 用户ID |
 
 #### 查询参数
 
@@ -351,7 +351,7 @@ GET /users/user_12345/jobs?status=active&limit=5&offset=0
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
-| userId | string | ✅ | 用户ID |
+| userId | number | ✅ | 用户ID |
 
 #### 返回参数
 
@@ -474,7 +474,7 @@ GET /users/user_12345/jobs?status=active&limit=5&offset=0
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
-| userId | string | ✅ | 用户ID |
+| userId | number | ✅ | 用户ID |
 
 #### 查询参数
 
@@ -612,7 +612,7 @@ GET /users/user_12345/jobs?status=active&limit=5&offset=0
 // 1. 创建职位
 const jobResult = await apiManager.createJobByDescription({
   description: "招聘高级前端工程师...",
-  userId: "user_12345"
+  userId: 1
 });
 
 const jobId = jobResult.data.jobId;

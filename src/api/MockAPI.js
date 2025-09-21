@@ -1775,7 +1775,7 @@ export function mockGetCandidateAIAnalysis(candidateId, analysisType = 'detailed
 /**
 * Mock - 根据用户输入的职位描述生成职位卡片和岗位详情
 * 功能描述：使用AI技术解析用户输入的职位描述，生成结构化的职位卡片和详细信息
-* 入参：{ user_id: string, description: string, companyInfo?: object }
+* 入参：{ user_id: number, description: string, companyInfo?: object }
 * 返回参数：{ success: boolean, data: { jobId: string, jobCard: object, jobDetails: object }, message: string }
 * url地址：/jobs/ai-create
 * 请求方式：POST
@@ -1911,7 +1911,7 @@ export function mockGetJobCandidatesAndDetails(jobId) {
 /**
 * Mock - 根据用户id返回关联的职位卡片和岗位详情list
 * 功能描述：获取指定用户创建的所有职位信息，包括职位卡片和详情
-* 入参：{ userId: string, status?: string, limit?: number, offset?: number }
+* 入参：{ userId: number, status?: string, limit?: number, offset?: number }
 * 返回参数：{ success: boolean, data: { jobs: array, total: number, summary: object }, message: string }
 * url地址：/users/{userId}/jobs
 * 请求方式：GET
@@ -2051,7 +2051,7 @@ export function mockGetUserJobs(userId, params = {}) {
 /**
 * Mock - 获取用户职位统计信息
 * 功能描述：获取用户的职位创建和管理统计信息
-* 入参：{ userId: string }
+* 入参：{ userId: number }
 * 返回参数：{ success: boolean, data: object, message: string }
 * url地址：/users/{userId}/job-stats
 * 请求方式：GET
@@ -2171,7 +2171,7 @@ export function mockMatchCandidatesByDescription(data) {
 /**
 * Mock - 获取用户的匹配历史
 * 功能描述：获取用户的候选人匹配历史记录
-* 入参：{ userId: string, limit?: number, offset?: number }
+* 入参：{ userId: number, limit?: number, offset?: number }
 * 返回参数：{ success: boolean, data: { matchHistory: array, total: number }, message: string }
 * url地址：/candidates/match-history/{userId}
 * 请求方式：GET

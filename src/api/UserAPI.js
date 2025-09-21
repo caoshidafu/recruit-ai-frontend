@@ -4,7 +4,7 @@ import { get, put, del } from './index.js'
 * 根据用户id返回关联的职位卡片和岗位详情list
 * 功能描述：获取指定用户创建的所有职位信息，包括职位卡片和详情
 * 入参：{ 
-*   userId: string,        // 用户ID
+*   userId: number,        // 用户ID
 *   status?: string,       // 可选的职位状态筛选 ('active', 'inactive', 'draft')
 *   limit?: number,        // 限制返回数量
 *   offset?: number        // 偏移量
@@ -28,7 +28,7 @@ export function getUserJobs(userId, params = {}) {
 /**
 * 获取用户职位统计信息
 * 功能描述：获取用户的职位创建和管理统计信息
-* 入参：{ userId: string } - 用户ID
+* 入参：{ userId: number } - 用户ID
 * 返回参数：{ 
 *   success: boolean, 
 *   data: {
@@ -51,7 +51,7 @@ export function getUserJobStats(userId) {
 * 更新用户职位状态
 * 功能描述：批量更新用户的职位状态
 * 入参：{ 
-*   userId: string,        // 用户ID
+*   userId: number,        // 用户ID
 *   jobIds: array,         // 职位ID数组
 *   status: string         // 新状态 ('active', 'inactive', 'draft')
 * }
@@ -67,7 +67,7 @@ export function updateUserJobsStatus(userId, jobIds, status) {
 * 删除用户职位
 * 功能描述：删除用户指定的职位
 * 入参：{ 
-*   userId: string,        // 用户ID
+*   userId: number,        // 用户ID
 *   jobIds: array          // 要删除的职位ID数组
 * }
 * 返回参数：{ success: boolean, message: string }
@@ -82,7 +82,7 @@ export function deleteUserJobs(userId, jobIds) {
 * 获取用户最近活动
 * 功能描述：获取用户在招聘系统中的最近活动记录
 * 入参：{ 
-*   userId: string,        // 用户ID
+*   userId: number,        // 用户ID
 *   limit?: number,        // 限制返回数量，默认20
 *   activityType?: string  // 活动类型筛选 ('job_create', 'candidate_match', 'job_update')
 * }
@@ -104,7 +104,7 @@ export function getUserRecentActivities(userId, params = {}) {
 /**
 * 获取用户偏好设置
 * 功能描述：获取用户的招聘偏好设置
-* 入参：{ userId: string } - 用户ID
+* 入参：{ userId: number } - 用户ID
 * 返回参数：{ 
 *   success: boolean, 
 *   data: {

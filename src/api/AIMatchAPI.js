@@ -137,7 +137,7 @@ export function getMatchAnalysis(matchId, analysisLevel = 'detailed') {
 * 保存匹配结果
 * 功能描述：保存AI匹配的候选人结果，便于后续管理
 * 入参：{ 
-*   userId: string,        // 用户ID
+*   userId: number,        // 用户ID
 *   jobDescription: string,// 职位描述
 *   matchResults: array,   // 匹配结果
 *   matchType: string      // 匹配类型
@@ -160,7 +160,7 @@ export function saveMatchResults(data) {
 * 获取用户的匹配历史
 * 功能描述：获取用户的候选人匹配历史记录
 * 入参：{ 
-*   userId: string,        // 用户ID
+*   userId: number,        // 用户ID
 *   limit?: number,        // 限制数量
 *   offset?: number        // 偏移量
 * }

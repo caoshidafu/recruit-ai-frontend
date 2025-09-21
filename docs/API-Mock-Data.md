@@ -88,7 +88,7 @@
         "团队建设活动",
         "带薪年假"
       ],
-      "userId": "user_001"
+      "userId": 1
     }
   },
   "message": "职位解析成功"
@@ -502,7 +502,7 @@
         "团队建设活动",
         "带薪年假"
       ],
-      "userId": "user_001",
+      "userId": 1,
       "status": "active",
       "candidateCount": 25,
       "interviewCount": 5,
@@ -582,7 +582,7 @@
 
 ```json
 {
-  "userId": "user_001",
+  "userId": 1,
   "filters": {
     "status": "all",
     "dateRange": {
@@ -653,7 +653,7 @@
             "股权激励",
             "技术培训"
           ],
-          "userId": "user_001"
+          "userId": 1
         }
       },
       {
@@ -701,7 +701,7 @@
             "技术培训",
             "弹性工作"
           ],
-          "userId": "user_001"
+          "userId": 1
         }
       }
     ],
