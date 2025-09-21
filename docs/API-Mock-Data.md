@@ -94,20 +94,7 @@
       "userId": "user_001",
       "aiGenerated": true,
       "aiConfidence": 0.92
-    },
-    "extractedInfo": {
-      "title": "高级前端工程师",
-      "experience": "3年以上",
-      "skills": ["Vue.js", "TypeScript", "组件化开发"],
-      "education": "本科及以上",
-      "workType": "全职"
-    },
-    "analysisConfidence": 0.92,
-    "suggestions": [
-      "建议在职位描述中明确技术栈版本要求",
-      "可以增加对候选人软技能的描述",
-      "薪资范围建议更加具体"
-    ]
+    }
   },
   "message": "职位解析成功"
 }
