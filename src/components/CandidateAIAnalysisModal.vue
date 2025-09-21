@@ -222,7 +222,7 @@ export default {
         error.value = ''
 
         // 调用AI分析API
-        const response = await apiManager.getCandidateAIAnalysis(props.candidate.id)
+        const response = await apiManager.getCandidateAIAnalysis(props.candidate.id, { user_id: '1' })
         
         if (response.success) {
           analysisData.value = response.data

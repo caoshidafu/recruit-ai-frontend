@@ -230,7 +230,7 @@ export default {
         }, 800)
 
         // 1. 先解析职位描述
-        const parseResponse = await apiManager.parseJobDescription(jobForm.description)
+        const parseResponse = await apiManager.parseJobDescription(jobForm.description, { user_id: '1' })
         
         clearInterval(progressInterval)
         analysisProgress.value = 3
@@ -339,7 +339,8 @@ export default {
           description: jobForm.description,
           aiAnalysis: aiAnalysis.value,
           status: 'active',
-          publishedAt: new Date().toISOString()
+          publishedAt: new Date().toISOString(),
+          user_id: '1'
         }
 
         const createResponse = await apiManager.createJob(jobData)
@@ -377,7 +378,8 @@ export default {
           aiAnalysis: aiAnalysis.value,
           matchResult: matchResult.value,
           status: 'active',
-          publishedAt: new Date().toISOString()
+          publishedAt: new Date().toISOString(),
+          user_id: '1'
         }
 
         const response = await apiManager.createJob(jobData)
