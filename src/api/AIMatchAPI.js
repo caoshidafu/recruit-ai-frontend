@@ -1,109 +1,15 @@
 import { get, post } from './index.js'
 
 /**
-* 统一候选人匹配接口（接口2和3的合并版本）
-* 功能描述：根据岗位ID和用户ID获取候选人信息和岗位详情，支持实时匹配和缓存匹配
-* 入参：{ 
-*   jobId: string|number,  // 岗位ID（必填）
-*   userId: string|number, // 用户ID（必填）
-*   matchType?: string,    // 匹配类型：'smart'(默认智能匹配) | 'skill' | 'experience' | 'education'
-*   forceRefresh?: boolean,// 是否强制重新匹配，默认false（使用缓存）
-*   limit?: number,        // 限制返回候选人数量，默认10
-*   offset?: number,       // 分页偏移量，默认0
-*   filters?: object       // 额外的筛选条件
-*   filters.minScore?: number,    // 最小匹配分数
-*   filters.location?: string,    // 地理位置
-*   filters.minExperience?: number, // 最少工作年限
-*   filters.maxExperience?: number, // 最多工作年限
-*   filters.skills?: array,       // 必需技能
-*   filters.education?: string,   // 学历要求
-*   sortBy?: string,       // 排序字段：'matchScore'(默认) | 'experience' | 'education' | 'appliedTime'
-*   sortOrder?: string     // 排序顺序：'desc'(默认) | 'asc'
-* }
-* 返回参数：{ 
-*   success: boolean, 
-*   data: {
-*     jobDetail: object,     // 岗位详情信息
-*     candidates: array,     // 匹配的候选人列表
-*     matchAnalysis: object, // 匹配分析结果
-*     pagination: object,    // 分页信息
-*     isFromCache: boolean,  // 是否来自缓存
-*     lastMatchTime: string, // 上次匹配时间
-*     processingTime: string // 处理时间
-*   }, 
-*   message: string 
-* }
+* 统一候选人匹配接口
+* 功能描述：根据岗位ID和用户ID获取候选人信息和岗位详情
+* 入参：jobId: string|number, userId: string|number
+* 返回参数：{ success: boolean, data: object, message: string }
 * url地址：/jobs/{jobId}/candidates
 * 请求方式：POST
-* @example
-* // 基础调用（使用缓存）
-* getJobCandidatesWithMatching({
-*   jobId: 1,
-*   userId: 1
-* })
-* 
-* // 智能匹配，强制刷新
-* getJobCandidatesWithMatching({
-*   jobId: 1,
-*   userId: 1,
-*   matchType: 'smart',
-*   forceRefresh: true,
-*   limit: 20
-* })
-* 
-* // 技能匹配，带筛选条件
-* getJobCandidatesWithMatching({
-*   jobId: 2,
-*   userId: 1,
-*   matchType: 'skill',
-*   filters: {
-*     minScore: 80,
-*     location: '北京',
-*     skills: ['Vue.js', 'React']
-*   },
-*   sortBy: 'matchScore'
-* })
 */
-export function getJobCandidatesWithMatching(data) {
-  // 参数验证
-  if (!data.jobId || !data.userId) {
-    throw new Error('jobId和userId是必填参数')
-  }
-
-  const { 
-    jobId, 
-    matchType = 'smart', 
-    forceRefresh = false,
-    limit = 10,
-    offset = 0,
-    sortBy = 'matchScore',
-    sortOrder = 'desc',
-    filters = {},
-    ...otherData 
-  } = data
-
-  // 标准化参数格式
-  const requestData = { 
-    userId: Number(data.userId),
-    matchType,
-    forceRefresh,
-    limit: Math.min(Math.max(Number(limit), 1), 50), // 限制在1-50之间
-    offset: Math.max(Number(offset), 0),
-    sortBy,
-    sortOrder,
-    filters: {
-      minScore: filters.minScore ? Number(filters.minScore) : undefined,
-      location: filters.location?.trim(),
-      minExperience: filters.minExperience ? Number(filters.minExperience) : undefined,
-      maxExperience: filters.maxExperience ? Number(filters.maxExperience) : undefined,
-      skills: Array.isArray(filters.skills) ? filters.skills : undefined,
-      education: filters.education?.trim(),
-      ...filters
-    },
-    ...otherData 
-  }
-
-  return post(`/jobs/${jobId}/candidates`, requestData)
+export function getJobCandidatesWithMatching(jobId, userId) {
+  return post(`/jobs/${jobId}/candidates`, { userId })
 }
 
 /**

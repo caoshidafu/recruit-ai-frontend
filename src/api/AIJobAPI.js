@@ -7,61 +7,14 @@ import { get, post, put } from './index'
 
 /**
  * 根据职位描述生成职位信息
- * @description 使用AI分析职位描述，自动生成职位卡片和详情信息
- * @param {Object} data - 请求数据
- * @param {string} data.description - 职位描述文本
- * @param {number} data.userId - 用户ID
- * @param {Object} data.companyInfo - 可选的公司信息
- * @param {Object} data.options - 可选配置选项
- * @param {string} data.options.industry - 行业类型
- * @param {string} data.options.department - 部门
- * @param {string} data.options.urgency - 紧急程度 ('low', 'normal', 'high')
- * @param {number} data.options.headcount - 招聘人数
- * @returns {Promise<Object>} 返回生成的职位信息
- * @url POST /jobs/ai-create
- * @example
- * // 基础调用
- * createJobByDescription({
- *   description: "招聘高级前端工程师...",
- *   userId: 1
- * })
- * 
- * // 带完整选项的调用
- * createJobByDescription({
- *   description: "招聘高级前端工程师...",
- *   userId: 1,
- *   companyInfo: {
- *     name: "科技有限公司",
- *     industry: "互联网"
- *   },
- *   options: {
- *     department: "技术部",
- *     urgency: "high",
- *     headcount: 2
- *   }
- * })
+ * 功能描述：使用AI分析职位描述，自动生成职位卡片和详情信息
+ * 入参：{ description: string, userId: number }
+ * 返回参数：{ success: boolean, data: object, message: string }
+ * url地址：/jobs/ai-create
+ * 请求方式：POST
  */
-export function createJobByDescription(data) {
-  // 参数验证
-  if (!data.description || !data.userId) {
-    throw new Error('职位描述和用户ID是必填参数')
-  }
-
-  // 标准化参数格式
-  const requestData = {
-    description: data.description.trim(),
-    userId: Number(data.userId),
-    companyInfo: data.companyInfo || {},
-    options: {
-      industry: 'tech',
-      department: '技术部',
-      urgency: 'normal',
-      headcount: 1,
-      ...data.options
-    }
-  }
-
-  return post('/jobs/ai-create', requestData)
+export function createJobByDescription(description, userId) {
+  return post('/jobs/ai-create', { description, userId })
 }
 
 /**

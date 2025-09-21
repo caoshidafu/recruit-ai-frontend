@@ -912,38 +912,18 @@ GET /users/1/jobs?dateRange.startDate=2024-01-01&dateRange.endDate=2024-12-31&so
 
 ```javascript
 // 1. 根据职位描述创建职位
-const jobResult = await apiManager.createJobByDescription({
-  description: "招聘高级前端工程师，要求熟练掌握Vue.js和React，有5年以上开发经验，薪资25-40K，工作地点北京",
-  userId: 1,
-  options: {
-    department: "技术部",
-    urgency: "high",
-    headcount: 2
-  }
-});
+const jobResult = await apiManager.createJobByDescription(
+  "招聘高级前端工程师，要求熟练掌握Vue.js和React，有5年以上开发经验，薪资25-40K，工作地点北京",
+  1
+);
 
 const jobId = jobResult.data.jobId;
 
 // 2. 使用统一匹配接口获取候选人
-const matchResult = await apiManager.getJobCandidatesWithMatching({
-  jobId: jobId,
-  userId: 1,
-  matchType: "smart",
-  forceRefresh: false, // 使用缓存提高性能
-  limit: 20,
-  filters: {
-    minScore: 80,
-    location: "北京"
-  }
-});
+const matchResult = await apiManager.getJobCandidatesWithMatching(jobId, 1);
 
 // 3. 获取用户所有职位列表
-const userJobsResult = await apiManager.getUserJobs(1, {
-  status: 'active',
-  sortBy: 'createdAt',
-  sortOrder: 'desc',
-  limit: 10
-});
+const userJobsResult = await apiManager.getUserJobs(1);
 ```
 
 ### 三个核心接口详细使用示例
@@ -954,10 +934,10 @@ const userJobsResult = await apiManager.getUserJobs(1, {
 // 基础使用
 const createBasicJob = async () => {
   try {
-    const response = await apiManager.createJobByDescription({
-      description: "招聘高级前端工程师...",
-      userId: 1
-    });
+    const response = await apiManager.createJobByDescription(
+      "招聘高级前端工程师...",
+      1
+    );
     console.log('职位创建成功:', response.data.jobId);
   } catch (error) {
     console.error('创建失败:', error.message);
@@ -967,20 +947,10 @@ const createBasicJob = async () => {
 // 高级使用（带完整配置）
 const createAdvancedJob = async () => {
   try {
-    const response = await apiManager.createJobByDescription({
-      description: "招聘资深全栈工程师，负责核心产品开发...",
-      userId: 1,
-      companyInfo: {
-        name: "创新科技公司",
-        industry: "人工智能"
-      },
-      options: {
-        industry: "ai",
-        department: "研发部",
-        urgency: "high",
-        headcount: 3
-      }
-    });
+    const response = await apiManager.createJobByDescription(
+      "招聘资深全栈工程师，负责核心产品开发...",
+      1
+    );
     return response.data;
   } catch (error) {
     throw new Error(`职位创建失败: ${error.message}`);
@@ -993,48 +963,19 @@ const createAdvancedJob = async () => {
 ```javascript
 // 智能匹配（使用缓存）
 const smartMatch = async (jobId) => {
-  const response = await apiManager.getJobCandidatesWithMatching({
-    jobId: jobId,
-    userId: 1,
-    matchType: 'smart'
-  });
+  const response = await apiManager.getJobCandidatesWithMatching(jobId, 1);
   return response.data.candidates;
 };
 
 // 技能匹配（带筛选）
 const skillMatch = async (jobId) => {
-  const response = await apiManager.getJobCandidatesWithMatching({
-    jobId: jobId,
-    userId: 1,
-    matchType: 'skill',
-    forceRefresh: true, // 强制重新匹配
-    filters: {
-      minScore: 85,
-      skills: ['Vue.js', 'React', 'TypeScript'],
-      location: '北京',
-      minExperience: 3
-    },
-    sortBy: 'matchScore',
-    limit: 15
-  });
+  const response = await apiManager.getJobCandidatesWithMatching(jobId, 1);
   return response.data;
 };
 
 // 分页查询候选人
 const paginatedMatch = async (jobId, page = 1) => {
-  const response = await apiManager.getJobCandidatesWithMatching({
-    jobId: jobId,
-    userId: 1,
-    matchType: 'experience',
-    limit: 10,
-    offset: (page - 1) * 10,
-    filters: {
-      minExperience: 3,
-      maxExperience: 10
-    },
-    sortBy: 'experience',
-    sortOrder: 'desc'
-  });
+  const response = await apiManager.getJobCandidatesWithMatching(jobId, 1);
   return {
     candidates: response.data.candidates,
     pagination: response.data.pagination,
@@ -1054,35 +995,19 @@ const getAllUserJobs = async (userId) => {
 
 // 按条件筛选职位
 const filterUserJobs = async (userId) => {
-  const response = await apiManager.getUserJobs(userId, {
-    status: 'active',
-    department: '技术部',
-    urgency: 'high',
-    sortBy: 'candidateCount',
-    sortOrder: 'desc',
-    limit: 20
-  });
+  const response = await apiManager.getUserJobs(userId);
   return response.data.jobs;
 };
 
 // 搜索用户职位
 const searchUserJobs = async (userId, keyword) => {
-  const response = await apiManager.getUserJobs(userId, {
-    searchKeyword: keyword,
-    status: 'active',
-    sortBy: 'createdAt',
-    sortOrder: 'desc'
-  });
+  const response = await apiManager.getUserJobs(userId);
   return response.data.jobs;
 };
 
 // 分页获取职位
 const getPaginatedJobs = async (userId, page = 1, pageSize = 10) => {
-  const response = await apiManager.getUserJobs(userId, {
-    page: page,
-    limit: pageSize,
-    includeStats: true
-  });
+  const response = await apiManager.getUserJobs(userId);
   return {
     jobs: response.data.jobs,
     pagination: {
@@ -1120,10 +1045,7 @@ const handleAPICall = async (apiCall) => {
 
 // 使用示例
 const safeCreateJob = () => handleAPICall(() => 
-  apiManager.createJobByDescription({
-    description: "职位描述",
-    userId: 1
-  })
+  apiManager.createJobByDescription("职位描述", 1)
 );
 ```
 
