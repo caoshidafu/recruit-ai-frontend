@@ -67,7 +67,6 @@
             </div>
 
             <div class="form-actions">
-              <button type="button" class="btn btn-secondary" @click="closeModal">取消</button>
               <button type="submit" class="btn btn-primary" :disabled="!jobForm.description.trim()">
                 <span class="btn-icon">🧠</span>
                 开始AI智能解析
@@ -149,16 +148,6 @@
             </div>
           </div>
 
-          <div class="form-actions">
-            <button 
-              type="button" 
-              class="btn btn-primary" 
-              @click="nextStep"
-              :disabled="isAnalyzing || !aiAnalysis"
-            >
-              下一步：智能匹配
-            </button>
-          </div>
         </div>
 
         <!-- 步骤3: 智能匹配 -->
@@ -272,16 +261,6 @@ export default {
       await performAiAnalysis()
     }
 
-    const nextStep = async () => {
-      if (currentStep.value === 1) {
-        currentStep.value = 2
-        await performAiAnalysis()
-      } else if (currentStep.value === 2) {
-        currentStep.value = 3
-        // 执行匹配，匹配完成后会自动创建职位并关闭弹窗
-        await performMatching()
-      }
-    }
 
 
     const performAiAnalysis = async () => {
@@ -327,8 +306,10 @@ export default {
             }
           }
 
-          // 2. 创建职位
-          await createJobAndMatch()
+          // 2. 等待2秒让用户查看解析结果，然后自动创建职位并进行匹配
+          setTimeout(async () => {
+            await createJobAndMatch()
+          }, 2000)
         } else {
           console.error('AI分析失败:', parseResponse.message)
           alert('AI分析失败，请检查网络连接或重试')
@@ -502,7 +483,6 @@ export default {
       closeModal,
       handleOverlayClick,
       handleSubmitDescription,
-      nextStep,
       createJob,
       createJobAndMatch,
       performMatching,
