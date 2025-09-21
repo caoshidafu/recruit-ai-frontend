@@ -316,10 +316,28 @@ export default {
           // 将候选人数据分配到不同的类型中
           const candidatesData = response.data.candidates
           
-          // 根据匹配分数和经验分配到不同类别
-          candidates.value.smart = candidatesData.filter(c => c.matchScore >= 80)
-          candidates.value.experience = candidatesData.filter(c => c.experience >= 5)
-          candidates.value.education = candidatesData.filter(c => c.education === '本科' || c.education === '硕士' || c.education === '博士')
+          // 根据不同维度分配候选人到不同类别，确保每个类别都有合适的数据
+          // 智能推荐：按匹配分数排序，包含所有候选人但优先显示高分的
+          candidates.value.smart = candidatesData
+            .filter(c => c.matchScore >= 70) // 更宽泛的分数范围
+            .sort((a, b) => b.matchScore - a.matchScore) // 按分数降序排列
+          
+          // 经验推荐：按经验年限排序，包含有一定经验的候选人
+          candidates.value.experience = candidatesData
+            .filter(c => c.experience >= 2) // 包含2年以上经验的候选人
+            .sort((a, b) => b.experience - a.experience) // 按经验降序排列
+          
+          // 学历推荐：按学历等级排序，包含所有学历背景
+          const educationOrder = { '博士': 4, '硕士': 3, '本科': 2, '专科': 1 }
+          candidates.value.education = candidatesData
+            .sort((a, b) => (educationOrder[b.education] || 0) - (educationOrder[a.education] || 0)) // 按学历等级降序排列
+          
+          // 调试信息：输出筛选结果
+          console.log('候选人数据筛选结果:')
+          console.log('- 智能推荐:', candidates.value.smart.length, '人')
+          console.log('- 经验推荐:', candidates.value.experience.length, '人') 
+          console.log('- 学历推荐:', candidates.value.education.length, '人')
+          console.log('- 原始数据总数:', candidatesData.length, '人')
         }
       } catch (error) {
         console.error('加载候选人数据失败:', error)
