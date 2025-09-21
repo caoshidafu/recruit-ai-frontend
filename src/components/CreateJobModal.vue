@@ -1148,7 +1148,7 @@ export default {
 /* 按钮样式 */
 .form-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 32px;
   padding-top: 24px;
   border-top: 1px solid #e5e7eb;
