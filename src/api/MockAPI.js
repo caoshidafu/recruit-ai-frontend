@@ -299,6 +299,8 @@ export function mockGetJobCardsList(userId) {
       newCandidates: 8,      // 新推荐候选人数
       interviewingCount: 5,  // 面试中人数
       headcount: 3,          // 需求人数
+      // 岗位描述
+      description: "我们正在寻找一位经验丰富的高级前端工程师，负责公司核心产品的前端开发工作。该职位将参与完整的产品开发生命周期，从需求分析到上线维护，是一个充满挑战和成长机会的岗位。加入我们，你将与优秀的技术团队一起，使用最新的前端技术栈，构建用户体验卓越的Web应用。我们提供灵活的工作环境、完善的技术培训体系以及具有竞争力的薪酬福利。",
       responsibilities: [
         "负责前端项目架构设计和开发",
         "参与产品需求分析和技术方案制定",
@@ -329,6 +331,8 @@ export function mockGetJobCardsList(userId) {
       newCandidates: 6,      // 新推荐候选人数
       interviewingCount: 3,  // 面试中人数
       headcount: 2,          // 需求人数
+      // 岗位描述
+      description: "诚聘Java后端工程师，负责构建高性能、高可用的后端服务系统。你将参与核心业务系统的设计与开发，处理大并发场景下的技术挑战，与产品、前端团队紧密协作，共同打造优秀的互联网产品。我们使用先进的技术栈，包括Spring Boot、微服务架构、分布式系统等，为你提供广阔的技术成长空间。团队氛围开放，鼓励技术创新和最佳实践分享。",
       responsibilities: [
         "负责后端服务架构设计和开发",
         "参与数据库设计和优化",
