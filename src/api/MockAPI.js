@@ -419,18 +419,47 @@ export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
     const isFromCache = Math.random() > 0.3;
     const delay = isFromCache ? 100 : 2000;
     
+    // 根据匹配类型返回不同的候选人数据
+    let filteredCandidates = candidates;
+    let algorithmType = "AI_SMART_MATCH_V2";
+    
+    switch (type) {
+      case '智能匹配':
+        // 智能匹配：返回所有候选人，但按匹配分数排序
+        filteredCandidates = candidates
+          .sort((a, b) => b.matchScore - a.matchScore);
+        algorithmType = "AI_SMART_MATCH_V2";
+        break;
+      case '经验匹配':
+        // 经验匹配：按工作经验排序，优先显示经验丰富的
+        filteredCandidates = candidates
+          .sort((a, b) => b.experience - a.experience);
+        algorithmType = "EXPERIENCE_MATCH_V1";
+        break;
+      case '学历匹配':
+        // 学历匹配：按学历等级排序
+        const educationOrder = { '博士': 4, '硕士': 3, '本科': 2, '专科': 1 };
+        filteredCandidates = candidates
+          .sort((a, b) => (educationOrder[b.education] || 0) - (educationOrder[a.education] || 0));
+        algorithmType = "EDUCATION_MATCH_V1";
+        break;
+      default:
+        filteredCandidates = candidates;
+    }
+    
     setTimeout(() => {
       resolve({
         success: true,
         data: {
-          candidates,
-          total: candidates.length,
+          candidates: filteredCandidates,
+          total: filteredCandidates.length,
           matchingInfo: {
             type: type,
             isFromCache: isFromCache,
             processingTime: isFromCache ? '0.05s' : '1.5s',
-            totalMatched: candidates.length,
-            algorithm: "AI_SMART_MATCH_V2"
+            totalMatched: filteredCandidates.length,
+            algorithm: algorithmType,
+            jobId: jobId
           },
           jobDetail: {
             id: jobId,
@@ -441,7 +470,7 @@ export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
           },
           userId: userId
         },
-        message: `成功获取${candidates.length}个匹配候选人`
+        message: `使用${type}成功获取${filteredCandidates.length}个匹配候选人`
       });
     }, delay);
   });

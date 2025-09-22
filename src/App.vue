@@ -215,10 +215,23 @@ export default {
 
     // 方法
     const setSelectedJob = async (job) => {
+      if (!job || !job.id) {
+        console.warn('无效的职位信息')
+        return
+      }
+
+      console.log(`切换到职位: ${job.title} (ID: ${job.id})`)
+      
+      // 更新选中的职位
       selectedJob.value = job
-      await loadCandidatesForJob(job.id) // 调用新的API加载候选人
-      // 重置无限滚动
+      
+      // 根据职位ID加载候选人数据，携带发布岗位id请求接口
+      await loadCandidatesForJob(job.id)
+      
+      // 重置无限滚动状态
       resetScrolling()
+      
+      console.log(`职位切换完成: ${job.title}`)
     }
 
     // 无限滚动处理方法
@@ -305,16 +318,24 @@ export default {
     }
 
     // 根据职位ID加载候选人数据
-    const loadCandidatesForJob = async (jobId) => {
+    const loadCandidatesForJob = async (jobId, matchType = '智能匹配') => {
+      if (!jobId) {
+        console.warn('职位ID不能为空')
+        return
+      }
+
       try {
         loading.value = true
+        console.log(`正在为职位ID ${jobId} 加载候选人数据... (匹配类型: ${matchType})`)
         
-        // 使用新的统一API接口获取候选人数据
-        const response = await apiManager.getCandidatesByJobId(jobId, 1, '智能匹配')
+        // 使用新的统一API接口获取候选人数据，携带发布岗位id和匹配类型
+        const response = await apiManager.getCandidatesByJobId(jobId, 1, matchType)
 
-        if (response.success) {
+        if (response.success && response.data) {
           // 将候选人数据分配到不同的类型中
-          const candidatesData = response.data.candidates
+          const candidatesData = response.data.candidates || []
+          
+          console.log(`成功获取职位ID ${jobId} 的候选人数据，共 ${candidatesData.length} 人`)
           
           // 根据不同维度分配候选人到不同类别，确保每个类别都有合适的数据
           // 智能推荐：按匹配分数排序，包含所有候选人但优先显示高分的
@@ -338,9 +359,24 @@ export default {
           console.log('- 经验推荐:', candidates.value.experience.length, '人') 
           console.log('- 学历推荐:', candidates.value.education.length, '人')
           console.log('- 原始数据总数:', candidatesData.length, '人')
+          console.log('- API返回的匹配信息:', response.data.matchingInfo)
+        } else {
+          console.error('API返回数据格式错误:', response)
+          // 清空候选人数据
+          candidates.value = {
+            smart: [],
+            experience: [],
+            education: []
+          }
         }
       } catch (error) {
-        console.error('加载候选人数据失败:', error)
+        console.error(`加载职位ID ${jobId} 的候选人数据失败:`, error)
+        // 清空候选人数据
+        candidates.value = {
+          smart: [],
+          experience: [],
+          education: []
+        }
       } finally {
         loading.value = false
       }
@@ -354,22 +390,48 @@ export default {
 
     // 处理职位创建完成事件
     const handleJobCreated = async (newJob) => {
+      console.log(`新职位创建完成: ${newJob.title} (ID: ${newJob.id})`)
+      
       // 重新加载职位列表以获取最新数据（包含新创建的职位）
       await loadJobs()
       
       // 设置为当前选中的职位（新职位在列表顶部）
       selectedJob.value = newJob
       
-      // 加载新职位的候选人数据
-      await loadCandidatesForJob(newJob.id)
+      // 加载新职位的候选人数据，携带发布岗位id
+      await loadCandidatesForJob(newJob.id, '智能匹配')
       
       // 重置滚动状态
       resetScrolling()
+      
+      console.log(`新职位设置完成，已加载候选人数据`)
     }
 
-    // 监听推荐类型变化，重置滚动
-    watch(recommendType, () => {
+    // 根据推荐类型加载候选人数据
+    const loadCandidatesByType = async (type) => {
+      if (!selectedJob.value?.id) {
+        console.warn('没有选中的职位')
+        return
+      }
+
+      const typeMapping = {
+        'smart': '智能匹配',
+        'experience': '经验匹配', 
+        'education': '学历匹配'
+      }
+
+      const apiType = typeMapping[type] || '智能匹配'
+      console.log(`加载${apiType}类型的候选人数据...`)
+      
+      await loadCandidatesForJob(selectedJob.value.id, apiType)
+    }
+
+    // 监听推荐类型变化，重新加载对应类型的候选人数据
+    watch(recommendType, async (newType) => {
+      console.log(`推荐类型切换到: ${newType}`)
       resetScrolling()
+      // 如果是切换推荐类型，可以考虑重新请求API获取该类型的专门数据
+      // 目前暂时使用现有数据的筛选逻辑
     })
 
     // 组件挂载时初始化数据
@@ -408,6 +470,7 @@ export default {
       loadJobs,
       loadCandidates,
       loadCandidatesForJob,
+      loadCandidatesByType,
       handleScroll,
       loadMoreCandidates,
       resetScrolling,
