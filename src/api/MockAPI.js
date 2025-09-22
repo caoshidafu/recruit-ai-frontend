@@ -1,20 +1,20 @@
 // AI解析相关的Mock数据和接口
 
-// 候选人数据
-const candidates = [
-  {
-    id: 1,
-    name: "张三",
-    avatar: "https://i.pravatar.cc/150?img=3",
+// 前端工程师候选人数据
+const frontendCandidates = [
+      {
+        id: 1,
+        name: "张三",
+        avatar: "https://i.pravatar.cc/150?img=3",
     title: "高级前端工程师",
-    experience: 5,
+        experience: 5,
     education: "本科",
-    currentCompany: "某知名电商公司",
-    expectedSalary: "35K",
-    location: "北京",
-    status: "在职-看机会",
+        currentCompany: "某知名电商公司",
+        expectedSalary: "35K",
+        location: "北京",
+        status: "在职-看机会",
     skills: ["Vue.js", "React", "TypeScript", "Node.js"],
-    matchScore: 95,
+        matchScore: 95,
     recommendReasons: ["技术栈高度匹配", "有电商平台开发经验", "大型项目经验丰富"],
     educationHistory: [
       {
@@ -23,22 +23,22 @@ const candidates = [
         major: "计算机科学与技术",
         duration: "2015-2019"
       }
-    ],
-    workHistory: [
-      {
-        company: "某知名电商公司",
+        ],
+        workHistory: [
+          {
+            company: "某知名电商公司",
         position: "高级前端工程师",
         duration: "2021-至今",
         description: "负责电商平台前端架构设计，主导多个核心功能模块开发"
-      },
-      {
-        company: "某互联网公司",
+          },
+          {
+            company: "某互联网公司",
         position: "前端工程师",
         duration: "2019-2021",
         description: "参与多个Web应用开发，积累丰富的前端开发经验"
       }
-    ],
-    radarData: {
+        ],
+        radarData: {
       "学历背景": 85,
       "工作经历": 92,
       "技能匹配": 95,
@@ -46,34 +46,34 @@ const candidates = [
       "稳定性": 88,
       "发展潜力": 92
     }
-  },
-  {
-    id: 2,
-    name: "李四",
-    avatar: "https://i.pravatar.cc/150?img=4",
-    title: "前端技术专家",
-    experience: 7,
-    education: "硕士",
-    currentCompany: "某大型互联网公司",
-    expectedSalary: "40K",
-    location: "北京",
-    status: "在职-看机会",
-    skills: ["Vue.js", "React", "Angular", "架构设计"],
-    matchScore: 88,
-    recommendReasons: ["丰富的架构设计经验", "带领过技术团队", "跨框架开发能力"],
-    educationHistory: [
+      },
       {
-        degree: "硕士",
+        id: 2,
+        name: "李四",
+        avatar: "https://i.pravatar.cc/150?img=4",
+    title: "前端技术专家",
+        experience: 7,
+    education: "硕士",
+        currentCompany: "某大型互联网公司",
+        expectedSalary: "40K",
+        location: "北京",
+        status: "在职-看机会",
+    skills: ["Vue.js", "React", "Angular", "架构设计"],
+        matchScore: 88,
+    recommendReasons: ["丰富的架构设计经验", "带领过技术团队", "跨框架开发能力"],
+        educationHistory: [
+          {
+            degree: "硕士",
         school: "清华大学",
-        major: "软件工程",
+            major: "软件工程",
         duration: "2014-2017"
       }
-    ],
-    workHistory: [
-      {
+        ],
+        workHistory: [
+          {
         company: "某大型互联网公司",
         position: "前端技术专家",
-        duration: "2020-至今",
+            duration: "2020-至今",
         description: "负责前端技术架构设计，带领10人前端团队，制定技术标准"
       },
       {
@@ -82,8 +82,8 @@ const candidates = [
         duration: "2017-2020",
         description: "参与多个大型项目架构设计，积累丰富的技术管理经验"
       }
-    ],
-    radarData: {
+        ],
+        radarData: {
       "学历背景": 98,
       "工作经历": 95,
       "技能匹配": 88,
@@ -92,10 +92,10 @@ const candidates = [
       "发展潜力": 95
     }
   },
-  {
-    id: 3,
-    name: "王五",
-    avatar: "https://i.pravatar.cc/150?img=5",
+      {
+        id: 3,
+        name: "王五",
+        avatar: "https://i.pravatar.cc/150?img=5",
     title: "中级前端工程师",
     experience: 3,
     education: "本科",
@@ -106,23 +106,23 @@ const candidates = [
     skills: ["Vue.js", "JavaScript", "CSS3", "Webpack"],
     matchScore: 82,
     recommendReasons: ["Vue.js经验丰富", "学习能力强", "快速适应新技术"],
-    educationHistory: [
-      {
-        degree: "本科",
+        educationHistory: [
+          {
+            degree: "本科",
         school: "北京邮电大学",
-        major: "软件工程",
+            major: "软件工程",
         duration: "2017-2021"
       }
     ],
-    workHistory: [
-      {
+        workHistory: [
+          {
         company: "某创业公司",
         position: "前端工程师",
         duration: "2021-至今",
         description: "负责公司核心产品前端开发，参与从0到1的产品构建"
       }
-    ],
-    radarData: {
+        ],
+        radarData: {
       "学历背景": 82,
       "工作经历": 78,
       "技能匹配": 85,
@@ -145,29 +145,29 @@ const candidates = [
     skills: ["React", "TypeScript", "Next.js", "GraphQL"],
     matchScore: 85,
     recommendReasons: ["React技术栈熟练", "有金融行业经验", "TypeScript深度应用"],
-    educationHistory: [
-      {
-        degree: "本科",
+        educationHistory: [
+          {
+            degree: "本科",
         school: "复旦大学",
-        major: "计算机科学与技术",
+            major: "计算机科学与技术",
         duration: "2014-2018"
       }
     ],
-    workHistory: [
-      {
+        workHistory: [
+          {
         company: "某金融科技公司",
         position: "资深前端工程师",
-        duration: "2020-至今",
+            duration: "2020-至今",
         description: "负责金融产品前端开发，熟悉金融业务流程和合规要求"
-      },
-      {
-        company: "某互联网公司",
+          },
+          {
+            company: "某互联网公司",
         position: "前端工程师",
         duration: "2018-2020",
         description: "参与多个B端产品开发，积累丰富的React开发经验"
       }
-    ],
-    radarData: {
+        ],
+        radarData: {
       "学历背景": 86,
       "工作经历": 88,
       "技能匹配": 85,
@@ -190,23 +190,23 @@ const candidates = [
     skills: ["Vue.js", "JavaScript", "HTML5", "CSS3"],
     matchScore: 75,
     recommendReasons: ["基础扎实", "可立即入职", "学习意愿强烈"],
-    educationHistory: [
-      {
+        educationHistory: [
+          {
         degree: "专科",
         school: "北京信息职业技术学院",
-        major: "计算机应用技术",
+            major: "计算机应用技术",
         duration: "2019-2022"
       }
     ],
-    workHistory: [
-      {
+        workHistory: [
+          {
         company: "某外包公司",
         position: "前端开发工程师",
         duration: "2022-2024",
         description: "参与多个中小型项目开发，熟悉Vue.js开发流程"
       }
-    ],
-    radarData: {
+        ],
+        radarData: {
       "学历背景": 68,
       "工作经历": 70,
       "技能匹配": 75,
@@ -220,7 +220,7 @@ const candidates = [
     name: "孙八",
     avatar: "https://i.pravatar.cc/150?img=8",
     title: "全栈工程师",
-    experience: 4,
+        experience: 4,
     education: "硕士",
     currentCompany: "某AI公司",
     expectedSalary: "32K",
@@ -229,23 +229,23 @@ const candidates = [
     skills: ["Vue.js", "React", "Node.js", "Python"],
     matchScore: 90,
     recommendReasons: ["全栈能力", "AI行业背景", "技术视野广阔"],
-    educationHistory: [
-      {
+        educationHistory: [
+          {
         degree: "硕士",
         school: "中山大学",
-        major: "人工智能",
+            major: "人工智能",
         duration: "2018-2021"
       }
     ],
-    workHistory: [
-      {
+        workHistory: [
+          {
         company: "某AI公司",
         position: "全栈工程师",
         duration: "2021-至今",
         description: "负责AI产品的全栈开发，包括前端界面和后端算法集成"
       }
-    ],
-    radarData: {
+        ],
+        radarData: {
       "学历背景": 95,
       "工作经历": 82,
       "技能匹配": 90,
@@ -255,6 +255,316 @@ const candidates = [
     }
   }
 ];
+
+// Java后端工程师候选人数据
+const backendCandidates = [
+  {
+    id: 101,
+    name: "陈一",
+        avatar: "https://i.pravatar.cc/150?img=11",
+    title: "Java后端工程师",
+    experience: 4,
+    education: "本科",
+        currentCompany: "某互联网公司",
+        expectedSalary: "28K",
+        location: "上海",
+        status: "在职-看机会",
+    skills: ["Java", "Spring Boot", "MySQL", "Redis", "微服务"],
+    matchScore: 92,
+    recommendReasons: ["Spring Boot经验丰富", "微服务架构实践", "数据库优化能力强"],
+    educationHistory: [
+      {
+        degree: "本科",
+        school: "华东理工大学",
+        major: "计算机科学与技术",
+        duration: "2016-2020"
+      }
+    ],
+        workHistory: [
+          {
+            company: "某互联网公司",
+        position: "Java后端工程师",
+        duration: "2022-至今",
+        description: "负责核心业务后端开发，参与微服务架构设计和实施"
+      },
+      {
+        company: "某软件公司",
+        position: "Java开发工程师",
+        duration: "2020-2022",
+        description: "参与企业级应用开发，熟悉Spring生态体系"
+      }
+        ],
+        radarData: {
+      "学历背景": 85,
+      "工作经历": 88,
+      "技能匹配": 92,
+      "项目经验": 89,
+      "稳定性": 90,
+      "发展潜力": 88
+    }
+  },
+  {
+    id: 102,
+    name: "刘二",
+        avatar: "https://i.pravatar.cc/150?img=12",
+    title: "高级Java工程师",
+    experience: 6,
+    education: "硕士",
+    currentCompany: "某大型电商公司",
+    expectedSalary: "35K",
+    location: "上海",
+    status: "在职-看机会",
+    skills: ["Java", "Spring Cloud", "MySQL", "Redis", "Elasticsearch", "Kafka"],
+    matchScore: 95,
+    recommendReasons: ["高并发系统经验", "分布式架构设计", "电商业务理解深入"],
+        educationHistory: [
+          {
+        degree: "硕士",
+        school: "上海交通大学",
+        major: "软件工程",
+        duration: "2015-2018"
+      }
+    ],
+        workHistory: [
+          {
+        company: "某大型电商公司",
+        position: "高级Java工程师",
+        duration: "2020-至今",
+        description: "负责电商核心交易系统开发，处理日均千万级订单"
+      },
+      {
+        company: "某金融科技公司",
+        position: "Java工程师",
+        duration: "2018-2020",
+        description: "参与支付系统开发，熟悉高并发和金融业务"
+      }
+        ],
+        radarData: {
+      "学历背景": 95,
+      "工作经历": 92,
+      "技能匹配": 95,
+      "项目经验": 94,
+      "稳定性": 88,
+      "发展潜力": 90
+    }
+  },
+  {
+    id: 103,
+    name: "周三",
+        avatar: "https://i.pravatar.cc/150?img=13",
+        title: "Java开发工程师",
+    experience: 3,
+    education: "本科",
+    currentCompany: "某创业公司",
+    expectedSalary: "22K",
+    location: "上海",
+    status: "离职-随时到岗",
+    skills: ["Java", "Spring Boot", "MyBatis", "MySQL", "Docker"],
+    matchScore: 85,
+    recommendReasons: ["基础扎实", "可立即入职", "容器化部署经验"],
+        educationHistory: [
+          {
+            degree: "本科",
+        school: "上海大学",
+        major: "软件工程",
+        duration: "2018-2022"
+      }
+    ],
+        workHistory: [
+          {
+        company: "某创业公司",
+            position: "Java开发工程师",
+        duration: "2022-2024",
+        description: "负责公司核心业务系统开发，参与从0到1系统构建"
+      }
+        ],
+        radarData: {
+      "学历背景": 82,
+      "工作经历": 78,
+      "技能匹配": 85,
+      "项目经验": 80,
+      "稳定性": 92,
+      "发展潜力": 88
+    }
+  },
+  {
+    id: 104,
+    name: "吴四",
+        avatar: "https://i.pravatar.cc/150?img=14",
+    title: "资深Java工程师",
+    experience: 8,
+    education: "硕士",
+    currentCompany: "某知名互联网公司",
+    expectedSalary: "45K",
+    location: "上海",
+    status: "在职-看机会",
+    skills: ["Java", "Spring Cloud", "分布式架构", "高并发优化", "团队管理"],
+    matchScore: 88,
+    recommendReasons: ["架构设计能力强", "团队管理经验", "技术深度和广度兼备"],
+        educationHistory: [
+          {
+            degree: "硕士",
+        school: "复旦大学",
+            major: "计算机科学与技术",
+        duration: "2013-2016"
+      }
+    ],
+        workHistory: [
+          {
+        company: "某知名互联网公司",
+        position: "资深Java工程师",
+            duration: "2019-至今",
+        description: "负责核心业务架构设计，带领8人后端团队"
+      },
+      {
+        company: "某大型企业",
+        position: "高级Java工程师",
+        duration: "2016-2019",
+        description: "参与企业级系统重构，积累丰富的架构经验"
+      }
+        ],
+        radarData: {
+      "学历背景": 95,
+      "工作经历": 95,
+      "技能匹配": 88,
+      "项目经验": 92,
+      "稳定性": 85,
+      "发展潜力": 90
+    }
+  },
+  {
+    id: 105,
+    name: "郑五",
+    avatar: "https://i.pravatar.cc/150?img=15",
+    title: "全栈开发工程师",
+    experience: 5,
+    education: "本科",
+    currentCompany: "某科技公司",
+    expectedSalary: "30K",
+    location: "上海",
+    status: "在职-看机会",
+    skills: ["Java", "Spring Boot", "Vue.js", "MySQL", "MongoDB"],
+    matchScore: 87,
+    recommendReasons: ["全栈能力", "前后端协作经验", "技术栈匹配度高"],
+    educationHistory: [
+      {
+        degree: "本科",
+        school: "同济大学",
+        major: "软件工程",
+        duration: "2015-2019"
+      }
+    ],
+    workHistory: [
+      {
+        company: "某科技公司",
+        position: "全栈开发工程师",
+        duration: "2021-至今",
+        description: "负责产品的前后端开发，具备完整产品开发经验"
+      },
+      {
+        company: "某互联网公司",
+        position: "Java开发工程师",
+        duration: "2019-2021",
+        description: "专注后端开发，后期拓展前端技能形成全栈能力"
+      }
+    ],
+    radarData: {
+      "学历背景": 85,
+      "工作经历": 88,
+      "技能匹配": 87,
+      "项目经验": 90,
+      "稳定性": 87,
+      "发展潜力": 92
+    }
+  },
+  {
+    id: 106,
+    name: "王六",
+    avatar: "https://i.pravatar.cc/150?img=16",
+    title: "Java架构师",
+    experience: 10,
+    education: "博士",
+    currentCompany: "某大型集团公司",
+    expectedSalary: "55K",
+    location: "上海",
+    status: "在职-看机会",
+    skills: ["Java", "分布式架构", "微服务", "系统设计", "技术管理"],
+    matchScore: 90,
+    recommendReasons: ["架构设计专家", "大型系统经验", "技术领导力强"],
+    educationHistory: [
+      {
+        degree: "博士",
+        school: "中科院",
+        major: "计算机系统结构",
+        duration: "2010-2014"
+      }
+    ],
+    workHistory: [
+      {
+        company: "某大型集团公司",
+        position: "Java架构师",
+        duration: "2018-至今",
+        description: "负责集团技术架构规划，指导多个业务线技术决策"
+      },
+      {
+        company: "某知名科技公司",
+        position: "高级Java工程师",
+        duration: "2014-2018",
+        description: "从高级工程师成长为架构师，积累丰富架构经验"
+      }
+    ],
+    radarData: {
+      "学历背景": 100,
+      "工作经历": 98,
+      "技能匹配": 90,
+      "项目经验": 95,
+      "稳定性": 92,
+      "发展潜力": 88
+    }
+  }
+];
+
+// 根据职位ID获取对应的候选人数据
+function getCandidatesByJobId(jobId) {
+  switch (jobId) {
+    case 123: // 高级前端工程师
+      return frontendCandidates;
+    case 124: // Java后端工程师
+      return backendCandidates;
+    default:
+      return frontendCandidates; // 默认返回前端候选人
+  }
+}
+
+// 根据职位ID获取对应的职位详情
+function getJobDetailById(jobId) {
+  switch (jobId) {
+    case 123:
+      return {
+        id: jobId,
+        title: "高级前端工程师",
+        department: "技术部",
+        location: "北京",
+        salaryRange: "25-35K"
+      };
+    case 124:
+      return {
+        id: jobId,
+        title: "Java后端工程师",
+        department: "技术部",
+        location: "上海",
+        salaryRange: "20-30K"
+      };
+    default:
+      return {
+        id: jobId,
+        title: "高级前端工程师",
+        department: "技术部",
+        location: "北京",
+        salaryRange: "25-35K"
+      };
+  }
+}
 
 // Mock API配置
 const MOCK_DELAY = 500;
@@ -283,17 +593,17 @@ export function mockGetJobCardsList(userId) {
   const jobCards = [
     {
       id: 123,
-      title: "高级前端工程师",
-      department: "技术部",
-      location: "北京",
+            title: "高级前端工程师",
+            department: "技术部",
+            location: "北京",
       salaryRange: "25-35K",
       experience: "3-5年",
       education: "本科",
       skills: ["Vue.js", "React", "TypeScript"],
-      status: "active",
+            status: "active",
       publishDate: "2024-01-15",
       applicationCount: 25,
-      urgency: "high",
+            urgency: "high",
       // 职位卡片统计数据
       candidateCount: 42,    // 候选人总数
       newCandidates: 8,      // 新推荐候选人数
@@ -306,26 +616,26 @@ export function mockGetJobCardsList(userId) {
         "参与产品需求分析和技术方案制定",
         "优化前端性能，提升用户体验"
       ],
-      requirements: [
+            requirements: [
         "3年以上前端开发经验",
         "熟练掌握Vue.js、React等框架",
-        "具备良好的团队协作能力"
-      ],
+              "具备良好的团队协作能力"
+            ],
       benefits: ["六险一金", "弹性工作", "技术培训", "年终奖金"]
     },
     {
       id: 124,
       title: "Java后端工程师",
       department: "技术部",
-      location: "上海",
+            location: "上海",
       salaryRange: "20-30K",
       experience: "2-4年",
       education: "本科",
       skills: ["Java", "Spring Boot", "MySQL", "Redis"],
-      status: "active",
+            status: "active",
       publishDate: "2024-01-10",
       applicationCount: 18,
-      urgency: "normal",
+            urgency: "normal",
       // 职位卡片统计数据
       candidateCount: 28,    // 候选人总数
       newCandidates: 6,      // 新推荐候选人数
@@ -338,7 +648,7 @@ export function mockGetJobCardsList(userId) {
         "参与数据库设计和优化",
         "确保系统稳定性和安全性"
       ],
-      requirements: [
+            requirements: [
         "2年以上Java开发经验",
         "熟练掌握Spring Boot框架",
         "熟悉MySQL数据库操作"
@@ -419,6 +729,9 @@ export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
     const isFromCache = Math.random() > 0.3;
     const delay = isFromCache ? 100 : 2000;
     
+    // 根据职位ID获取对应的候选人数据
+    const candidates = getCandidatesByJobId(jobId);
+    
     // 根据匹配类型返回不同的候选人数据
     let filteredCandidates = candidates;
     let algorithmType = "AI_SMART_MATCH_V2";
@@ -429,22 +742,22 @@ export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
         filteredCandidates = candidates
           .sort((a, b) => b.matchScore - a.matchScore);
         algorithmType = "AI_SMART_MATCH_V2";
-        break;
+          break;
       case '经验匹配':
         // 经验匹配：按工作经验排序，优先显示经验丰富的
         filteredCandidates = candidates
           .sort((a, b) => b.experience - a.experience);
         algorithmType = "EXPERIENCE_MATCH_V1";
-        break;
+          break;
       case '学历匹配': {
         // 学历匹配：按学历等级排序
         const educationOrder = { '博士': 4, '硕士': 3, '本科': 2, '专科': 1 };
         filteredCandidates = candidates
           .sort((a, b) => (educationOrder[b.education] || 0) - (educationOrder[a.education] || 0));
         algorithmType = "EDUCATION_MATCH_V1";
-        break;
+          break;
       }
-      default:
+        default:
         filteredCandidates = candidates;
     }
     
@@ -462,13 +775,7 @@ export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
             algorithm: algorithmType,
             jobId: jobId
           },
-          jobDetail: {
-            id: jobId,
-            title: "高级前端工程师",
-            department: "技术部",
-            location: "北京",
-            salaryRange: "25-35K"
-          },
+          jobDetail: getJobDetailById(jobId),
           userId: userId
         },
         message: `使用${type}成功获取${filteredCandidates.length}个匹配候选人`
