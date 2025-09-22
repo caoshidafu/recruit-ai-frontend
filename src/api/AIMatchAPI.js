@@ -16,3 +16,15 @@ import { post } from './index.js'
 export function getCandidatesByJobId(jobId, userId, type = '智能匹配') {
   return post('/candidates/match', { job_id: jobId, user_id: userId, type })
 }
+
+/**
+ * 接口四：获取候选人AI分析
+ * 功能描述：根据候选人ID获取AI智能分析报告，包含能力评估、匹配度分析等
+ * 入参：{ candidateId: number, userId: number }
+ * 返回参数：{ success: boolean, data: { overallScore: number, recommendation: string, strengths: array, improvements: array, jobMatching: object, recommendedActions: array }, message: string }
+ * url地址：/candidates/ai-analysis
+ * 请求方式：POST
+ */
+export function getCandidateAIAnalysis(candidateId, userId) {
+  return post('/candidates/ai-analysis', { candidate_id: candidateId, user_id: userId })
+}

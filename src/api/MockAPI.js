@@ -401,4 +401,54 @@ export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
   });
 }
 
+/**
+* Mock - 接口四：获取候选人AI分析
+* 功能描述：根据候选人ID获取AI智能分析报告，包含能力评估、匹配度分析等
+* 入参：{ candidateId: number, userId: number }
+* 返回参数：{ success: boolean, data: { overallScore: number, recommendation: string, strengths: array, improvements: array, jobMatching: object, recommendedActions: array }, message: string }
+* url地址：/candidates/ai-analysis
+* 请求方式：POST
+*/
+export function mockGetCandidateAIAnalysis(candidateId, userId) { // eslint-disable-line no-unused-vars
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        success: true,
+        data: {
+          overallScore: 85,
+          recommendation: '该候选人整体素质优秀，建议优先考虑',
+          strengths: [
+            "技术能力突出，掌握多种前端框架",
+            "有丰富的项目实战经验",
+            "学习能力强，能快速适应新技术"
+          ],
+          improvements: [
+            "可以加强后端技术栈的了解",
+            "团队管理经验有待提升"
+          ],
+          jobMatching: {
+            skillMatch: 90,
+            experienceMatch: 85,
+            educationMatch: 80,
+            cultureMatch: 85
+          },
+          recommendedActions: [
+            {
+              action: "安排技术面试",
+              priority: "high",
+              description: "重点考察Vue.js和React技能"
+            },
+            {
+              action: "了解项目经验",
+              priority: "medium", 
+              description: "详细了解之前项目的技术架构"
+            }
+          ]
+        },
+        message: "AI分析完成"
+      });
+    }, 1500);
+  });
+}
+
 export const MOCK_ENABLED = process.env.VUE_APP_MOCK_ENABLED !== 'false';
