@@ -50,7 +50,7 @@
             <div class="job-tags">
               <span class="tag">{{ selectedJob?.department }}</span>
               <span class="tag">{{ selectedJob?.location }}</span>
-              <span class="tag">{{ selectedJob?.salary }}</span>
+              <span class="tag">{{ selectedJob?.experience }}</span>
             </div>
           </div>
           <div class="view-controls">
