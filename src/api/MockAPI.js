@@ -16,7 +16,6 @@ const candidates = [
     skills: ["Vue.js", "React", "TypeScript", "Node.js"],
     matchScore: 95,
     recommendReasons: ["技术栈高度匹配", "有电商平台开发经验", "大型项目经验丰富"],
-    keyHighlights: ["Vue.js专家", "React熟练", "TypeScript", "电商经验"],
     educationHistory: [
       {
         degree: "本科",
@@ -62,7 +61,6 @@ const candidates = [
     skills: ["Vue.js", "React", "Angular", "架构设计"],
     matchScore: 88,
     recommendReasons: ["丰富的架构设计经验", "带领过技术团队", "跨框架开发能力"],
-    keyHighlights: ["架构专家", "团队Leader", "多框架精通", "技术深度"],
     educationHistory: [
       {
         degree: "硕士",
@@ -108,7 +106,6 @@ const candidates = [
     skills: ["Vue.js", "JavaScript", "CSS3", "Webpack"],
     matchScore: 82,
     recommendReasons: ["Vue.js经验丰富", "学习能力强", "快速适应新技术"],
-    keyHighlights: ["Vue.js熟练", "工程化经验", "学习能力", "创业公司经验"],
     educationHistory: [
       {
         degree: "本科",
@@ -148,7 +145,6 @@ const candidates = [
     skills: ["React", "TypeScript", "Next.js", "GraphQL"],
     matchScore: 85,
     recommendReasons: ["React技术栈熟练", "有金融行业经验", "TypeScript深度应用"],
-    keyHighlights: ["React专家", "TypeScript", "金融行业", "GraphQL"],
     educationHistory: [
       {
         degree: "本科",
@@ -194,7 +190,6 @@ const candidates = [
     skills: ["Vue.js", "JavaScript", "HTML5", "CSS3"],
     matchScore: 75,
     recommendReasons: ["基础扎实", "可立即入职", "学习意愿强烈"],
-    keyHighlights: ["基础扎实", "立即到岗", "Vue.js经验", "成本优势"],
     educationHistory: [
       {
         degree: "专科",
@@ -234,7 +229,6 @@ const candidates = [
     skills: ["Vue.js", "React", "Node.js", "Python"],
     matchScore: 90,
     recommendReasons: ["全栈能力", "AI行业背景", "技术视野广阔"],
-    keyHighlights: ["全栈开发", "AI背景", "多语言精通", "创新能力"],
     educationHistory: [
       {
         degree: "硕士",

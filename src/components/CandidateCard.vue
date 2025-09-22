@@ -67,20 +67,6 @@
           </ul>
         </div>
 
-        <!-- 关键匹配点 -->
-        <div class="highlight-section">
-          <h5>关键匹配点</h5>
-          <div class="highlights">
-            <span
-              v-for="(highlight, index) in candidate.keyHighlights"
-              :key="index"
-              class="highlight-tag"
-            >
-              {{ highlight }}
-            </span>
-          </div>
-        </div>
-
         <!-- 技能标签 -->
         <div class="skills-section">
           <h5>技能标签</h5>
@@ -377,7 +363,6 @@ export default {
 /* 详细内容各区块 */
 .education-section,
 .recommend-section,
-.highlight-section,
 .skills-section,
 .work-section {
   margin-bottom: 0;
@@ -386,7 +371,6 @@ export default {
 
 .education-section h5,
 .recommend-section h5,
-.highlight-section h5,
 .skills-section h5,
 .work-section h5 {
   font-size: 14px;
@@ -461,23 +445,6 @@ export default {
   position: absolute;
   left: 0;
   color: var(--primary);
-}
-
-/* 关键匹配点 */
-.highlights {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.highlight-tag {
-  padding: 6px 12px;
-  background: #ff6b6b15;
-  color: #dc2626;
-  border: 1px solid #ff6b6b30;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
 }
 
 /* 技能标签 */
