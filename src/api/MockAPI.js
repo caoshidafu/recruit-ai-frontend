@@ -436,13 +436,14 @@ export function mockGetCandidatesByJobId(jobId, userId, type = '智能匹配') {
           .sort((a, b) => b.experience - a.experience);
         algorithmType = "EXPERIENCE_MATCH_V1";
         break;
-      case '学历匹配':
+      case '学历匹配': {
         // 学历匹配：按学历等级排序
         const educationOrder = { '博士': 4, '硕士': 3, '本科': 2, '专科': 1 };
         filteredCandidates = candidates
           .sort((a, b) => (educationOrder[b.education] || 0) - (educationOrder[a.education] || 0));
         algorithmType = "EDUCATION_MATCH_V1";
         break;
+      }
       default:
         filteredCandidates = candidates;
     }
