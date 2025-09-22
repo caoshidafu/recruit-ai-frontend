@@ -116,7 +116,7 @@
     <!-- 数值显示 -->
     <div class="radar-values">
       <div
-        v-for="([key, value]) in Object.entries(data)"
+        v-for="([key, value]) in data ? Object.entries(data) : []"
         :key="key"
         class="radar-value-item"
       >
@@ -146,8 +146,8 @@ export default {
   setup(props) {
     const isAnimated = ref(false)
     
-    const labels = computed(() => Object.keys(props.data))
-    const values = computed(() => Object.values(props.data))
+    const labels = computed(() => props.data ? Object.keys(props.data) : [])
+    const values = computed(() => props.data ? Object.values(props.data) : [])
     const maxValue = 100
     const chartSize = 240
     const chartCenter = chartSize / 2
