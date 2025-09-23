@@ -303,15 +303,54 @@ export default {
     const loadJobs = async () => {
       try {
         loading.value = true
-        const response = await apiManager.getJobCardsList(1)
-        if (response.success) {
-          jobs.value = response.data.jobCards
+        // 调用真实接口一获取职位列表
+        const response = await apiManager.getPositionList()
+        if (response && response.code === 0 && response.data) {
+          // 将接口返回的字段映射到页面字段
+          jobs.value = response.data.map(position => ({
+            id: position.positionId,
+            title: position.positionName, // positionName -> title
+            department: position.positionCategory, // positionCategory -> department
+            location: position.workLocationLimit, // workLocationLimit -> location
+            experience: position.workYearLimit, // workYearLimit -> experience
+            description: position.positionDescription, // positionDescription -> description
+            requirements: Array.isArray(position.positionDemand) ? position.positionDemand : [position.positionDemand], // positionDemand -> requirements
+            skills: position.positionSkillLabels || [], // positionSkillLabels -> skills
+            experienceLabels: position.positionExperienceLabels || [], // positionExperienceLabels -> experienceLabels
+            // 添加页面所需的统计数据字段（默认值）
+            candidateCount: 0,
+            recommendCount: 0, 
+            interviewCount: 0,
+            interviewingCount: 0, // JobCard组件使用的字段名
+            requiredCount: 1,
+            headcount: 1, // JobCard组件使用的字段名
+            newCandidates: 0, // JobCard组件使用的字段名
+            // 添加其他页面可能需要的字段
+            positionNature: position.positionNature || '全职',
+            salary: '面议', // 接口文档中没有薪资字段，使用默认值
+            education: '本科及以上', // 接口文档中没有学历要求字段，使用默认值
+            urgency: 'normal', // JobCard组件使用的紧急程度字段，默认值
+            benefits: ['五险一金', '带薪年假', '弹性工作'], // JobDetail组件使用的福利字段，默认值
+            // 向后兼容字段
+            publishTime: new Date().toISOString(),
+            status: 'active'
+          }))
+          
           if (jobs.value.length > 0 && !selectedJob.value) {
             selectedJob.value = jobs.value[0]
           }
+          
+          console.log('职位列表加载成功:', jobs.value)
+        } else {
+          console.error('职位列表接口返回异常:', response)
         }
       } catch (error) {
         console.error('加载职位列表失败:', error)
+        // 如果真实接口失败，可以考虑降级到Mock数据
+        // const response = await apiManager.getJobCardsList(1)
+        // if (response.success) {
+        //   jobs.value = response.data.jobCards
+        // }
       } finally {
         loading.value = false
       }

@@ -3,9 +3,11 @@
 
 /**
  * 后端接口基础URL配置
- * 修改这里的URL来切换不同的后端服务器
+ * 开发环境使用代理路径，生产环境使用真实服务器地址
  */
-const BASE_URL = 'http://localhost:8080/recruit/ai';
+const BASE_URL = process.env.NODE_ENV === 'development' 
+  ? '/api'  // 开发环境使用代理路径
+  : 'https://is-ehr-recruit2.test.gifshow.com/recruit';  // 生产环境使用真实地址
 
 // 导出配置
 export default BASE_URL;

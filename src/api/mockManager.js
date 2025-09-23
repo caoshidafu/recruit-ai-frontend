@@ -1,12 +1,14 @@
 // API管理器 - 统一管理真实API和Mock API的调用（只保留AI解析相关接口）
 import * as AIJobAPI from './AIJobAPI.js'
 import * as AIMatchAPI from './AIMatchAPI.js'
+import * as RecruitAPI from './RecruitAPI.js'
 import * as MockAPI from './MockAPI.js'
 
 // ==================== API配置 ====================
 
 // 判断是否使用Mock数据
-const USE_MOCK = process.env.VUE_APP_USE_MOCK !== 'false' && (process.env.NODE_ENV === 'development' || process.env.VUE_APP_USE_MOCK === 'true')
+// 注意：当前设置为使用真实API，如需使用Mock数据请修改为 true
+const USE_MOCK = false // process.env.VUE_APP_USE_MOCK !== 'false' && (process.env.NODE_ENV === 'development' || process.env.VUE_APP_USE_MOCK === 'true')
 
 /**
  * API调用管理器 - 只保留AI解析相关的核心接口
@@ -17,10 +19,26 @@ class APIManager {
     this.useMock = USE_MOCK
   }
 
-  // ==================== AI职位创建相关API ====================
+  // ==================== 职位管理相关API ====================
 
   /**
-   * 接口一：获取职位卡片列表
+   * 接口一：查询职位列表
+   * 功能描述：获取的职位列表信息
+   * 入参：无
+   * 返回参数：{ code: number, message: string, data: array }
+   * url地址：/api/v1/open/hackthon/position/list
+   * 请求方式：GET
+   */
+  async getPositionList() {
+    if (this.useMock) {
+      return await MockAPI.mockGetJobCardsList(1) // Mock数据暂时保持原有结构
+    } else {
+      return await RecruitAPI.getPositionList()
+    }
+  }
+
+  /**
+   * 接口一：获取职位卡片列表（向后兼容）
    * 功能描述：根据user_id获取职位卡片和岗位详情列表
    * 入参：userId: number
    * 返回参数：{ success: boolean, data: { jobCards: array, total: number, userId: number }, message: string }

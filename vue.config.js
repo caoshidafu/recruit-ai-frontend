@@ -13,6 +13,31 @@ module.exports = defineConfig({
     // disableHostCheck: true,
     client: {
       webSocketURL: 'auto://0.0.0.0:0/ws'
+    },
+    
+    // 跨域代理配置
+    proxy: {
+      '/api': {
+        target: 'https://is-ehr-recruit2.test.gifshow.com',
+        changeOrigin: true,
+        secure: true,
+        pathRewrite: {
+          '^/api': '/recruit'
+        },
+        onProxyReq: function(proxyReq, req, res) {
+          // 添加必要的请求头
+          console.log('代理请求:', req.method, req.url, '-> ', proxyReq.path);
+        },
+        onProxyRes: function(proxyRes, req, res) {
+          // 处理响应头，确保跨域
+          proxyRes.headers['access-control-allow-origin'] = '*';
+          proxyRes.headers['access-control-allow-methods'] = 'GET,POST,PUT,DELETE,OPTIONS';
+          proxyRes.headers['access-control-allow-headers'] = 'Content-Type,Authorization,X-Requested-With';
+        },
+        onError: function(err, req, res) {
+          console.error('代理错误:', err);
+        }
+      }
     }
   }
 })

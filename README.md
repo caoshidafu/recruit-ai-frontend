@@ -37,15 +37,16 @@ recruit-ai-frontend/
 │   ├── favicon.ico
 │   └── index.html
 ├── src/
-│   ├── api/                # API接口目录（精简版）
+│   ├── api/                # API接口目录
 │   │   ├── index.js            # HTTP请求基础方法
 │   │   ├── AIJobAPI.js         # AI职位创建API接口（核心业务）
 │   │   ├── AIMatchAPI.js       # AI匹配API接口（核心业务）
+│   │   ├── RecruitAPI.js       # 招聘系统真实API接口（新增）
 │   │   ├── MockAPI.js          # Mock API接口（精简版）
 │   │   └── mockManager.js      # API管理器（统一调用入口，精简版）
 │   ├── config/             # 配置目录
-│   │   ├── index.js            # 全局配置管理（域名、API等）
-│   │   └── env.example.js      # 环境变量配置示例
+│   │   ├── baseURL.js          # 后端接口基础URL配置
+│   │   └── README.md           # 配置说明文档
 │   ├── components/          # 组件目录
 │   │   ├── CandidateCard.vue              # 候选人卡片组件
 │   │   ├── CandidateAIAnalysisModal.vue   # 候选人AI分析模态框组件
@@ -74,6 +75,7 @@ recruit-ai-frontend/
 - `src/api/index.js`: HTTP请求基础方法（get、post、put、del）
 - `src/api/AIJobAPI.js`: AI职位创建API接口（核心业务）
 - `src/api/AIMatchAPI.js`: AI匹配API接口（核心业务）
+- `src/api/RecruitAPI.js`: 招聘系统真实API接口（新增，基于接口文档）
 - `src/api/MockAPI.js`: Mock API接口实现（精简版，只包含AI解析相关数据）
 - `src/api/mockManager.js`: API管理器，统一调用入口（精简版）
 
@@ -204,5 +206,15 @@ const candidates = await apiManager.getCandidatesByJobId(123, 1, '智能匹配')
 
 ---
 
-**项目版本**: v1.0.1  
-**最后更新**: 2024-01-21
+### 2024-09-23
+- ✅ **真实API接口集成**
+  - 更新baseURL配置为真实后端接口地址：https://is-ehr-recruit2.test.gifshow.com/recruit
+  - 新增RecruitAPI.js文件，实现基于接口文档的三个真实接口：
+    - getPositionList(): 查询职位列表
+    - getRecommendCandidateList(positionId): 查询推荐候选人列表
+    - createRecommendPosition(positionData): 创建推荐职位
+  - 修改AIMatchAPI.js中的getCandidateAIAnalysis函数，使用真实接口二的数据
+  - 候选人AI分析功能现在基于真实后端数据，包含匹配度、各项评分、正负向标签等
+
+**项目版本**: v1.1.0  
+**最后更新**: 2024-09-23
