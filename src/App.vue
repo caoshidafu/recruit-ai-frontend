@@ -372,34 +372,66 @@ export default {
         const response = await apiManager.getCandidatesByJobId(jobId, 1, matchType)
 
         if (response.success && response.data) {
-          // 将候选人数据分配到不同的类型中
-          const candidatesData = response.data.candidates || []
+          // 将接口返回的数据转换为页面需要的格式
+          const rawCandidatesData = response.data || []
           
-          console.log(`成功获取职位ID ${jobId} 的候选人数据，共 ${candidatesData.length} 人`)
+          console.log(`成功获取职位ID ${jobId} 的候选人数据，共 ${rawCandidatesData.length} 人`)
           
-          // 根据不同维度分配候选人到不同类别，确保每个类别都有合适的数据
-          // 智能推荐：按匹配分数排序，包含所有候选人但优先显示高分的
+          // 根据接口文档转换数据格式
+          const candidatesData = rawCandidatesData.map(candidate => ({
+            id: candidate.resumeId,
+            name: candidate.name,
+            experience: candidate.workYears,
+            title: candidate.title,
+            location: candidate.workLocation,
+            matchScore: candidate.matchScore,
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${candidate.name}`,
+            
+            // 推荐理由使用正向标签
+            recommendReasons: candidate.positiveLabels || [],
+            
+            // 技能标签（如果接口有提供的话，目前接口文档中没有明确说明）
+            skills: candidate.skills || [],
+            
+            // 工作经历转换
+            workHistory: (candidate.workExperience || []).map(work => ({
+              company: work.companyName,
+              position: work.positionName,
+              duration: work.workTimeBucket,
+              description: work.detailedIntroduction
+            })),
+            
+            // 教育经历转换
+            educationHistory: (candidate.eduExperience || []).map(edu => ({
+              school: edu.schoolName,
+              degree: edu.degreeName,
+              major: edu.majorName,
+              duration: `${new Date(edu.startDate).getFullYear()}-${new Date(edu.endDate).getFullYear()}`
+            })),
+            
+            // AI分析相关数据
+            aiAnalysis: {
+              recommendReason: candidate.recommendReason,
+              positiveLabels: candidate.positiveLabels || [],
+              negativeLabels: candidate.negativeLabels || [],
+              scores: {
+                eduBackgroundScore: candidate.eduBackgroundScore,
+                skillMatchScore: candidate.skillMatchScore,
+                projectExperienceScore: candidate.projectExperienceScore,
+                stabilityScore: candidate.stabilityScore,
+                developmentPotentialScore: candidate.developmentPotentialScore
+              }
+            }
+          }))
+          
+          // 直接使用转换后的候选人数据
           candidates.value.smart = candidatesData
-            .filter(c => c.matchScore >= 70) // 更宽泛的分数范围
-            .sort((a, b) => b.matchScore - a.matchScore) // 按分数降序排列
-          
-          // 经验推荐：按经验年限排序，包含有一定经验的候选人
           candidates.value.experience = candidatesData
-            .filter(c => c.experience >= 2) // 包含2年以上经验的候选人
-            .sort((a, b) => b.experience - a.experience) // 按经验降序排列
-          
-          // 学历推荐：按学历等级排序，包含所有学历背景
-          const educationOrder = { '博士': 4, '硕士': 3, '本科': 2, '专科': 1 }
           candidates.value.education = candidatesData
-            .sort((a, b) => (educationOrder[b.education] || 0) - (educationOrder[a.education] || 0)) // 按学历等级降序排列
           
-          // 调试信息：输出筛选结果
-          console.log('候选人数据筛选结果:')
-          console.log('- 智能推荐:', candidates.value.smart.length, '人')
-          console.log('- 经验推荐:', candidates.value.experience.length, '人') 
-          console.log('- 学历推荐:', candidates.value.education.length, '人')
-          console.log('- 原始数据总数:', candidatesData.length, '人')
-          console.log('- API返回的匹配信息:', response.data.matchingInfo)
+          // 调试信息：输出转换后的数据
+          console.log('转换后的候选人数据:', candidatesData.length, '人')
+          console.log('转换后的数据详情:', candidatesData)
         } else {
           console.error('API返回数据格式错误:', response)
           // 清空候选人数据

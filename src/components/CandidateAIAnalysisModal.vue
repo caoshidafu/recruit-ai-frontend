@@ -40,12 +40,12 @@
             <div class="summary-content">
               <div class="overall-score">
                 <div class="score-circle">
-                  <span class="score-value">{{ analysisData.overallScore }}</span>
+                  <span class="score-value">{{ candidate.matchScore || analysisData.overallScore }}</span>
                   <span class="score-label">综合评分</span>
                 </div>
                 <div class="score-description">
-                  <p class="score-level">{{ getScoreLevel(analysisData.overallScore) }}</p>
-                  <p class="score-subtitle">{{ analysisData.recommendation }}</p>
+                  <p class="score-level">{{ getScoreLevel(candidate.matchScore || analysisData.overallScore) }}</p>
+                  <p class="score-subtitle">{{ candidate.aiAnalysis?.recommendReason || analysisData.recommendation }}</p>
                 </div>
               </div>
             </div>
@@ -76,7 +76,7 @@
                 核心优势
               </h5>
               <ul class="analysis-list positive">
-                <li v-for="(strength, index) in analysisData.strengths" :key="index">
+                <li v-for="(strength, index) in (candidate.aiAnalysis?.positiveLabels || analysisData.strengths)" :key="index">
                   {{ strength }}
                 </li>
               </ul>
@@ -89,7 +89,7 @@
                 改进建议
               </h5>
               <ul class="analysis-list attention">
-                <li v-for="(improvement, index) in analysisData.improvements" :key="index">
+                <li v-for="(improvement, index) in (candidate.aiAnalysis?.negativeLabels || analysisData.improvements)" :key="index">
                   {{ improvement }}
                 </li>
               </ul>
@@ -102,7 +102,7 @@
                 岗位匹配分析
               </h5>
               <div class="match-analysis">
-                <div class="match-item" v-for="(match, key) in analysisData.jobMatching" :key="key">
+                <div class="match-item" v-for="(match, key) in (candidate.aiAnalysis?.scores || analysisData.jobMatching)" :key="key">
                   <span class="match-label">{{ getMatchLabel(key) }}</span>
                   <div class="match-bar">
                     <div class="match-fill" :style="{ width: match + '%' }"></div>
