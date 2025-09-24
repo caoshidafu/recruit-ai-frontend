@@ -169,6 +169,10 @@ export default {
     candidate: {
       type: Object,
       required: true
+    },
+    positionId: {
+      type: Number,
+      required: true
     }
   },
   emits: ['close', 'contact'],
@@ -195,6 +199,12 @@ export default {
     // 获取匹配度标签
     const getMatchLabel = (key) => {
       const labels = {
+        eduBackgroundScore: '学历背景',
+        skillMatchScore: '技能匹配',
+        projectExperienceScore: '项目经验',
+        stabilityScore: '稳定性',
+        developmentPotentialScore: '发展潜力',
+        // 向后兼容的字段
         skillMatch: '技能匹配',
         experienceMatch: '经验匹配',
         educationMatch: '学历匹配',
@@ -215,14 +225,16 @@ export default {
 
     // 加载AI分析数据
     const loadAnalysisData = async () => {
-      if (!props.candidate?.id) return
+      if (!props.candidate?.resumeId && !props.candidate?.id) return
+      if (!props.positionId) return
 
       try {
         loading.value = true
         error.value = ''
 
-        // 调用AI分析API
-        const response = await apiManager.getCandidateAIAnalysis(props.candidate.id, 1)
+        // 调用AI分析API，使用职位ID和简历ID
+        const resumeId = props.candidate.resumeId || props.candidate.id
+        const response = await apiManager.getCandidateAIAnalysis(props.positionId, resumeId)
         
         if (response.success) {
           analysisData.value = response.data

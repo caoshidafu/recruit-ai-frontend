@@ -68,7 +68,7 @@
         </div>
 
         <!-- 技能标签 -->
-        <div class="skills-section">
+        <div v-if="candidate.skills && candidate.skills.length > 0" class="skills-section">
           <h5>技能标签</h5>
           <div class="candidate-skills">
             <span
@@ -124,6 +124,7 @@
     <CandidateAIAnalysisModal
       :visible="showAIAnalysis"
       :candidate="candidate"
+      :positionId="positionId"
       @close="showAIAnalysis = false"
       @contact="handleContactFromModal"
     />
@@ -147,6 +148,10 @@ export default {
     defaultExpanded: {
       type: Boolean,
       default: false
+    },
+    positionId: {
+      type: Number,
+      required: true
     }
   },
   setup(props) {

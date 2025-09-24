@@ -111,6 +111,7 @@
                 v-for="candidate in displayedCandidates"
                 :key="candidate.id"
                 :candidate="candidate"
+                :positionId="selectedJob?.id"
                 class="candidate-column"
               />
               

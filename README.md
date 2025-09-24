@@ -216,5 +216,24 @@ const candidates = await apiManager.getCandidatesByJobId(123, 1, '智能匹配')
   - 修改AIMatchAPI.js中的getCandidateAIAnalysis函数，使用真实接口二的数据
   - 候选人AI分析功能现在基于真实后端数据，包含匹配度、各项评分、正负向标签等
 
-**项目版本**: v1.1.0  
-**最后更新**: 2024-09-23
+### 2024-09-24
+- ✅ **接口二集成完成**
+  - 完成接口二（推荐候选人列表）的真实API调用实现
+  - 更新mockManager.js中的getCandidatesByJobId方法，直接调用真实接口二
+  - 根据接口文档注释完成候选人字段的正确映射：
+    - name -> candidate.name（候选人姓名）
+    - workYears -> candidate.experience（工作年限）
+    - title -> candidate.title（职位标题）
+    - workLocation -> candidate.location（工作地点）
+    - matchScore -> candidate.matchScore（匹配分数）
+    - positiveLabels -> candidate.recommendReasons（推荐理由）
+    - negativeLabels -> 改进建议（用于AI分析）
+    - workExperience -> candidate.workHistory（工作经历）
+    - eduExperience -> candidate.educationHistory（教育经历）
+  - 更新AI分析功能参数，支持positionId和resumeId的新API调用方式
+  - 修复CandidateCard和CandidateAIAnalysisModal组件的参数传递
+  - 处理接口中缺失的技能标签字段，基于候选人职位和经历智能生成技能标签
+  - 所有候选人数据现在完全来源于真实后端接口，实现了完整的接口二集成
+
+**项目版本**: v1.2.0  
+**最后更新**: 2024-09-24

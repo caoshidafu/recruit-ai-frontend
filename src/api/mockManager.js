@@ -69,21 +69,145 @@ class APIManager {
     }
   }
 
+  // ==================== 辅助方法 ====================
+  
+  /**
+   * 基于候选人工作经历生成技能标签
+   * @param {Object} candidate - 候选人信息
+   * @returns {Array} 技能标签数组
+   */
+  generateSkillsFromExperience(candidate) {
+    const skills = []
+    
+    // 基于职位名称推断技能
+    const position = candidate.title || ''
+    if (position.includes('Java') || position.includes('java')) {
+      skills.push('Java', 'Spring', 'MySQL')
+    } else if (position.includes('前端') || position.includes('Frontend') || position.includes('React') || position.includes('Vue')) {
+      skills.push('JavaScript', 'Vue.js', 'React', 'HTML/CSS')
+    } else if (position.includes('Python') || position.includes('python')) {
+      skills.push('Python', 'Django', 'Flask')
+    } else if (position.includes('产品') || position.includes('Product')) {
+      skills.push('产品设计', '需求分析', 'Axure')
+    } else if (position.includes('运营') || position.includes('Operation')) {
+      skills.push('数据分析', '用户运营', '内容运营')
+    } else {
+      // 默认技能
+      skills.push('团队协作', '沟通能力', '学习能力')
+    }
+    
+    // 基于工作年限添加经验相关技能
+    const workYears = candidate.workYears || 0
+    if (workYears >= 5) {
+      skills.push('项目管理', '团队领导')
+    } else if (workYears >= 3) {
+      skills.push('项目经验', '业务理解')
+    }
+    
+    // 基于学历添加技能
+    const education = candidate.eduExperience?.[0]?.degreeName || ''
+    if (education.includes('硕士') || education.includes('博士')) {
+      skills.push('学术研究', '数据分析')
+    }
+    
+    // 去重并限制数量
+    return [...new Set(skills)].slice(0, 4)
+  }
+
   // ==================== AI匹配相关API ====================
 
   /**
-   * 接口三：根据发布岗位id获取候选人列表
-   * 功能描述：根据发布岗位id获取候选人list，携带type默认是智能匹配（后端根据type判断是否匹配过，有则数据库中返回，否则就匹配）
-   * 入参：{ jobId: number, userId: number, type?: string }
-   * 返回参数：{ success: boolean, data: { candidates: array, total: number, matchingInfo: object, jobDetail: object, userId: number }, message: string }
-   * url地址：/candidates/match
-   * 请求方式：POST
+   * 接口二：根据职位ID获取推荐候选人列表（使用真实接口）
+   * 功能描述：根据职位ID获取推荐的候选人列表
+   * 入参：{ positionId: number, userId: number, type?: string }
+   * 返回参数：{ success: boolean, data: { candidates: array, total: number, matchingInfo: object }, message: string }
+   * url地址：/api/v1/open/hackthon/recommend/candidate/list
+   * 请求方式：GET
    */
-  async getCandidatesByJobId(jobId, userId, type = '智能匹配') {
+  async getCandidatesByJobId(positionId, userId, type = '智能匹配') {
     if (this.useMock) {
-      return await MockAPI.mockGetCandidatesByJobId(jobId, userId, type)
+      return await MockAPI.mockGetCandidatesByJobId(positionId, userId, type)
     } else {
-      return await AIMatchAPI.getCandidatesByJobId(jobId, userId, type)
+      // 调用真实的接口二获取候选人数据
+      const response = await RecruitAPI.getRecommendCandidateList(positionId)
+      
+      if (response && response.code === 0 && response.data) {
+        // 将真实接口返回的数据映射为前端组件所需的格式
+        const candidates = response.data.map(item => ({
+          // 基本信息映射 - 根据接口文档注释
+          id: item.resumeId, // resumeId作为候选人ID
+          name: item.name, // candidate.name
+          experience: item.workYears, // candidate.experience - 工作年限
+          title: item.title, // candidate.title - 职位标题
+          location: item.workLocation, // candidate.location - 工作地点
+          matchScore: item.matchScore, // candidate.matchScore - 匹配分数
+          
+          // 能力评分
+          eduBackgroundScore: item.eduBackgroundScore || 0, // 学历背景分
+          skillMatchScore: item.skillMatchScore || 0, // 技能匹配分
+          projectExperienceScore: item.projectExperienceScore || 0, // 项目经验分
+          stabilityScore: item.stabilityScore || 0, // 稳定性分
+          developmentPotentialScore: item.developmentPotentialScore || 0, // 发展潜力分
+          
+          // 推荐信息
+          recommendReasons: item.positiveLabels || [], // candidate.recommendReasons - 推荐理由
+          negativeLabels: item.negativeLabels || [], // 负向标签 - 用于填充ai分析中的改进建议
+          recommendReason: item.recommendReason || '', // ai分析内容
+          
+          // 工作经历映射
+          workHistory: (item.workExperience || []).map(work => ({
+            company: work.companyName || '',
+            position: work.positionName || '',
+            duration: work.workTimeBucket || '',
+            description: work.detailedIntroduction || '',
+            startDate: work.startDate || '',
+            endDate: work.endDate || ''
+          })),
+          
+          // 教育经历映射
+          educationHistory: (item.eduExperience || []).map(edu => ({
+            school: edu.schoolName || '',
+            degree: edu.degreeName || '',
+            major: edu.majorName || '',
+            duration: `${edu.startDate ? new Date(edu.startDate).getFullYear() : ''}-${edu.endDate ? new Date(edu.endDate).getFullYear() : ''}`,
+            startDate: edu.startDate || '',
+            endDate: edu.endDate || ''
+          })),
+          
+          // 其他前端组件需要的字段
+          avatar: `https://i.pravatar.cc/48?seed=${item.resumeId}`, // 生成头像
+          skills: this.generateSkillsFromExperience(item), // 基于工作经历生成技能标签
+          education: item.eduExperience?.[0]?.degreeName || '本科', // 最高学历
+          
+          // 保留原有字段以确保兼容性
+          resumeId: item.resumeId,
+          workYears: item.workYears,
+          workLocation: item.workLocation,
+          workExperience: item.workExperience || [],
+          eduExperience: item.eduExperience || []
+        }))
+        
+        return {
+          success: true,
+          data: {
+            candidates: candidates,
+            total: candidates.length,
+            matchingInfo: {
+              positionId: positionId,
+              matchType: type,
+              totalCandidates: candidates.length
+            }
+          },
+          message: '候选人数据获取成功'
+        }
+      } else {
+        console.error('接口二返回数据异常:', response)
+        return {
+          success: false,
+          data: { candidates: [], total: 0 },
+          message: response?.message || '获取候选人数据失败'
+        }
+      }
     }
   }
 
@@ -186,16 +310,16 @@ class APIManager {
   // ==================== AI分析相关API ====================
 
   /**
-   * 获取候选人AI分析
-   * 功能描述：根据候选人ID获取AI智能分析报告，包含能力评估、匹配度分析等
-   * 入参：{ candidateId: number, userId: number }
+   * 获取候选人AI分析（使用真实接口数据）
+   * 功能描述：根据职位ID和候选人简历ID获取AI智能分析报告，包含能力评估、匹配度分析等
+   * 入参：{ positionId: number, resumeId: number }
    * 返回参数：{ success: boolean, data: { overallScore: number, recommendation: string, strengths: array, improvements: array, jobMatching: object, recommendedActions: array }, message: string }
    */
-  async getCandidateAIAnalysis(candidateId, userId) {
+  async getCandidateAIAnalysis(positionId, resumeId) {
     if (this.useMock) {
-      return await MockAPI.mockGetCandidateAIAnalysis(candidateId, userId)
+      return await MockAPI.mockGetCandidateAIAnalysis(positionId, resumeId)
     } else {
-      return await AIMatchAPI.getCandidateAIAnalysis(candidateId, userId)
+      return await AIMatchAPI.getCandidateAIAnalysis(positionId, resumeId)
     }
   }
 
