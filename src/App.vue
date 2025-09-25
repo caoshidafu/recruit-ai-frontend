@@ -1,7 +1,25 @@
 <template>
   <div class="app">
     <header class="app-header">
-      <h1 class="app-title">智能简历推荐系统 - 岗位推荐</h1>
+      <h1 class="app-title">智能简历推荐系统 - {{ currentViewTitle }}</h1>
+      <div class="header-center">
+        <div class="view-switcher">
+          <button 
+            :class="`switch-btn ${currentView === 'dashboard' ? 'active' : ''}`"
+            @click="switchView('dashboard')"
+          >
+            <span class="btn-icon">📊</span>
+            <span>数据大盘</span>
+          </button>
+          <button 
+            :class="`switch-btn ${currentView === 'details' ? 'active' : ''}`"
+            @click="switchView('details')"
+          >
+            <span class="btn-icon">👥</span>
+            <span>岗位详情</span>
+          </button>
+        </div>
+      </div>
       <div class="header-right">
         <button class="icon-button">
           <span class="icon">🔔</span>
@@ -18,31 +36,43 @@
     </header>
 
     <div class="app-body">
-      <aside class="sidebar" :style="{ width: sidebarWidth + 'px' }">
-        <div class="sidebar-section">
-          <h2>在招岗位</h2>
-          <div class="job-list">
-            <JobCard
-              v-for="job in jobs"
-              :key="job.id"
-              :job="job"
-              :isActive="selectedJob?.id === job.id"
-              @click="setSelectedJob(job)"
-            />
+      <!-- 数据大盘视图 -->
+      <template v-if="currentView === 'dashboard'">
+        <main class="dashboard-main">
+          <DashboardView
+            @navigate-to-job="handleNavigateToJob"
+            @navigate-to-candidates="handleNavigateToCandidates"
+          />
+        </main>
+      </template>
+
+      <!-- 详情视图 -->
+      <template v-else>
+        <aside class="sidebar" :style="{ width: sidebarWidth + 'px' }">
+          <div class="sidebar-section">
+            <h2>在招岗位</h2>
+            <div class="job-list">
+              <JobCard
+                v-for="job in jobs"
+                :key="job.id"
+                :job="job"
+                :isActive="selectedJob?.id === job.id"
+                @click="setSelectedJob(job)"
+              />
+            </div>
+            <button class="create-job-btn" @click="showCreateJobModal = true">
+              <span>➕</span> 发布新岗位
+            </button>
           </div>
-          <button class="create-job-btn" @click="showCreateJobModal = true">
-            <span>➕</span> 发布新岗位
-          </button>
-        </div>
-      </aside>
+        </aside>
 
-      <!-- 主分割器 - 在侧边栏和主内容区之间 -->
-      <ResizableSplitter 
-        @resize="handleMainSplitterResize"
-        class="main-splitter"
-      />
+        <!-- 主分割器 - 在侧边栏和主内容区之间 -->
+        <ResizableSplitter 
+          @resize="handleMainSplitterResize"
+          class="main-splitter"
+        />
 
-      <main class="main-content">
+        <main class="main-content">
         <div class="content-header">
           <div class="job-summary">
             <h2>{{ selectedJob?.title }}</h2>
@@ -132,7 +162,8 @@
             </div>
           </div>
         </div>
-      </main>
+        </main>
+      </template>
     </div>
 
     <!-- 创建职位模态框 -->
@@ -152,6 +183,7 @@ import CandidateCard from './components/CandidateCard.vue'
 import JobDetail from './components/JobDetail.vue'
 import ResizableSplitter from './components/ResizableSplitter.vue'
 import CreateJobModal from './components/CreateJobModal.vue'
+import DashboardView from './components/DashboardView.vue'
 import apiManager from './api/mockManager.js'
 
 export default {
@@ -161,7 +193,8 @@ export default {
     CandidateCard,
     JobDetail,
     ResizableSplitter,
-    CreateJobModal
+    CreateJobModal,
+    DashboardView
   },
   setup() {
     // 响应式数据
@@ -177,6 +210,9 @@ export default {
     const viewMode = ref('split')
     const loading = ref(false)
     const showCreateJobModal = ref(false)
+    
+    // 视图切换相关状态
+    const currentView = ref('dashboard') // 'dashboard' | 'details'
     
     // 分割器相关状态
     const leftPanelWidth = ref(400) // 左侧面板宽度，默认400px
@@ -214,7 +250,69 @@ export default {
       { value: 'education', label: '学历推荐' },
     ]
 
+    // 当前视图标题
+    const currentViewTitle = computed(() => {
+      return currentView.value === 'dashboard' ? '数据大盘' : '岗位推荐'
+    })
+
     // 方法
+    // 视图切换方法
+    const switchView = (view) => {
+      console.log(`切换视图到: ${view}`)
+      currentView.value = view
+      
+      // 如果切换到详情视图且没有选中的职位，自动选择第一个职位
+      if (view === 'details' && !selectedJob.value && jobs.value.length > 0) {
+        setSelectedJob(jobs.value[0])
+      }
+    }
+
+    // 处理从数据大盘导航到具体职位
+    const handleNavigateToJob = (jobId) => {
+      console.log(`从数据大盘导航到职位: ${jobId}`)
+      
+      // 切换到详情视图
+      currentView.value = 'details'
+      
+      // 查找并选择对应的职位
+      if (jobId) {
+        const targetJob = jobs.value.find(job => job.id === jobId)
+        if (targetJob) {
+          setSelectedJob(targetJob)
+        } else {
+          console.warn(`未找到ID为 ${jobId} 的职位`)
+          // 如果没找到指定职位，选择第一个职位
+          if (jobs.value.length > 0) {
+            setSelectedJob(jobs.value[0])
+          }
+        }
+      } else {
+        // 如果没有指定职位ID，选择第一个职位
+        if (jobs.value.length > 0) {
+          setSelectedJob(jobs.value[0])
+        }
+      }
+    }
+
+    // 处理从数据大盘导航到候选人列表
+    const handleNavigateToCandidates = (jobId) => {
+      console.log(`从数据大盘导航到候选人列表: ${jobId}`)
+      
+      // 切换到详情视图
+      currentView.value = 'details'
+      
+      // 如果指定了职位ID，选择对应职位
+      if (jobId) {
+        const targetJob = jobs.value.find(job => job.id === jobId)
+        if (targetJob) {
+          setSelectedJob(targetJob)
+        }
+      }
+      
+      // 切换到候选人视图模式
+      viewMode.value = 'candidates'
+    }
+
     const setSelectedJob = async (job) => {
       if (!job || !job.id) {
         console.warn('无效的职位信息')
@@ -539,12 +637,17 @@ export default {
       sidebarWidth,
       minSidebarWidth,
       maxSidebarWidth,
+      currentView,
       // 计算属性
       currentCandidates,
       displayedCandidates,
       hasMore,
       recommendOptions,
+      currentViewTitle,
       // 方法
+      switchView,
+      handleNavigateToJob,
+      handleNavigateToCandidates,
       setSelectedJob,
       loadJobs,
       loadCandidates,
@@ -563,6 +666,66 @@ export default {
 </script>
 
 <style>
+/* 头部视图切换器样式 */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.view-switcher {
+  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.switch-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.switch-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.switch-btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon {
+  font-size: 16px;
+}
+
+/* 数据大盘主容器样式 */
+.dashboard-main {
+  flex: 1;
+  overflow: hidden;
+  background: #f5f7fa;
+}
+
 /* 主分割器样式 */
 .main-splitter {
   /* 继承ResizableSplitter的样式 */
@@ -1038,6 +1201,49 @@ export default {
   .page-btn {
     width: 38px;
     height: 38px;
+  }
+}
+
+/* 响应式设计 - 视图切换器 */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .header-center {
+    order: -1;
+  }
+  
+  .view-switcher {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .switch-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  .btn-icon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .switch-btn span:not(.btn-icon) {
+    display: none;
+  }
+  
+  .switch-btn {
+    padding: 12px;
+  }
+  
+  .view-switcher {
+    max-width: 120px;
   }
 }
 

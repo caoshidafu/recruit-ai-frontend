@@ -42,6 +42,7 @@ recruit-ai-frontend/
 │   │   ├── AIJobAPI.js         # AI职位创建API接口（核心业务）
 │   │   ├── AIMatchAPI.js       # AI匹配API接口（核心业务）
 │   │   ├── RecruitAPI.js       # 招聘系统真实API接口（新增）
+│   │   ├── DASHBOARDAPI.js     # 数据大盘API接口（新增）
 │   │   ├── MockAPI.js          # Mock API接口（精简版）
 │   │   └── mockManager.js      # API管理器（统一调用入口，精简版）
 │   ├── config/             # 配置目录

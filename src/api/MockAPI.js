@@ -834,4 +834,155 @@ export function mockGetCandidateAIAnalysis(candidateId, userId) { // eslint-disa
   });
 }
 
+/**
+* Mock - 数据大盘接口：获取招聘数据大盘
+* 功能描述：获取智能招聘驾驶舱所需的所有数据，包括概览指标、AI提醒、图表数据等
+* 入参：无
+* 返回参数：{ success: boolean, data: object, message: string }
+* url地址：/dashboard/data
+* 请求方式：GET
+*/
+export function mockGetDashboardData() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const dashboardData = {
+        // 概览指标
+        totalJobs: 8,
+        totalCandidates: 156,
+        interviewsToday: 3,
+        offersPending: 5,
+        
+        // AI智能提醒
+        aiAlerts: [
+          {
+            id: 'alert-1',
+            title: '高级算法工程师急需补充',
+            message: '该岗位已空缺15天，有3位匹配度超过90%的候选人待处理',
+            action: '立即查看候选人',
+            priority: 'high',
+            icon: '🚨',
+            count: 3,
+            jobId: 123
+          },
+          {
+            id: 'alert-2',
+            title: '简历堆积提醒',
+            message: 'Java后端工程师岗位有28份简历待筛选',
+            action: '开始批量筛选',
+            priority: 'medium',
+            icon: '📚',
+            count: 28,
+            jobId: 124
+          },
+          {
+            id: 'alert-3',
+            title: '面试安排建议',
+            message: '前端工程师岗位有5位候选人可安排本周面试',
+            action: '查看面试日程',
+            priority: 'low',
+            icon: '📅',
+            count: 5,
+            jobId: 123
+          }
+        ],
+        
+        // 岗位健康度数据
+        jobHealthData: {
+          jobs: [
+            { jobId: 123, title: '高级前端工程师', healthScore: 45, status: 'danger', candidates: 42 },
+            { jobId: 124, title: 'Java后端工程师', healthScore: 78, status: 'warning', candidates: 28 },
+            { jobId: 125, title: '产品经理', healthScore: 92, status: 'healthy', candidates: 35 },
+            { jobId: 126, title: 'UI设计师', healthScore: 65, status: 'warning', candidates: 18 },
+            { jobId: 127, title: '数据分析师', healthScore: 88, status: 'healthy', candidates: 22 },
+            { jobId: 128, title: '运营专员', healthScore: 35, status: 'danger', candidates: 15 }
+          ]
+        },
+        
+        // 招聘进度分布数据
+        recruitProgressData: {
+          items: [
+            { label: '简历筛选', value: 89 },
+            { label: '初试进行', value: 24 },
+            { label: '复试进行', value: 12 },
+            { label: '终试进行', value: 8 },
+            { label: '待发Offer', value: 5 },
+            { label: '已入职', value: 18 }
+          ]
+        },
+        
+        // 候选人流量趋势数据（最近7天）
+        candidateFlowData: {
+          points: [
+            { label: '12/19', value: 23, date: '2024-12-19', trend: { type: 'up', text: '↗️ 增长' } },
+            { label: '12/20', value: 31, date: '2024-12-20', trend: { type: 'up', text: '↗️ 增长' } },
+            { label: '12/21', value: 18, date: '2024-12-21', trend: { type: 'down', text: '↘️ 下降' } },
+            { label: '12/22', value: 26, date: '2024-12-22', trend: { type: 'up', text: '↗️ 增长' } },
+            { label: '12/23', value: 42, date: '2024-12-23', trend: { type: 'up', text: '↗️ 增长' } },
+            { label: '12/24', value: 35, date: '2024-12-24', trend: { type: 'down', text: '↘️ 下降' } },
+            { label: '12/25', value: 39, date: '2024-12-25', trend: { type: 'up', text: '↗️ 增长' } }
+          ]
+        },
+        
+        // 优先处理队列
+        priorityQueue: [
+          {
+            id: 'queue-1',
+            rank: 1,
+            jobId: 123,
+            jobTitle: '高级前端工程师',
+            candidateCount: 3,
+            avgMatchScore: 94,
+            waitingTime: '等待15天',
+            progress: 25,
+            urgency: 'high',
+            urgencyText: '紧急'
+          },
+          {
+            id: 'queue-2',
+            rank: 2,
+            jobId: 124,
+            jobTitle: 'Java后端工程师',
+            candidateCount: 6,
+            avgMatchScore: 87,
+            waitingTime: '等待8天',
+            progress: 60,
+            urgency: 'medium',
+            urgencyText: '重要'
+          },
+          {
+            id: 'queue-3',
+            rank: 3,
+            jobId: 126,
+            jobTitle: 'UI设计师',
+            candidateCount: 4,
+            avgMatchScore: 82,
+            waitingTime: '等待5天',
+            progress: 75,
+            urgency: 'medium',
+            urgencyText: '重要'
+          },
+          {
+            id: 'queue-4',
+            rank: 4,
+            jobId: 127,
+            jobTitle: '数据分析师',
+            candidateCount: 2,
+            avgMatchScore: 91,
+            waitingTime: '等待3天',
+            progress: 90,
+            urgency: 'low',
+            urgencyText: '一般'
+          }
+        ]
+      }
+      
+      resolve({
+        success: true,
+        data: dashboardData,
+        message: '数据大盘数据获取成功'
+      })
+    }, 800) // 模拟网络延迟
+  })
+}
+
 export const MOCK_ENABLED = process.env.VUE_APP_MOCK_ENABLED !== 'false';

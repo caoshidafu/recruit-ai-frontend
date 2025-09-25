@@ -2,6 +2,7 @@
 import * as AIJobAPI from './AIJobAPI.js'
 import * as AIMatchAPI from './AIMatchAPI.js'
 import * as RecruitAPI from './RecruitAPI.js'
+import * as DASHBOARDAPI from './DASHBOARDAPI.js'
 import * as MockAPI from './MockAPI.js'
 
 // ==================== API配置 ====================
@@ -324,6 +325,22 @@ class APIManager {
   }
 
   /**
+   * 获取数据大盘数据
+   * 功能描述：获取智能招聘驾驶舱所需的所有数据
+   * 入参：无
+   * 返回参数：{ success: boolean, data: object, message: string }
+   * url地址：/dashboard/data
+   * 请求方式：GET
+   */
+  async getDashboardData() {
+    if (this.useMock) {
+      return await MockAPI.mockGetDashboardData()
+    } else {
+      return await DASHBOARDAPI.getDashboardData()
+    }
+  }
+
+  /**
    * 创建职位（新API）
    * @param {Object} positionData - 职位数据
    * @param {string} positionData.positionName - 职位名称
@@ -429,4 +446,4 @@ const apiManager = new APIManager()
 export default apiManager
 
 // 同时导出各个API模块，供需要直接调用的场景使用
-export { AIJobAPI, AIMatchAPI, MockAPI }
+export { AIJobAPI, AIMatchAPI, DASHBOARDAPI, MockAPI }
