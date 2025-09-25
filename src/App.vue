@@ -36,31 +36,33 @@
     </header>
 
     <div class="app-body">
-      <!-- 数据大盘视图 -->
-      <template v-if="currentView === 'dashboard'">
-        <main class="dashboard-main">
+      <!-- 页面切换动画容器 -->
+      <transition name="page-slide" mode="out-in">
+        <!-- 数据大盘视图 -->
+        <main v-if="currentView === 'dashboard'" key="dashboard" class="dashboard-main">
           <DashboardView
             @navigate-to-job="handleNavigateToJob"
             @navigate-to-candidates="handleNavigateToCandidates"
           />
         </main>
-      </template>
 
-      <!-- 详情视图 -->
-      <template v-else>
-        <aside class="sidebar" :style="{ width: sidebarWidth + 'px' }">
+        <!-- 详情视图 -->
+        <div v-else key="details" class="details-main">
+        <aside class="sidebar sidebar-animate" :style="{ width: sidebarWidth + 'px' }">
           <div class="sidebar-section">
-            <h2>在招岗位</h2>
+            <h2 class="sidebar-title-animate">在招岗位</h2>
             <div class="job-list">
               <JobCard
-                v-for="job in jobs"
+                v-for="(job, index) in jobs"
                 :key="job.id"
                 :job="job"
                 :isActive="selectedJob?.id === job.id"
                 @click="setSelectedJob(job)"
+                :style="{ 'animation-delay': `${0.1 + index * 0.1}s` }"
+                class="job-card-animate"
               />
             </div>
-            <button class="create-job-btn" @click="showCreateJobModal = true">
+            <button class="create-job-btn create-job-btn-animate" @click="showCreateJobModal = true">
               <span>➕</span> 发布新岗位
             </button>
           </div>
@@ -72,17 +74,20 @@
           class="main-splitter"
         />
 
-        <main class="main-content">
-        <div class="content-header">
-          <div class="job-summary">
+        <main class="main-content main-content-animate">
+        <div class="content-header content-header-animate">
+          <div class="job-summary job-summary-animate">
             <h2>{{ selectedJob?.title }}</h2>
             <div class="job-tags">
-              <span class="tag">{{ selectedJob?.department }}</span>
-              <span class="tag">{{ selectedJob?.location }}</span>
-              <span class="tag">{{ selectedJob?.experience }}</span>
+              <span v-for="(tag, index) in [selectedJob?.department, selectedJob?.location, selectedJob?.experience]" 
+                    :key="index" 
+                    class="tag tag-animate" 
+                    :style="{ 'animation-delay': `${0.3 + index * 0.1}s` }">
+                {{ tag }}
+              </span>
             </div>
           </div>
-          <div class="view-controls">
+          <div class="view-controls view-controls-animate">
             <button
               :class="`view-btn ${viewMode === 'split' ? 'active' : ''}`"
               @click="viewMode = 'split'"
@@ -113,11 +118,11 @@
             @resize="handleSplitterResize"
           />
 
-          <div class="candidates-panel">
-            <div class="panel-header">
+          <div class="candidates-panel candidates-panel-animate">
+            <div class="panel-header panel-header-animate">
               <h3>推荐候选人 ({{ currentCandidates.length }})</h3>
               <select
-                class="recommend-select"
+                class="recommend-select recommend-select-animate"
                 v-model="recommendType"
               >
                 <option
@@ -163,7 +168,8 @@
           </div>
         </div>
         </main>
-      </template>
+        </div>
+      </transition>
     </div>
 
     <!-- 创建职位模态框 -->
@@ -756,10 +762,37 @@ export default {
   font-size: 16px;
 }
 
+/* 页面切换动画样式 */
+.page-slide-enter-active {
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.page-slide-leave-active {
+  transition: all 0.4s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+
+.page-slide-enter-from {
+  transform: translateX(60px);
+  opacity: 0;
+}
+
+.page-slide-leave-to {
+  transform: translateX(-40px);
+  opacity: 0;
+}
+
 /* 数据大盘主容器样式 */
 .dashboard-main {
   flex: 1;
   overflow: hidden;
+  background: #f5f7fa;
+}
+
+/* 详情视图主容器样式 */
+.details-main {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
   background: #f5f7fa;
 }
 
@@ -1281,6 +1314,122 @@ export default {
   
   .view-switcher {
     max-width: 120px;
+  }
+}
+
+/* 岗位详情页面入场动画 */
+.sidebar-animate {
+  animation: slideInLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.sidebar-title-animate {
+  animation: fadeInDown 0.8s ease-out 0.2s both;
+}
+
+.job-card-animate {
+  animation: slideInLeft 0.6s ease-out both;
+}
+
+.create-job-btn-animate {
+  animation: slideInLeft 0.8s ease-out 0.5s both;
+}
+
+.main-content-animate {
+  animation: slideInRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.content-header-animate {
+  animation: fadeInDown 0.8s ease-out 0.3s both;
+}
+
+.job-summary-animate h2 {
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.tag-animate {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.view-controls-animate {
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+.candidates-panel-animate {
+  animation: slideInUp 0.8s ease-out 0.4s both;
+}
+
+.panel-header-animate {
+  animation: fadeInDown 0.8s ease-out 0.6s both;
+}
+
+.recommend-select-animate {
+  animation: fadeInLeft 0.6s ease-out 0.7s both;
+}
+
+/* 动画关键帧定义 */
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  0% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInLeft {
+  0% {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  0% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
