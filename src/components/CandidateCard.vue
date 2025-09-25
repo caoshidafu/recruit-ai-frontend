@@ -552,6 +552,7 @@ export default {
 .description {
   color: var(--gray-500);
   font-size: 12px;
+  white-space: pre-line;
 }
 
 /* 操作按钮 */
