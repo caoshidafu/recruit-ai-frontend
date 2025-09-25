@@ -21,17 +21,37 @@ async function request(url, options = {}) {
     ...options,
   };
 
+  const fullUrl = `${BASE_URL}${url}`;
+  console.log('🌐 [HTTP] 发起请求:', {
+    url: fullUrl,
+    method: config.method || 'GET',
+    headers: config.headers,
+    body: config.body
+  });
+
   try {
-    const response = await fetch(`${BASE_URL}${url}`, config);
+    const response = await fetch(fullUrl, config);
+    
+    console.log('📡 [HTTP] 响应状态:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      headers: Object.fromEntries(response.headers.entries())
+    });
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
     }
     
     const data = await response.json();
+    console.log('📦 [HTTP] 响应数据:', data);
     return data;
   } catch (error) {
-    console.error('API request failed:', error);
+    console.error('💥 [HTTP] 请求失败:', {
+      url: fullUrl,
+      error: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }

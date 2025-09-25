@@ -140,6 +140,7 @@
       :visible="showCreateJobModal"
       @close="showCreateJobModal = false"
       @created="handleJobCreated"
+      @refresh-data="handleRefreshData"
     />
   </div>
 </template>
@@ -427,16 +428,47 @@ export default {
       // 重新加载职位列表以获取最新数据（包含新创建的职位）
       await loadJobs()
       
-      // 设置为当前选中的职位（新职位在列表顶部）
-      selectedJob.value = newJob
-      
-      // 加载新职位的候选人数据，携带发布岗位id
-      await loadCandidatesForJob(newJob.id, '智能匹配')
+      // 如果标记了需要滚动到第一条职位，则选择第一条职位
+      if (newJob.shouldScrollToFirst && jobs.value.length > 0) {
+        console.log('🎯 定位到第一条职位')
+        selectedJob.value = jobs.value[0]
+        
+        // 加载第一条职位的候选人数据
+        await loadCandidatesForJob(jobs.value[0].id, '智能匹配')
+      } else {
+        // 否则设置为当前创建的职位
+        selectedJob.value = newJob
+        
+        // 加载新职位的候选人数据，携带发布岗位id
+        await loadCandidatesForJob(newJob.id, '智能匹配')
+      }
       
       // 重置滚动状态
       resetScrolling()
       
-      console.log(`新职位设置完成，已加载候选人数据`)
+      console.log(`职位设置完成，已加载候选人数据`)
+    }
+
+    // 处理数据刷新事件（职位创建成功后调用）
+    const handleRefreshData = async () => {
+      console.log('职位创建成功，开始刷新数据...')
+      
+      try {
+        // 重新调用接口一：获取职位列表
+        console.log('重新加载职位列表（接口一）')
+        await loadJobs()
+        
+        // 如果有选中的职位，重新调用接口二：获取推荐候选人列表
+        if (selectedJob.value?.id) {
+          console.log('重新加载候选人数据（接口二）')
+          await loadCandidatesForJob(selectedJob.value.id, recommendType.value === 'smart' ? '智能匹配' : 
+                                   recommendType.value === 'experience' ? '经验匹配' : '学历匹配')
+        }
+        
+        console.log('数据刷新完成')
+      } catch (error) {
+        console.error('刷新数据失败:', error)
+      }
     }
 
     // 根据推荐类型加载候选人数据
@@ -523,7 +555,8 @@ export default {
       resetScrolling,
       handleSplitterResize,
       handleMainSplitterResize,
-      handleJobCreated
+      handleJobCreated,
+      handleRefreshData
     }
   }
 }

@@ -323,6 +323,88 @@ class APIManager {
     }
   }
 
+  /**
+   * 创建职位（新API）
+   * @param {Object} positionData - 职位数据
+   * @param {string} positionData.positionName - 职位名称
+   * @param {string} positionData.positionDescription - 职位描述
+   * @param {string} positionData.positionDemand - 任职要求
+   */
+  async createPosition(positionData) {
+    try {
+      console.log('🚀 [APIManager] 调用创建职位API（接口三）')
+      console.log('📝 [APIManager] 请求参数:', JSON.stringify(positionData, null, 2))
+      
+      const response = await RecruitAPI.createRecommendPosition(positionData)
+      
+      console.log('📥 [APIManager] 原始API响应:', JSON.stringify(response, null, 2))
+      console.log('🔍 [APIManager] 响应分析:')
+      console.log('  - response:', response)
+      console.log('  - response.code:', response?.code)
+      console.log('  - response.data:', response?.data)
+      console.log('  - response.message:', response?.message)
+      console.log('  - typeof response.code:', typeof response?.code)
+      
+      // 检查响应是否存在
+      if (!response) {
+        console.log('❌ [APIManager] 响应为空')
+        return {
+          success: false,
+          data: null,
+          message: "服务器响应为空"
+        }
+      }
+
+      // 根据接口文档，code为0表示创建成功
+      // 同时检查字符串"0"的情况，以防后端返回字符串类型
+      const isSuccess = response.code === 0 || response.code === "0"
+      
+      if (isSuccess) {
+        console.log('✅ [APIManager] 职位创建成功，code=0')
+        
+        // 确保data存在，如果不存在则创建一个默认的
+        const responseData = response.data || { positionId: Date.now() }
+        
+        const result = {
+          success: true,
+          data: responseData,
+          message: response.message || "职位创建成功"
+        }
+        console.log('📤 [APIManager] 返回成功结果:', JSON.stringify(result, null, 2))
+        return result
+      } else {
+        console.log('❌ [APIManager] 职位创建失败')
+        console.log('  - 实际code值:', response.code)
+        console.log('  - code类型:', typeof response.code)
+        console.log('  - code === 0:', response.code === 0)
+        console.log('  - code == 0:', response.code == 0)
+        console.log('  - code === "0":', response.code === "0")
+        
+        const result = {
+          success: false,
+          data: null,
+          message: response.message || `职位创建失败 (code: ${response.code})`
+        }
+        console.log('📤 [APIManager] 返回失败结果:', JSON.stringify(result, null, 2))
+        return result
+      }
+    } catch (error) {
+      console.error('💥 [APIManager] 创建职位API调用异常:', error)
+      console.error('  - 错误类型:', error.constructor.name)
+      console.error('  - 错误信息:', error.message)
+      console.error('  - 错误堆栈:', error.stack)
+      
+      // 如果真实API失败，返回错误信息
+      const result = {
+        success: false,
+        data: null,
+        message: error.message || "网络错误，请重试"
+      }
+      console.log('📤 [APIManager] 返回异常结果:', JSON.stringify(result, null, 2))
+      return result
+    }
+  }
+
   // ==================== 工具方法 ====================
 
   /**

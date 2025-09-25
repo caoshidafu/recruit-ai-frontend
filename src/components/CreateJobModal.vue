@@ -157,37 +157,7 @@
               </div>
             </div>
 
-            <!-- 匹配结果 -->
-            <div v-if="matchResult" class="match-results">
-              <div class="results-header">
-                <h4>🎉 匹配完成！</h4>
-                <p>为您找到了 <strong>{{ matchResult.totalCandidates }}</strong> 位候选人</p>
-              </div>
-              
-              <div class="results-summary">
-                <div class="summary-item">
-                  <div class="summary-number high-match">{{ matchResult.highMatch }}</div>
-                  <div class="summary-label">高匹配度</div>
-                </div>
-                <div class="summary-item">
-                  <div class="summary-number medium-match">{{ matchResult.mediumMatch }}</div>
-                  <div class="summary-label">中匹配度</div>
-                </div>
-                <div class="summary-item">
-                  <div class="summary-number low-match">{{ matchResult.lowMatch }}</div>
-                  <div class="summary-label">低匹配度</div>
-                </div>
-              </div>
-
-              <div class="action-buttons">
-                <button class="btn btn-secondary" @click="closeModal">
-                  稍后查看
-                </button>
-                <button class="btn btn-primary" @click="viewCandidates">
-                  立即查看候选人
-                </button>
-              </div>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -207,7 +177,7 @@ export default {
       default: false
     }
   },
-  emits: ['close', 'created'],
+  emits: ['close', 'created', 'refresh-data'],
   setup(props, { emit }) {
     const currentStep = ref(1)
     const isAnalyzing = ref(false)
@@ -229,7 +199,7 @@ export default {
       scored: 0
     })
 
-    const matchResult = ref(null)
+    
 
     const isFormValid = computed(() => {
       return jobForm.positionName.trim() && 
@@ -247,7 +217,6 @@ export default {
       analysisProgress.value = 0
       aiAnalysis.value = null
       createdJob.value = null
-      matchResult.value = null
       
       Object.assign(jobForm, {
         positionName: '',
@@ -285,10 +254,11 @@ export default {
 
     const createJobDirectly = async () => {
       analysisProgress.value = 0
+      let progressInterval = null
 
       try {
         // 模拟创建进度
-        const progressInterval = setInterval(() => {
+        progressInterval = setInterval(() => {
           if (analysisProgress.value < 3) {
             analysisProgress.value++
           }
@@ -301,76 +271,143 @@ export default {
           positionDemand: jobForm.positionDemand
         }
 
+        console.log('🚀 开始创建职位，参数:', jobData)
         const createResponse = await apiManager.createPosition(jobData)
+        console.log('📥 创建职位响应:', createResponse)
         
-        clearInterval(progressInterval)
+        if (progressInterval) {
+          clearInterval(progressInterval)
+          progressInterval = null
+        }
         analysisProgress.value = 3
 
-        if (createResponse.success) {
+        // 详细检查响应结构
+        console.log('🔍 检查响应结构:')
+        console.log('- createResponse:', createResponse)
+        console.log('- createResponse.success:', createResponse.success)
+        console.log('- createResponse.data:', createResponse.data)
+        console.log('- createResponse.message:', createResponse.message)
+        console.log('- typeof createResponse:', typeof createResponse)
+        console.log('- createResponse是否为null:', createResponse === null)
+        console.log('- createResponse是否为undefined:', createResponse === undefined)
+
+        // 更严格的成功检查
+        if (createResponse && 
+            typeof createResponse === 'object' && 
+            createResponse.success === true) {
+          console.log('✅ 职位创建成功，准备设置createdJob')
+          
+          // 确保data和positionId存在
+          const positionId = createResponse.data?.positionId || createResponse.data?.id || Date.now()
+          console.log('📝 使用的positionId:', positionId)
+          
           createdJob.value = {
-            id: createResponse.data.positionId,
+            id: positionId,
             title: jobForm.positionName,
             description: jobForm.positionDescription,
             requirements: jobForm.positionDemand
           }
           
+          console.log('📋 设置的createdJob:', createdJob.value)
+          
+          // 职位创建成功，通知父组件刷新数据（重新调用接口一和接口二）
+          emit('refresh-data')
+          console.log('📡 已发送refresh-data事件')
+          
           // 等待2秒让用户查看创建结果，然后自动进行智能匹配
           setTimeout(async () => {
+            console.log('🎯 开始智能匹配，positionId:', positionId)
             currentStep.value = 3
-            await performMatching(createResponse.data.positionId)
+            await performMatching(positionId)
           }, 2000)
         } else {
-          console.error('创建职位失败:', createResponse.message)
-          alert('创建职位失败，请检查网络连接或重试')
+          console.error('❌ 创建职位失败 - success不为true')
+          console.error('- 完整响应:', createResponse)
+          console.error('- success值:', createResponse?.success)
+          console.error('- 错误信息:', createResponse?.message)
+          
+          // 显示更详细的错误信息
+          const errorMsg = createResponse?.message || '创建职位失败，请检查网络连接或重试'
+          alert(`创建职位失败: ${errorMsg}`)
+          
+          // 重置到第一步，让用户可以重试
+          currentStep.value = 1
         }
       } catch (error) {
-        console.error('创建职位错误:', error)
-        alert('创建职位出现错误，请重试')
+        console.error('💥 创建职位异常:', error)
+        console.error('- 错误类型:', error.constructor.name)
+        console.error('- 错误信息:', error.message)
+        console.error('- 错误堆栈:', error.stack)
+        
+        if (progressInterval) {
+          clearInterval(progressInterval)
+        }
+        alert(`创建职位出现错误: ${error.message}`)
+        
+        // 重置到第一步，让用户可以重试
+        currentStep.value = 1
       }
     }
 
-    const performMatching = async () => {
+    const performMatching = async (positionId) => {
       isMatching.value = true
       matchingProgress.analyzed = 0
       matchingProgress.matched = 0
       matchingProgress.scored = 0
 
       try {
+        console.log('🎯 开始智能匹配流程，positionId:', positionId)
+        
         // 模拟匹配进度
         const updateProgress = (step, value) => {
           matchingProgress[step] = value
         }
 
         // 分析职位要求
-        for (let i = 0; i <= 100; i += 10) {
+        for (let i = 0; i <= 100; i += 20) {
           updateProgress('analyzed', i)
-          await new Promise(resolve => setTimeout(resolve, 100))
+          await new Promise(resolve => setTimeout(resolve, 80))
         }
 
         // 匹配候选人
-        for (let i = 0; i <= 100; i += 15) {
+        for (let i = 0; i <= 100; i += 25) {
           updateProgress('matched', i)
-          await new Promise(resolve => setTimeout(resolve, 120))
+          await new Promise(resolve => setTimeout(resolve, 80))
         }
 
         // 计算匹配度
-        for (let i = 0; i <= 100; i += 20) {
+        for (let i = 0; i <= 100; i += 33) {
           updateProgress('scored', i)
-          await new Promise(resolve => setTimeout(resolve, 100))
+          await new Promise(resolve => setTimeout(resolve, 80))
         }
 
-        // 模拟匹配结果
-        matchResult.value = {
-          totalCandidates: Math.floor(Math.random() * 50) + 20,
-          highMatch: Math.floor(Math.random() * 15) + 5,
-          mediumMatch: Math.floor(Math.random() * 20) + 10,
-          lowMatch: Math.floor(Math.random() * 15) + 5
-        }
+        // 确保所有进度都完成
+        updateProgress('analyzed', 100)
+        updateProgress('matched', 100)
+        updateProgress('scored', 100)
+
+        console.log('✅ 智能匹配完成，准备跳转到初始页面')
+        
+        // 等待一小段时间让用户看到完成状态
+        await new Promise(resolve => setTimeout(resolve, 500))
 
         isMatching.value = false
+        
+        // 关闭模态框并跳转到初始页面，定位到第一条职位
+        emit('created', { 
+          id: positionId,
+          title: jobForm.positionName,
+          description: jobForm.positionDescription,
+          requirements: jobForm.positionDemand,
+          shouldScrollToFirst: true // 标记需要滚动到第一条职位
+        })
+        closeModal()
+        
       } catch (error) {
         console.error('匹配过程出错:', error)
         isMatching.value = false
+        // 即使出错也要关闭模态框
+        closeModal()
       }
     }
 
@@ -379,10 +416,7 @@ export default {
       return createJobDirectly()
     }
 
-    const viewCandidates = () => {
-      emit('created', createdJob.value)
-      closeModal()
-    }
+    
 
     const getScoreClass = (score) => {
       if (score >= 80) return 'high-score'
@@ -416,7 +450,6 @@ export default {
       analysisProgress,
       matchingProgress,
       aiAnalysis,
-      matchResult,
       createdJob,
       closeModal,
       handleOverlayClick,
@@ -424,7 +457,6 @@ export default {
       createJob,
       createJobDirectly,
       performMatching,
-      viewCandidates,
       getScoreClass,
       getConfidenceStyle
     }
