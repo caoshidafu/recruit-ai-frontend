@@ -173,6 +173,16 @@
       @created="handleJobCreated"
       @refresh-data="handleRefreshData"
     />
+
+    <!-- 新候选人通知 -->
+    <NewCandidateNotification
+      ref="notificationRef"
+      :job-title="selectedJob?.title || 'Java开发工程师-【大模型应用】'"
+      :new-candidate-count="2"
+      :auto-start="false"
+      @view-candidates="handleViewCandidates"
+      @close="handleNotificationClose"
+    />
   </div>
 </template>
 
@@ -184,6 +194,7 @@ import JobDetail from './components/JobDetail.vue'
 import ResizableSplitter from './components/ResizableSplitter.vue'
 import CreateJobModal from './components/CreateJobModal.vue'
 import DashboardView from './components/DashboardView.vue'
+import NewCandidateNotification from './components/NewCandidateNotification.vue'
 import jobAPIManager from './api/JobAPIManager.js'
 
 export default {
@@ -194,7 +205,8 @@ export default {
     JobDetail,
     ResizableSplitter,
     CreateJobModal,
-    DashboardView
+    DashboardView,
+    NewCandidateNotification
   },
   setup() {
     // 响应式数据
@@ -213,6 +225,9 @@ export default {
     
     // 视图切换相关状态
     const currentView = ref('dashboard') // 'dashboard' | 'details'
+    
+    // 通知相关状态
+    const notificationRef = ref(null)
     
     // 分割器相关状态
     const leftPanelWidth = ref(400) // 左侧面板宽度，默认400px
@@ -264,6 +279,14 @@ export default {
       // 如果切换到详情视图且没有选中的职位，自动选择第一个职位
       if (view === 'details' && !selectedJob.value && jobs.value.length > 0) {
         setSelectedJob(jobs.value[0])
+      }
+      
+      // 如果切换到详情视图，启动新候选人通知倒计时
+      if (view === 'details' && notificationRef.value) {
+        // 延迟启动通知，让页面切换动画完成
+        setTimeout(() => {
+          notificationRef.value.startCountdown()
+        }, 500)
       }
     }
 
@@ -611,6 +634,17 @@ export default {
       }
     })
 
+    // 通知相关方法
+    const handleViewCandidates = () => {
+      console.log('用户点击查看候选人')
+      // 切换到候选人视图
+      viewMode.value = 'candidates'
+    }
+
+    const handleNotificationClose = () => {
+      console.log('新候选人通知已关闭')
+    }
+
     // 组件挂载时初始化数据
     onMounted(async () => {
       await loadJobs()
@@ -638,6 +672,7 @@ export default {
       minSidebarWidth,
       maxSidebarWidth,
       currentView,
+      notificationRef,
       // 计算属性
       currentCandidates,
       displayedCandidates,
@@ -659,7 +694,9 @@ export default {
       handleSplitterResize,
       handleMainSplitterResize,
       handleJobCreated,
-      handleRefreshData
+      handleRefreshData,
+      handleViewCandidates,
+      handleNotificationClose
     }
   }
 }

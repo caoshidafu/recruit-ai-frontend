@@ -278,5 +278,13 @@ const candidates = await apiManager.getCandidatesByJobId(123, 1, '智能匹配')
   - 优化API调用日志，清晰标识数据来源（Mock数据 vs 真实API）
   - 确保数据一致性：数据大盘展示Mock统计数据，岗位详情展示真实业务数据
 
-**项目版本**: v1.2.4  
+- ✅ **AI分析模态框数据源修复**
+  - 修复JobAPIManager.js中缺失的AI分析关键字段映射问题
+  - 添加recommendReason（AI推荐理由）、positiveLabels（正向标签）、negativeLabels（负向标签）字段
+  - 更新候选人基本信息字段优先级，优先使用接口二的实际字段名（resumeId、workLocation等）
+  - 修复工作经历和教育经历的字段映射，确保使用workExperience和eduExperience字段
+  - 统一雷达图数据字段名称，与CandidateAIAnalysisModal组件期望的"学历"、"技能"、"经验"、"稳定性"、"潜力"一致
+  - 确保AI分析模态框能正确展示接口二返回的完整数据，包括流式推荐理由、优势标签、风险点标签和雷达图
+
+**项目版本**: v1.2.5  
 **最后更新**: 2024-09-25
