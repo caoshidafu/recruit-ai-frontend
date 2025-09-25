@@ -90,7 +90,7 @@
           <h5>过往经历</h5>
           <div class="work-list">
             <div
-              v-for="(work, index) in candidate.workHistory"
+              v-for="(work, index) in candidate.workHistory.slice().reverse()"
               :key="index"
               class="work-item"
             >
