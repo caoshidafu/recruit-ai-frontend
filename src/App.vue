@@ -30,7 +30,6 @@
               @click="setSelectedJob(job)"
             />
           </div>
-
           <button class="create-job-btn" @click="showCreateJobModal = true">
             <span>➕</span> 发布新岗位
           </button>
@@ -502,8 +501,23 @@ export default {
     watch(recommendType, async (newType) => {
       console.log(`推荐类型切换到: ${newType}`)
       resetScrolling()
-      // 如果是切换推荐类型，可以考虑重新请求API获取该类型的专门数据
-      // 目前暂时使用现有数据的筛选逻辑
+      
+      // 根据推荐类型重新加载候选人数据
+      if (selectedJob.value?.id) {
+        let apiType = '智能匹配'
+        switch (newType) {
+          case 'smart':
+            apiType = '智能匹配'
+            break
+          case 'experience':
+            apiType = '经验匹配'
+            break
+          case 'education':
+            apiType = '学历匹配'
+            break
+        }
+        await loadCandidatesForJob(selectedJob.value.id, apiType)
+      }
     })
 
     // 组件挂载时初始化数据

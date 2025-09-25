@@ -119,11 +119,12 @@ body {
   flex-direction: column;
   overflow: hidden;
   flex-shrink: 0; /* 防止收缩 */
+  position: relative; /* 为绝对定位的子元素提供参考 */
 }
 
 .sidebar-section {
   padding: 24px;
-  flex: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -133,12 +134,33 @@ body {
   font-weight: 600;
   margin-bottom: 16px;
   color: #2c3e50;
+  flex-shrink: 0; /* 防止标题被压缩 */
 }
 
 .job-list {
   flex: 1;
   overflow-y: auto;
   margin-bottom: 16px;
+  min-height: 0; /* 允许flex子项收缩 */
+}
+
+/* 确保job-list可以正确滚动 */
+.job-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.job-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.job-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.job-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 .create-job-btn {
@@ -155,11 +177,20 @@ body {
   justify-content: center;
   gap: 8px;
   transition: all 0.2s;
+  flex-shrink: 0; /* 防止按钮被压缩 */
+  margin-top: auto; /* 将按钮推到底部 */
+  position: sticky; /* 使按钮粘在底部 */
+  bottom: 0;
+  z-index: 10;
 }
 
 .create-job-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.create-job-btn:active {
+  transform: translateY(0);
 }
 
 /* 主内容区 */
@@ -283,6 +314,24 @@ body {
   color: #495057;
   cursor: pointer;
   min-width: 120px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.recommend-select:hover {
+  border-color: #667eea;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.1);
+}
+
+.recommend-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.recommend-select option {
+  padding: 8px 12px;
+  background: white;
+  color: #495057;
 }
 
 .candidates-list {
