@@ -161,6 +161,19 @@ class APIManager {
             negativeLabels: item.negativeLabels || [], // 负向标签 - 用于填充ai分析中的改进建议
             recommendReason: item.recommendReason || '', // ai分析内容
             
+            // AI分析数据结构
+            aiAnalysis: {
+              overallScore: item.matchScore || 85,
+              recommendReason: item.recommendReason || '该候选人整体素质优秀，建议优先考虑',
+              positiveLabels: item.positiveLabels || [],
+              negativeLabels: item.negativeLabels || [],
+              eduBackgroundScore: item.eduBackgroundScore || 80,
+              skillMatchScore: item.skillMatchScore || 85,
+              projectExperienceScore: item.projectExperienceScore || 88,
+              stabilityScore: item.stabilityScore || 75,
+              developmentPotentialScore: item.developmentPotentialScore || 90
+            },
+            
             // 工作经历映射
             workHistory: (item.workExperience || []).map(work => ({
               company: work.companyName || '',

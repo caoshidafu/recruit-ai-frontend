@@ -31,22 +31,16 @@
         </div>
 
         <div v-else class="analysis-content">
-          <!-- AI分析总结 -->
-          <div class="analysis-summary">
+          <!-- AI推荐理由 - 流式展示 -->
+          <div class="recommendation-section">
             <h4 class="section-title">
               <span class="title-icon">🤖</span>
-              AI智能分析
+              AI推荐理由
             </h4>
-            <div class="summary-content">
-              <div class="overall-score">
-                <div class="score-circle">
-                  <span class="score-value">{{ candidate.matchScore || analysisData.overallScore }}</span>
-                  <span class="score-label">综合评分</span>
-                </div>
-                <div class="score-description">
-                  <p class="score-level">{{ getScoreLevel(candidate.matchScore || analysisData.overallScore) }}</p>
-                  <p class="score-subtitle">{{ candidate.aiAnalysis?.recommendReason || analysisData.recommendation }}</p>
-                </div>
+            <div class="recommendation-content">
+              <div class="typing-container">
+                <p class="recommendation-text">{{ displayedText }}</p>
+                <span v-if="isTyping" class="typing-cursor">|</span>
               </div>
             </div>
           </div>
@@ -62,78 +56,51 @@
             </div>
           </div>
 
-          <!-- 详细分析 -->
-          <div class="detailed-analysis">
-            <h4 class="section-title">
-              <span class="title-icon">🔍</span>
-              详细分析报告
-            </h4>
-            
-            <!-- 优势亮点 -->
+          <!-- 优势与风险分析 -->
+          <div class="labels-analysis">
+            <!-- 优势标签 -->
             <div class="analysis-section">
-              <h5 class="subsection-title">
-                <span class="highlight-dot positive"></span>
+              <h4 class="section-title">
+                <span class="title-icon">✨</span>
                 核心优势
-              </h5>
-              <ul class="analysis-list positive">
-                <li v-for="(strength, index) in (candidate.aiAnalysis?.positiveLabels || analysisData.strengths)" :key="index">
-                  {{ strength }}
-                </li>
-              </ul>
+              </h4>
+              <div class="labels-container positive">
+                <div 
+                  v-for="(label, index) in (candidate.aiAnalysis?.positiveLabels || analysisData.strengths).slice(0, 5)" 
+                  :key="index"
+                  class="label-tag positive"
+                >
+                  <span class="label-icon">👍</span>
+                  {{ label }}
+                </div>
+                <div v-if="!(candidate.aiAnalysis?.positiveLabels || analysisData.strengths).length" class="no-data">
+                  暂无优势标签
+                </div>
+              </div>
             </div>
 
-            <!-- 改进建议 -->
+            <!-- 风险点标签 -->
             <div class="analysis-section">
-              <h5 class="subsection-title">
-                <span class="highlight-dot attention"></span>
-                改进建议
-              </h5>
-              <ul class="analysis-list attention">
-                <li v-for="(improvement, index) in (candidate.aiAnalysis?.negativeLabels || analysisData.improvements)" :key="index">
-                  {{ improvement }}
-                </li>
-              </ul>
-            </div>
-
-            <!-- 岗位匹配度 -->
-            <div class="analysis-section">
-              <h5 class="subsection-title">
-                <span class="highlight-dot neutral"></span>
-                岗位匹配分析
-              </h5>
-              <div class="match-analysis">
-                <div class="match-item" v-for="(match, key) in (candidate.aiAnalysis?.scores || analysisData.jobMatching)" :key="key">
-                  <span class="match-label">{{ getMatchLabel(key) }}</span>
-                  <div class="match-bar">
-                    <div class="match-fill" :style="{ width: match + '%' }"></div>
-                    <span class="match-value">{{ match }}%</span>
-                  </div>
+              <h4 class="section-title">
+                <span class="title-icon">⚠️</span>
+                风险点
+              </h4>
+              <div class="labels-container negative">
+                <div 
+                  v-for="(label, index) in (candidate.aiAnalysis?.negativeLabels || analysisData.improvements)" 
+                  :key="index"
+                  class="label-tag negative"
+                >
+                  <span class="label-icon">⚡</span>
+                  {{ label }}
+                </div>
+                <div v-if="!(candidate.aiAnalysis?.negativeLabels || analysisData.improvements).length" class="no-data">
+                  暂无风险点
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- AI推荐行动 -->
-          <div class="action-recommendations">
-            <h4 class="section-title">
-              <span class="title-icon">💡</span>
-              推荐行动
-            </h4>
-            <div class="action-cards">
-              <div 
-                v-for="(action, index) in analysisData.recommendedActions" 
-                :key="index"
-                :class="`action-card ${action.priority}`"
-              >
-                <div class="action-icon">{{ action.icon }}</div>
-                <div class="action-content">
-                  <h6 class="action-title">{{ action.title }}</h6>
-                  <p class="action-description">{{ action.description }}</p>
-                </div>
-                <div class="action-priority">{{ getPriorityText(action.priority) }}</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -154,7 +121,6 @@
 <script>
 import { ref, computed, watch } from 'vue'
 import RadarChart from './RadarChart.vue'
-import apiManager from '../api/mockManager.js'
 
 export default {
   name: 'CandidateAIAnalysisModal',
@@ -179,6 +145,8 @@ export default {
   setup(props, { emit }) {
     const loading = ref(false)
     const error = ref('')
+    const displayedText = ref('')
+    const isTyping = ref(false)
     const analysisData = ref({
       overallScore: 85,
       recommendation: '该候选人整体素质优秀，建议优先考虑',
@@ -223,28 +191,62 @@ export default {
       return texts[priority] || priority
     }
 
+    // 流式展示推荐理由
+    const typeWriterEffect = (text, callback) => {
+      displayedText.value = ''
+      isTyping.value = true
+      let index = 0
+      
+      const typeChar = () => {
+        if (index < text.length) {
+          displayedText.value += text[index]
+          index++
+          setTimeout(typeChar, 30) // 控制打字速度
+        } else {
+          isTyping.value = false
+          if (callback) callback()
+        }
+      }
+      
+      typeChar()
+    }
+
     // 加载AI分析数据
     const loadAnalysisData = async () => {
-      if (!props.candidate?.resumeId && !props.candidate?.id) return
-      if (!props.positionId) return
+      if (!props.candidate) return
 
       try {
         loading.value = true
         error.value = ''
 
-        // 调用AI分析API，使用职位ID和简历ID
-        const resumeId = props.candidate.resumeId || props.candidate.id
-        const response = await apiManager.getCandidateAIAnalysis(props.positionId, resumeId)
+        // 直接使用候选人数据中的AI分析信息
+        const aiAnalysis = props.candidate.aiAnalysis || {}
         
-        if (response.success) {
-          analysisData.value = response.data
-        } else {
-          error.value = response.message || 'AI分析失败，请重试'
+        // 设置分析数据
+        analysisData.value = {
+          overallScore: aiAnalysis.overallScore || 85,
+          recommendation: aiAnalysis.recommendReason || '该候选人整体素质优秀，建议优先考虑',
+          strengths: aiAnalysis.positiveLabels || [],
+          improvements: aiAnalysis.negativeLabels || [],
+          jobMatching: {
+            eduBackgroundScore: aiAnalysis.eduBackgroundScore || 80,
+            skillMatchScore: aiAnalysis.skillMatchScore || 85,
+            projectExperienceScore: aiAnalysis.projectExperienceScore || 88,
+            stabilityScore: aiAnalysis.stabilityScore || 75,
+            developmentPotentialScore: aiAnalysis.developmentPotentialScore || 90
+          }
         }
+
+        loading.value = false
+        
+        // 开始流式展示推荐理由
+        if (analysisData.value.recommendation) {
+          typeWriterEffect(analysisData.value.recommendation)
+        }
+        
       } catch (err) {
         console.error('加载AI分析数据失败:', err)
         error.value = '加载AI分析数据失败，请重试'
-      } finally {
         loading.value = false
       }
     }
@@ -274,6 +276,8 @@ export default {
       loading,
       error,
       analysisData,
+      displayedText,
+      isTyping,
       getScoreLevel,
       getMatchLabel,
       getPriorityText,
@@ -950,5 +954,99 @@ export default {
   .score-value {
     font-size: 28px;
   }
+}
+
+/* 推荐理由流式展示样式 */
+.recommendation-section {
+  margin-bottom: 24px;
+}
+
+.recommendation-content {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
+  padding: 20px;
+  border-left: 4px solid #3b82f6;
+}
+
+.typing-container {
+  position: relative;
+  min-height: 60px;
+}
+
+.recommendation-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-700);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.typing-cursor {
+  display: inline-block;
+  background: #3b82f6;
+  color: #3b82f6;
+  animation: blink 1s infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* 标签容器样式 */
+.labels-analysis {
+  margin-top: 24px;
+}
+
+.labels-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.label-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.label-tag.positive {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.label-tag.positive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+}
+
+.label-tag.negative {
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.label-tag.negative:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.label-icon {
+  font-size: 16px;
+}
+
+.no-data {
+  color: var(--gray-500);
+  font-style: italic;
+  padding: 12px 0;
 }
 </style>
