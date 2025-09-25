@@ -40,17 +40,19 @@
           <h5>教育经历</h5>
           <div class="education-list">
             <div
-              v-for="(edu, index) in candidate.educationHistory"
+              v-for="(edu, index) in candidate.educationHistory.slice().reverse()"
               :key="index"
               class="education-item"
             >
               <div class="education-main">
-                <span class="degree">{{ edu.degree }}</span>
-                <span class="duration">{{ edu.duration }}</span>
+                <div class="education-left">
+                  <span class="school">{{ edu.school }}</span>
+                  <span class="separator" v-if="edu.degree">·</span>
+                  <span class="degree" v-if="edu.degree">{{ edu.degree }}</span>
+                </div>
+                <span class="duration">{{ formatEducationDuration(edu) }}</span>
               </div>
-              <div class="education-details">
-                <span class="school">{{ edu.school }}</span>
-                <span class="separator">·</span>
+              <div v-if="edu.major" class="education-details">
                 <span class="major">{{ edu.major }}</span>
               </div>
             </div>
@@ -96,7 +98,7 @@
             >
               <div class="work-main">
                 <span class="company">{{ work.company }}</span>
-                <span class="duration">{{ work.duration }}</span>
+                <span class="duration">{{ formatWorkDuration(work) }}</span>
               </div>
               <div class="position">{{ work.position }}</div>
               <div v-if="work.description" class="description">
@@ -182,6 +184,35 @@ export default {
       alert(`从AI分析模态框联系候选人：${candidate.name}`)
     }
 
+    // 格式化日期为 YYYY-MM 格式
+    const formatDate = (dateString) => {
+      if (!dateString) return ''
+      const date = new Date(dateString)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      return `${year}-${month}`
+    }
+
+    // 格式化工作时间段
+    const formatWorkDuration = (work) => {
+      const startDate = formatDate(work.startDate)
+      const endDate = formatDate(work.endDate)
+      if (startDate && endDate) {
+        return `${startDate}~${endDate}`
+      }
+      return work.duration || ''
+    }
+
+    // 格式化教育时间段
+    const formatEducationDuration = (edu) => {
+      const startDate = formatDate(edu.startDate)
+      const endDate = formatDate(edu.endDate)
+      if (startDate && endDate) {
+        return `${startDate}~${endDate}`
+      }
+      return edu.duration || ''
+    }
+
     return {
       showAIAnalysis,
       isExpanded,
@@ -189,7 +220,9 @@ export default {
       viewDetails,
       quickContact,
       generateAIAnalysis,
-      handleContactFromModal
+      handleContactFromModal,
+      formatWorkDuration,
+      formatEducationDuration
     }
   }
 }
@@ -411,6 +444,18 @@ export default {
   margin-bottom: 4px;
 }
 
+.education-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.school {
+  font-weight: 500;
+  color: var(--gray-900);
+}
+
 .degree {
   font-weight: 600;
   color: var(--gray-900);
@@ -422,18 +467,12 @@ export default {
 }
 
 .education-details {
-  display: flex;
-  align-items: center;
-  gap: 4px;
   color: var(--gray-600);
-}
-
-.school {
-  font-weight: 500;
+  font-size: 13px;
 }
 
 .major {
-  color: var(--gray-500);
+  color: var(--gray-600);
 }
 
 /* 推荐理由部分 */
