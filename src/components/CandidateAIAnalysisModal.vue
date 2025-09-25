@@ -45,19 +45,19 @@
             </div>
           </div>
 
-          <!-- 能力雷达图 -->
-          <div class="radar-section">
+          <!-- 能力雷达图 - 流式输出完成后显示 -->
+          <div v-if="showDetailedContent" class="radar-section fade-in">
             <h4 class="section-title">
               <span class="title-icon">📊</span>
               能力维度分析
             </h4>
             <div class="radar-container">
-              <RadarChart :data="candidate.radarData" />
+              <RadarChart :data="radarChartData" />
             </div>
           </div>
 
-          <!-- 优势与风险分析 -->
-          <div class="labels-analysis">
+          <!-- 优势与风险分析 - 流式输出完成后显示 -->
+          <div v-if="showDetailedContent" class="labels-analysis fade-in">
             <!-- 优势标签 -->
             <div class="analysis-section">
               <h4 class="section-title">
@@ -104,8 +104,8 @@
         </div>
       </div>
 
-      <!-- 模态框底部 -->
-      <div class="modal-footer">
+      <!-- 模态框底部 - 流式输出完成后显示 -->
+      <div v-if="showDetailedContent" class="modal-footer fade-in">
         <button class="secondary-button" @click="handleClose">
           关闭
         </button>
@@ -147,6 +147,25 @@ export default {
     const error = ref('')
     const displayedText = ref('')
     const isTyping = ref(false)
+    const showDetailedContent = ref(false)  // 控制雷达图和其他内容的显示
+    
+    // 计算雷达图数据
+    const radarChartData = computed(() => {
+      if (props.candidate?.radarData) {
+        return props.candidate.radarData
+      }
+      
+      // 从AI分析数据中生成雷达图数据
+      const aiAnalysis = props.candidate?.aiAnalysis || {}
+      return {
+        '学历': aiAnalysis.eduBackgroundScore || 80,
+        '技能': aiAnalysis.skillMatchScore || 85,
+        '经验': aiAnalysis.projectExperienceScore || 88,
+        '稳定性': aiAnalysis.stabilityScore || 75,
+        '潜力': aiAnalysis.developmentPotentialScore || 90
+      }
+    })
+    
     const analysisData = ref({
       overallScore: 85,
       recommendation: '该候选人整体素质优秀，建议优先考虑',
@@ -195,6 +214,7 @@ export default {
     const typeWriterEffect = (text, callback) => {
       displayedText.value = ''
       isTyping.value = true
+      showDetailedContent.value = false  // 隐藏详细内容
       let index = 0
       
       const typeChar = () => {
@@ -204,6 +224,10 @@ export default {
           setTimeout(typeChar, 30) // 控制打字速度
         } else {
           isTyping.value = false
+          // 流式输出完成后，延迟显示详细内容
+          setTimeout(() => {
+            showDetailedContent.value = true
+          }, 500)
           if (callback) callback()
         }
       }
@@ -268,6 +292,10 @@ export default {
     // 监听visible变化，自动加载数据
     watch(() => props.visible, (newVisible) => {
       if (newVisible) {
+        // 重置状态
+        showDetailedContent.value = false
+        displayedText.value = ''
+        isTyping.value = false
         loadAnalysisData()
       }
     })
@@ -278,6 +306,8 @@ export default {
       analysisData,
       displayedText,
       isTyping,
+      showDetailedContent,
+      radarChartData,
       getScoreLevel,
       getMatchLabel,
       getPriorityText,
@@ -1048,5 +1078,21 @@ export default {
   color: var(--gray-500);
   font-style: italic;
   padding: 12px 0;
+}
+
+/* 淡入动画 */
+.fade-in {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

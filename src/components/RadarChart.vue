@@ -101,12 +101,15 @@
           :key="index"
           :x="getLabelPosition(index).x"
           :y="getLabelPosition(index).y"
-          text-anchor="middle"
+          :text-anchor="getTextAnchor(index)"
           dominant-baseline="middle"
           class="radar-label"
           fill="#374151"
-          font-size="12"
-          font-weight="500"
+          font-size="13"
+          font-weight="600"
+          stroke="white"
+          stroke-width="3"
+          paint-order="stroke fill"
         >
           {{ label }}
         </text>
@@ -149,9 +152,9 @@ export default {
     const labels = computed(() => props.data ? Object.keys(props.data) : [])
     const values = computed(() => props.data ? Object.values(props.data) : [])
     const maxValue = 100
-    const chartSize = 240
+    const chartSize = 320  // 进一步增加图表尺寸
     const chartCenter = chartSize / 2
-    const chartRadius = 90
+    const chartRadius = 70  // 进一步减小雷达图半径，为标签留出更多空间
     const angleStep = computed(() => (Math.PI * 2) / labels.value.length)
 
     // 计算多边形点
@@ -170,10 +173,20 @@ export default {
     // 计算标签位置
     const getLabelPosition = (index) => {
       const angle = index * angleStep.value - Math.PI / 2
-      const labelRadius = chartRadius + 25
+      const labelRadius = chartRadius + 45  // 进一步增加标签距离
       const x = chartCenter + labelRadius * Math.cos(angle)
       const y = chartCenter + labelRadius * Math.sin(angle)
       return { x, y }
+    }
+
+    // 根据标签位置智能调整文字对齐方式
+    const getTextAnchor = (index) => {
+      const angle = index * angleStep.value - Math.PI / 2
+      const x = Math.cos(angle)
+      
+      if (x > 0.1) return 'start'      // 右侧，降低阈值
+      if (x < -0.1) return 'end'       // 左侧，降低阈值
+      return 'middle'                  // 中间
     }
 
     onMounted(() => {
@@ -192,7 +205,8 @@ export default {
       chartRadius,
       angleStep,
       getPolygonPoints,
-      getLabelPosition
+      getLabelPosition,
+      getTextAnchor
     }
   }
 }
@@ -208,7 +222,17 @@ export default {
   background: white;
   border-radius: 12px;
   margin: 0 auto;
-  max-width: 400px;
+  max-width: 450px;
+  overflow: visible; /* 确保内容不被截断 */
+}
+
+.modern-radar-chart svg {
+  overflow: visible; /* 确保SVG内容不被截断 */
+}
+
+.radar-label {
+  pointer-events: none;
+  user-select: none;
 }
 
 /* 雷达图动画 */
