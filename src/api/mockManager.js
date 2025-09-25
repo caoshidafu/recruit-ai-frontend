@@ -194,6 +194,15 @@ class APIManager {
               endDate: edu.endDate || ''
             })),
             
+            // 雷达图数据 - 基于能力评分生成
+            radarData: {
+              '学历背景': item.eduBackgroundScore || 80,
+              '技能匹配': item.skillMatchScore || 85,
+              '项目经验': item.projectExperienceScore || 88,
+              '稳定性': item.stabilityScore || 75,
+              '发展潜力': item.developmentPotentialScore || 90
+            },
+            
             // 其他前端组件需要的字段
             avatar: `https://i.pravatar.cc/48?seed=${item.resumeId}`, // 生成头像
             skills: this.generateSkillsFromExperience(item), // 基于工作经历生成技能标签

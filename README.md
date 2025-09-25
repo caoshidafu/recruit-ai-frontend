@@ -264,6 +264,7 @@ const candidates = await apiManager.getCandidatesByJobId(123, 1, '智能匹配')
   - 完善风险点标签展示，使用negativeLabels数据，采用红色渐变卡片样式
   - 保持现有雷达图组件不变，确保能力维度分析的连续性
   - 新增aiAnalysis数据结构映射，包含完整的AI分析字段
+  - 修复雷达图数据映射问题，确保AI分析模态框中的雷达图能正常显示
 
-**项目版本**: v1.2.2  
+**项目版本**: v1.2.3  
 **最后更新**: 2024-09-25
