@@ -157,21 +157,64 @@ class JobAPIManager {
         // 转换数据格式以兼容现有组件
         const candidates = Array.isArray(response.data) ? response.data : []
         
-        // 对候选人数据进行格式化处理
+        // 对候选人数据进行格式化处理，确保与CandidateCard组件期望的字段匹配
         const formattedCandidates = candidates.map(candidate => ({
+          // 基本信息
           id: candidate.candidateId || candidate.id || Date.now() + Math.random(),
           name: candidate.candidateName || candidate.name || '未知候选人',
           title: candidate.currentPosition || candidate.title || '职位信息不详',
-          company: candidate.currentCompany || candidate.company || '公司信息不详',
-          experience: candidate.workYears || candidate.experience || '经验不详',
+          currentCompany: candidate.currentCompany || candidate.company || '公司信息不详',
+          experience: candidate.workYears || candidate.experience || 0,
           education: candidate.education || '学历不详',
-          skills: candidate.skills || [],
-          matchScore: candidate.matchScore || Math.floor(Math.random() * 30) + 70,
-          avatar: candidate.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${candidate.candidateName || 'default'}`,
           location: candidate.location || '地址不详',
+          status: '在职-看机会',
+          expectedSalary: '面议',
+          
+          // 技能和匹配度
+          skills: Array.isArray(candidate.skills) ? candidate.skills : [],
+          matchScore: candidate.matchScore || Math.floor(Math.random() * 30) + 70,
+          
+          // 推荐相关
+          recommendReasons: Array.isArray(candidate.recommendReasons) ? candidate.recommendReasons : 
+                           Array.isArray(candidate.positiveLabels) ? candidate.positiveLabels : 
+                           ['技能匹配度高', '工作经验丰富'],
+          
+          // 头像
+          avatar: candidate.avatar || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70) + 1}`,
+          
+          // 工作经历 - 确保格式正确
+          workHistory: Array.isArray(candidate.workHistory) ? candidate.workHistory : 
+                      Array.isArray(candidate.workExperience) ? candidate.workExperience.map(work => ({
+                        company: work.companyName || work.company || '',
+                        position: work.positionName || work.position || '',
+                        duration: work.workTimeBucket || work.duration || '',
+                        description: work.detailedIntroduction || work.description || ''
+                      })) : [],
+          
+          // 教育经历 - 确保格式正确
+          educationHistory: Array.isArray(candidate.educationHistory) ? candidate.educationHistory :
+                           Array.isArray(candidate.eduExperience) ? candidate.eduExperience.map(edu => ({
+                             school: edu.schoolName || edu.school || '',
+                             degree: edu.degreeName || edu.degree || '',
+                             major: edu.majorName || edu.major || '',
+                             duration: edu.duration || `${edu.startDate ? new Date(edu.startDate).getFullYear() : ''}-${edu.endDate ? new Date(edu.endDate).getFullYear() : ''}`
+                           })) : [],
+          
+          // 雷达图数据
+          radarData: candidate.radarData || {
+            "学历背景": candidate.eduBackgroundScore || Math.floor(Math.random() * 20) + 80,
+            "工作经历": Math.floor(Math.random() * 20) + 80,
+            "技能匹配": candidate.skillMatchScore || Math.floor(Math.random() * 20) + 80,
+            "项目经验": candidate.projectExperienceScore || Math.floor(Math.random() * 20) + 80,
+            "稳定性": candidate.stabilityScore || Math.floor(Math.random() * 20) + 75,
+            "发展潜力": candidate.developmentPotentialScore || Math.floor(Math.random() * 20) + 85
+          },
+          
+          // 联系信息
           age: candidate.age || null,
           phone: candidate.phone || '',
           email: candidate.email || '',
+          
           // 原始数据保留
           originalData: candidate
         }))

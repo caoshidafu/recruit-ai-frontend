@@ -476,7 +476,7 @@ export default {
         console.log(`正在为职位ID ${jobId} 加载候选人数据... (匹配类型: ${matchType})`)
         
         // 使用新的统一API接口获取候选人数据，携带发布岗位id和匹配类型
-        const response = await jobAPIManager.getCandidatesByJobId(jobId, 1, matchType)
+        const response = await jobAPIManager.getCandidatesByJobId(jobId, matchType)
         console.log('接口二返回数据:', response)
         if (response.success && response.data) {
           // mockManager.getCandidatesByJobId 已经处理过数据格式转换
