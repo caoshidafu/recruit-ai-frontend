@@ -16,6 +16,8 @@ const frontendCandidates = [
     skills: ["Vue.js", "React", "TypeScript", "Node.js"],
         matchScore: 95,
     recommendReasons: ["技术栈高度匹配", "有电商平台开发经验", "大型项目经验丰富"],
+    recommendReason: "该候选人技术栈与岗位需求高度匹配，拥有丰富的电商平台开发经验，曾主导多个核心功能模块开发，具备大型项目架构设计能力。其在Vue.js、React、TypeScript等核心技术方面表现出色，工作经验丰富且稳定性良好，是优秀的高级前端工程师候选人。",
+    negativeLabels: ["薪资期望偏高", "对新技术学习速度较慢"],
     educationHistory: [
       {
         degree: "本科",
@@ -61,6 +63,8 @@ const frontendCandidates = [
     skills: ["Vue.js", "React", "Angular", "架构设计"],
         matchScore: 88,
     recommendReasons: ["丰富的架构设计经验", "带领过技术团队", "跨框架开发能力"],
+    recommendReason: "该候选人具备丰富的前端架构设计经验，曾带领10人技术团队，在Vue.js、React、Angular等多个主流框架方面都有深度实践。其技术管理能力突出，能够制定技术标准和规范，是优秀的技术专家候选人，适合承担技术领导职责。",
+    negativeLabels: ["管理经验不足", "对新框架适应较慢"],
         educationHistory: [
           {
             degree: "硕士",
@@ -106,6 +110,8 @@ const frontendCandidates = [
     skills: ["Vue.js", "JavaScript", "CSS3", "Webpack"],
     matchScore: 82,
     recommendReasons: ["Vue.js经验丰富", "学习能力强", "快速适应新技术"],
+    recommendReason: "该候选人在Vue.js方面有扎实的经验基础，学习能力强，能够快速适应新技术。虽然工作经验相对较少，但基础扎实，发展潜力大，适合中级岗位培养，是值得投资的技术人才。",
+    negativeLabels: ["经验相对不足", "复杂项目经验缺乏"],
         educationHistory: [
           {
             degree: "本科",
@@ -145,6 +151,8 @@ const frontendCandidates = [
     skills: ["React", "TypeScript", "Next.js", "GraphQL"],
     matchScore: 85,
     recommendReasons: ["React技术栈熟练", "有金融行业经验", "TypeScript深度应用"],
+    recommendReason: "该候选人React技术栈熟练，具有金融行业开发经验，对业务理解深入。在TypeScript方面有深度应用经验，代码质量高，架构设计能力强。其行业背景与技术能力的结合使其成为优质候选人。",
+    negativeLabels: ["跨行业适应成本", "Vue.js经验相对不足"],
         educationHistory: [
           {
             degree: "本科",
@@ -190,6 +198,8 @@ const frontendCandidates = [
     skills: ["Vue.js", "JavaScript", "HTML5", "CSS3"],
     matchScore: 75,
     recommendReasons: ["基础扎实", "可立即入职", "学习意愿强烈"],
+    recommendReason: "该候选人基础知识扎实，虽然经验较少但学习意愿强烈，能够立即入职开始工作。其积极的学习态度和良好的技术基础，使其具备快速成长的潜力，适合初级岗位培养。",
+    negativeLabels: ["工作经验不足", "需要较长培养周期"],
         educationHistory: [
           {
         degree: "专科",
@@ -229,6 +239,8 @@ const frontendCandidates = [
     skills: ["Vue.js", "React", "Node.js", "Python"],
     matchScore: 90,
     recommendReasons: ["全栈能力", "AI行业背景", "技术视野广阔"],
+    recommendReason: "该候选人具备全栈开发能力，拥有AI行业背景，技术视野广阔。其在前端技术的同时具备后端开发经验，能够更好地理解整体技术架构，是难得的复合型技术人才，适合承担更多技术责任。",
+    negativeLabels: ["技术深度不足", "专业化程度有待提升"],
         educationHistory: [
           {
         degree: "硕士",
@@ -272,6 +284,8 @@ const backendCandidates = [
     skills: ["Java", "Spring Boot", "MySQL", "Redis", "微服务"],
     matchScore: 92,
     recommendReasons: ["Spring Boot经验丰富", "微服务架构实践", "数据库优化能力强"],
+    recommendReason: "该候选人在Spring Boot方面经验丰富，具备微服务架构实践经验，在数据库优化方面能力突出。曾负责多个核心业务系统的架构设计和开发，具备丰富的后端开发经验，是优秀的高级Java工程师候选人。",
+    negativeLabels: ["前端技术经验不足", "新技术学习速度较慢"],
     educationHistory: [
       {
         degree: "本科",
@@ -317,6 +331,8 @@ const backendCandidates = [
     skills: ["Java", "Spring Cloud", "MySQL", "Redis", "Elasticsearch", "Kafka"],
     matchScore: 95,
     recommendReasons: ["高并发系统经验", "分布式架构设计", "电商业务理解深入"],
+    recommendReason: "该候选人在高并发系统开发方面经验丰富，擅长分布式架构设计，对电商业务理解深入。其技术能力全面，架构设计能力强，能够解决复杂的技术问题，是优秀的后端技术专家候选人。",
+    negativeLabels: ["管理经验相对不足", "跨领域技术经验有限"],
         educationHistory: [
           {
         degree: "硕士",
@@ -362,6 +378,8 @@ const backendCandidates = [
     skills: ["Java", "Spring Boot", "MyBatis", "MySQL", "Docker"],
     matchScore: 85,
     recommendReasons: ["基础扎实", "可立即入职", "容器化部署经验"],
+    recommendReason: "该候选人后端开发基础扎实，具备容器化部署经验，能够立即入职开始工作。虽然经验相对较少，但学习能力强，技术基础良好，适合初中级岗位培养。",
+    negativeLabels: ["项目经验相对不足", "高并发处理经验缺乏"],
         educationHistory: [
           {
             degree: "本科",
@@ -401,6 +419,8 @@ const backendCandidates = [
     skills: ["Java", "Spring Cloud", "分布式架构", "高并发优化", "团队管理"],
     matchScore: 88,
     recommendReasons: ["架构设计能力强", "团队管理经验", "技术深度和广度兼备"],
+    recommendReason: "该候选人架构设计能力突出，具备丰富的团队管理经验，技术深度和广度兼备。能够带领技术团队完成复杂项目，具备强烈的技术领导力，是优秀的技术管理候选人。",
+    negativeLabels: ["薪资期望较高", "对新技术学习意愿不强"],
         educationHistory: [
           {
             degree: "硕士",
@@ -446,6 +466,8 @@ const backendCandidates = [
     skills: ["Java", "Spring Boot", "Vue.js", "MySQL", "MongoDB"],
     matchScore: 87,
     recommendReasons: ["全栈能力", "前后端协作经验", "技术栈匹配度高"],
+    recommendReason: "该候选人具备全栈开发能力，在前后端协作方面经验丰富，技术栈匹配度高。能够独立完成全栈开发任务，沟通协作能力强，是难得的复合型技术人才。",
+    negativeLabels: ["技术专业化程度不足", "在某些领域深度有限"],
     educationHistory: [
       {
         degree: "本科",
@@ -491,6 +513,8 @@ const backendCandidates = [
     skills: ["Java", "分布式架构", "微服务", "系统设计", "技术管理"],
     matchScore: 90,
     recommendReasons: ["架构设计专家", "大型系统经验", "技术领导力强"],
+    recommendReason: "该候选人是资深的架构设计专家，在大型系统开发方面经验丰富，技术领导力强。能够从整体架构视角解决复杂问题，带领团队完成挑战性项目，是优秀的技术架构师候选人。",
+    negativeLabels: ["薪资成本较高", "对具体实现参与度低"],
     educationHistory: [
       {
         degree: "博士",
