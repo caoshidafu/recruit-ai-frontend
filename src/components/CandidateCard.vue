@@ -61,7 +61,7 @@
         <div v-if="candidate.recommendReasons && candidate.recommendReasons.length > 0" class="recommend-section">
           <h5>推荐理由</h5>
           <ul class="recommend-reasons">
-            <li v-for="(reason, index) in candidate.recommendReasons" :key="index">
+            <li v-for="(reason, index) in candidate.recommendReasons.slice(0, 5)" :key="index">
               {{ reason }}
             </li>
           </ul>
@@ -76,7 +76,7 @@
           <h5>技能标签</h5>
           <div class="candidate-skills">
             <span
-              v-for="skill in candidate.skills"
+              v-for="skill in candidate.skills.slice(0, 5)"
               :key="skill"
               class="skill-tag"
             >

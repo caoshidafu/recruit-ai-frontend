@@ -87,7 +87,7 @@
               </h4>
               <div class="labels-container negative">
                 <div 
-                  v-for="(label, index) in (candidate.aiAnalysis?.negativeLabels || analysisData.improvements)" 
+                  v-for="(label, index) in (candidate.aiAnalysis?.negativeLabels || analysisData.improvements).slice(0, 5)" 
                   :key="index"
                   class="label-tag negative"
                 >
