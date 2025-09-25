@@ -9,7 +9,7 @@ import * as MockAPI from './MockAPI.js'
 
 // 判断是否使用Mock数据
 // 注意：当前设置为使用真实API，如需使用Mock数据请修改为 true
-const USE_MOCK = false // process.env.VUE_APP_USE_MOCK !== 'false' && (process.env.NODE_ENV === 'development' || process.env.VUE_APP_USE_MOCK === 'true')
+const USE_MOCK = true // 临时切换到mock数据进行测试
 
 /**
  * API调用管理器 - 只保留AI解析相关的核心接口
