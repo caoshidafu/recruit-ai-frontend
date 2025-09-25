@@ -139,7 +139,7 @@ class APIManager {
           id: item.resumeId, // resumeId作为候选人ID
           name: item.name, // candidate.name
           experience: item.workYears, // candidate.experience - 工作年限
-          currentJobName: item.title, // candidate.title - 职位标题
+          title: item.title, // candidate.title - 职位标题
           location: item.workLocation, // candidate.location - 工作地点
           matchScore: item.matchScore, // candidate.matchScore - 匹配分数
           
