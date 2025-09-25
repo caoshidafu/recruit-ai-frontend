@@ -371,57 +371,9 @@ export default {
         const response = await apiManager.getCandidatesByJobId(jobId, 1, matchType)
         console.log('接口二返回数据:', response)
         if (response.success && response.data) {
-          // 将接口返回的数据转换为页面需要的格式
-          // 注意：response.data 是一个对象，真正的候选人数组在 data.candidates 中
-          const rawCandidatesData = response.data.candidates || []
-          
-          
-          // 根据接口文档转换数据格式
-          const candidatesData = rawCandidatesData.map(candidate => ({
-            id: candidate.resumeId,
-            name: candidate.name,
-            experience: candidate.workYears,
-            title: candidate.title,
-            location: candidate.workLocation,
-            matchScore: candidate.matchScore,
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${candidate.name}`,
-            
-            // 推荐理由使用正向标签
-            recommendReasons: candidate.positiveLabels || [],
-            
-            // 技能标签（如果接口有提供的话，目前接口文档中没有明确说明）
-            skills: candidate.skills || [],
-            
-            // 工作经历转换
-            workHistory: (candidate.workExperience || []).map(work => ({
-              company: work.companyName,
-              position: work.positionName,
-              duration: work.workTimeBucket,
-              description: work.detailedIntroduction
-            })),
-            
-            // 教育经历转换
-            educationHistory: (candidate.eduExperience || []).map(edu => ({
-              school: edu.schoolName,
-              degree: edu.degreeName,
-              major: edu.majorName,
-              duration: `${new Date(edu.startDate).getFullYear()}-${new Date(edu.endDate).getFullYear()}`
-            })),
-            
-            // AI分析相关数据
-            aiAnalysis: {
-              recommendReason: candidate.recommendReason,
-              positiveLabels: candidate.positiveLabels || [],
-              negativeLabels: candidate.negativeLabels || [],
-              scores: {
-                eduBackgroundScore: candidate.eduBackgroundScore,
-                skillMatchScore: candidate.skillMatchScore,
-                projectExperienceScore: candidate.projectExperienceScore,
-                stabilityScore: candidate.stabilityScore,
-                developmentPotentialScore: candidate.developmentPotentialScore
-              }
-            }
-          }))
+          // mockManager.getCandidatesByJobId 已经处理过数据格式转换
+          // 直接使用返回的候选人数据，不需要重复转换
+          const candidatesData = response.data.candidates || []
           
           // 直接使用转换后的候选人数据
           candidates.value.smart = candidatesData

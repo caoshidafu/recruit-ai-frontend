@@ -58,13 +58,17 @@
         </div>
 
         <!-- 推荐理由 -->
-        <div class="recommend-section">
+        <div v-if="candidate.recommendReasons && candidate.recommendReasons.length > 0" class="recommend-section">
           <h5>推荐理由</h5>
           <ul class="recommend-reasons">
             <li v-for="(reason, index) in candidate.recommendReasons" :key="index">
               {{ reason }}
             </li>
           </ul>
+        </div>
+        <!-- 调试信息：如果推荐理由为空，显示调试信息 -->
+        <div v-else class="debug-info" style="background: #fff3cd; padding: 8px; border-radius: 4px; font-size: 12px; color: #856404;">
+          调试信息: recommendReasons = {{ JSON.stringify(candidate.recommendReasons) }}
         </div>
 
         <!-- 技能标签 -->
