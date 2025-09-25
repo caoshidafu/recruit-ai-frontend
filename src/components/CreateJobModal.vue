@@ -15,12 +15,12 @@
         <div class="steps-indicator">
           <div class="step" :class="{ active: currentStep === 1, completed: currentStep > 1 }">
             <div class="step-number">1</div>
-            <span>职位描述</span>
+            <span>职位信息</span>
           </div>
           <div class="step-line" :class="{ completed: currentStep > 1 }"></div>
           <div class="step" :class="{ active: currentStep === 2, completed: currentStep > 2 }">
             <div class="step-number">2</div>
-            <span>AI解析</span>
+            <span>创建职位</span>
           </div>
           <div class="step-line" :class="{ completed: currentStep > 2 }"></div>
           <div class="step" :class="{ active: currentStep === 3, completed: currentStep > 3 }">
@@ -29,53 +29,73 @@
           </div>
         </div>
 
-        <!-- 步骤1: 职位描述 -->
+        <!-- 步骤1: 职位信息 -->
         <div v-if="currentStep === 1" class="step-content">
           <div class="simple-form-intro">
             <h3>🚀 智能职位发布</h3>
-            <p>只需描述您的职位需求，AI将自动为您解析职位信息并推荐合适的候选人</p>
+            <p>填写职位基本信息，系统将自动为您推荐合适的候选人</p>
           </div>
-          
-          <form @submit.prevent="handleSubmitDescription">
+
+          <form @submit.prevent="handleSubmitJobInfo">
             <div class="form-group">
-              <label for="description">职位描述 *</label>
+              <label for="positionName">职位名称 *</label>
+              <input 
+                id="positionName"
+                v-model="jobForm.positionName"
+                type="text"
+                placeholder="例如：Java高级开发工程师"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="positionDescription">职位描述 *</label>
               <textarea 
-                id="description"
-                v-model="jobForm.description"
-                rows="12"
-                placeholder="请详细描述您的职位需求，例如：
-
-我们正在招聘一名前端工程师，主要负责：
-• 使用Vue.js开发用户界面
-• 与后端团队协作完成项目开发
-• 优化前端性能和用户体验
-
-任职要求：
-• 3-5年前端开发经验
-• 熟练掌握Vue.js、JavaScript、HTML、CSS
-• 有大型项目开发经验优先
-• 本科学历，计算机相关专业
-
-工作地点：北京市朝阳区
-薪资范围：15-25K"
+                id="positionDescription"
+                v-model="jobForm.positionDescription"
+                rows="6"
+                placeholder="请描述职位的主要工作内容，例如：
+• 负责核心业务系统的开发和维护
+• 参与系统架构设计和技术选型
+• 优化系统性能，提升用户体验
+• 与产品、设计团队协作完成项目开发"
                 required
               ></textarea>
               <div class="textarea-hint">
-                <span class="hint-text">💡 描述越详细，AI解析越准确。建议包含：工作内容、技能要求、经验要求、学历要求、工作地点、薪资等信息</span>
-                <span class="char-count">{{ jobForm.description.length }}/2000</span>
+                <span class="hint-text">💡 请详细描述职位的主要工作内容和职责</span>
+                <span class="char-count">{{ jobForm.positionDescription.length }}/1000</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="positionDemand">任职要求 *</label>
+              <textarea 
+                id="positionDemand"
+                v-model="jobForm.positionDemand"
+                rows="6"
+                placeholder="请描述任职要求，例如：
+• 5年以上Java开发经验
+• 熟悉Spring全家桶，有分布式系统开发经验
+• 熟练掌握MySQL、Redis等数据库技术
+• 本科及以上学历，计算机相关专业优先"
+                required
+              ></textarea>
+              <div class="textarea-hint">
+                <span class="hint-text">💡 请详细描述技能要求、经验要求、学历要求等</span>
+                <span class="char-count">{{ jobForm.positionDemand.length }}/1000</span>
               </div>
             </div>
 
             <div class="form-actions">
-              <button type="submit" class="btn btn-primary" :disabled="!jobForm.description.trim()">
-                <span class="btn-icon">🧠</span>
-                开始AI智能解析
+              <button type="submit" class="btn btn-primary" :disabled="!isFormValid">
+                <span class="btn-icon">🚀</span>
+                发布职位
               </button>
             </div>
           </form>
         </div>
 
-        <!-- 步骤2: AI解析 -->
+        <!-- 步骤2: 创建职位 -->
         <div v-if="currentStep === 2" class="step-content">
           <div class="ai-analysis-container">
             <div class="analysis-loading">
@@ -86,39 +106,87 @@
                           stroke-dasharray="113" stroke-dashoffset="0" class="rotating-circle"/>
                 </svg>
               </div>
-              <h3>AI正在处理职位信息...</h3>
-              <p>正在解析并创建职位，请稍候</p>
+              <h3>正在创建职位...</h3>
+              <p>正在提交职位信息，请稍候</p>
               <div class="progress-steps">
                 <div class="progress-step" :class="{ completed: analysisProgress >= 1 }">
-                  <span>解析职位要求</span>
+                  <span>验证职位信息</span>
                 </div>
                 <div class="progress-step" :class="{ completed: analysisProgress >= 2 }">
-                  <span>创建职位信息</span>
+                  <span>创建职位记录</span>
                 </div>
                 <div class="progress-step" :class="{ completed: analysisProgress >= 3 }">
                   <span>准备智能匹配</span>
                 </div>
               </div>
             </div>
-
           </div>
-
         </div>
 
         <!-- 步骤3: 智能匹配 -->
         <div v-if="currentStep === 3" class="step-content">
           <div class="matching-container">
-            <div v-if="isMatching" class="matching-loading">
-              <div class="loading-icon">
-                <svg width="40" height="40" viewBox="0 0 40 40">
-                  <circle cx="20" cy="20" r="18" stroke="#e6e6e6" stroke-width="4" fill="none"/>
-                  <circle cx="20" cy="20" r="18" stroke="#10b981" stroke-width="4" fill="none" 
-                          stroke-dasharray="113" stroke-dashoffset="0" class="rotating-circle"/>
-                </svg>
+            <div class="matching-header">
+              <h3>🎯 智能候选人匹配</h3>
+              <p>正在为您的职位匹配最合适的候选人...</p>
+            </div>
+
+            <div class="matching-progress">
+              <div class="progress-item">
+                <span class="progress-label">分析职位要求</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" :style="{ width: Math.min(matchingProgress.analyzed, 100) + '%' }"></div>
+                </div>
+                <span class="progress-text">{{ Math.min(matchingProgress.analyzed, 100) }}%</span>
               </div>
-              <h3>AI正在智能匹配候选人...</h3>
-              <p>正在匹配 {{ matchingProgress.total }} 位候选人</p>
-              <p class="auto-publish-note">匹配完成后将自动发布职位</p>
+              
+              <div class="progress-item">
+                <span class="progress-label">匹配候选人</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" :style="{ width: Math.min(matchingProgress.matched, 100) + '%' }"></div>
+                </div>
+                <span class="progress-text">{{ Math.min(matchingProgress.matched, 100) }}%</span>
+              </div>
+              
+              <div class="progress-item">
+                <span class="progress-label">计算匹配度</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" :style="{ width: Math.min(matchingProgress.scored, 100) + '%' }"></div>
+                </div>
+                <span class="progress-text">{{ Math.min(matchingProgress.scored, 100) }}%</span>
+              </div>
+            </div>
+
+            <!-- 匹配结果 -->
+            <div v-if="matchResult" class="match-results">
+              <div class="results-header">
+                <h4>🎉 匹配完成！</h4>
+                <p>为您找到了 <strong>{{ matchResult.totalCandidates }}</strong> 位候选人</p>
+              </div>
+              
+              <div class="results-summary">
+                <div class="summary-item">
+                  <div class="summary-number high-match">{{ matchResult.highMatch }}</div>
+                  <div class="summary-label">高匹配度</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-number medium-match">{{ matchResult.mediumMatch }}</div>
+                  <div class="summary-label">中匹配度</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-number low-match">{{ matchResult.lowMatch }}</div>
+                  <div class="summary-label">低匹配度</div>
+                </div>
+              </div>
+
+              <div class="action-buttons">
+                <button class="btn btn-secondary" @click="closeModal">
+                  稍后查看
+                </button>
+                <button class="btn btn-primary" @click="viewCandidates">
+                  立即查看候选人
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -146,42 +214,30 @@ export default {
     const isMatching = ref(false)
     const isCreating = ref(false)
     const analysisProgress = ref(0)
-    const matchingProgress = reactive({
-      total: 156,
-      analyzed: 0,
-      matched: 0
-    })
-    
-    const jobForm = reactive({
-      title: '',
-      department: '',
-      level: '',
-      location: '',
-      salary: '',
-      description: ''
-    })
-
     const aiAnalysis = ref(null)
-    const matchResult = ref(null)
     const createdJob = ref(null)
 
-    const isBasicFormValid = computed(() => {
-      return jobForm.title && 
-             jobForm.department && 
-             jobForm.level && 
-             jobForm.location && 
-             jobForm.description && 
-             jobForm.description.length >= 50
+    const jobForm = reactive({
+      positionName: '',
+      positionDescription: '',
+      positionDemand: ''
     })
 
-    const closeModal = () => {
-      resetForm()
-      emit('close')
-    }
+    const matchingProgress = reactive({
+      analyzed: 0,
+      matched: 0,
+      scored: 0
+    })
 
-    const handleOverlayClick = () => {
-      closeModal()
-    }
+    const matchResult = ref(null)
+
+    const isFormValid = computed(() => {
+      return jobForm.positionName.trim() && 
+             jobForm.positionDescription.trim() && 
+             jobForm.positionDemand.trim() &&
+             jobForm.positionDescription.length >= 20 &&
+             jobForm.positionDemand.length >= 20
+    })
 
     const resetForm = () => {
       currentStep.value = 1
@@ -189,174 +245,83 @@ export default {
       isMatching.value = false
       isCreating.value = false
       analysisProgress.value = 0
-      matchingProgress.analyzed = 0
-      matchingProgress.matched = 0
+      aiAnalysis.value = null
+      createdJob.value = null
+      matchResult.value = null
       
       Object.assign(jobForm, {
-        title: '',
-        department: '',
-        level: '',
-        location: '',
-        salary: '',
-        description: ''
+        positionName: '',
+        positionDescription: '',
+        positionDemand: ''
       })
       
-      aiAnalysis.value = null
-      matchResult.value = null
-      createdJob.value = null
+      Object.assign(matchingProgress, {
+        analyzed: 0,
+        matched: 0,
+        scored: 0
+      })
     }
 
-    const handleSubmitDescription = async () => {
-      if (!jobForm.description.trim()) {
-        alert('请输入职位描述')
+    const closeModal = () => {
+      emit('close')
+      setTimeout(resetForm, 300)
+    }
+
+    const handleOverlayClick = (event) => {
+      if (event.target === event.currentTarget) {
+        closeModal()
+      }
+    }
+
+    const handleSubmitJobInfo = async () => {
+      if (!isFormValid.value) {
+        alert('请完整填写职位信息')
         return
       }
       
       currentStep.value = 2
-      await performAiAnalysis()
+      await createJobDirectly()
     }
 
-
-
-    const performAiAnalysis = async () => {
+    const createJobDirectly = async () => {
       analysisProgress.value = 0
 
       try {
-        // 模拟分析进度
+        // 模拟创建进度
         const progressInterval = setInterval(() => {
           if (analysisProgress.value < 3) {
             analysisProgress.value++
           }
         }, 800)
 
-        // 1. 先解析职位描述
-        const parseResponse = await apiManager.parseJobDescription(jobForm.description, { user_id: 1 })
+        // 调用创建职位API
+        const jobData = {
+          positionName: jobForm.positionName,
+          positionDescription: jobForm.positionDescription,
+          positionDemand: jobForm.positionDemand
+        }
+
+        const createResponse = await apiManager.createPosition(jobData)
         
         clearInterval(progressInterval)
         analysisProgress.value = 3
 
-        if (parseResponse.success) {
-          aiAnalysis.value = parseResponse.data
-          
-          // 自动填充从AI解析出的基本信息到jobForm
-          if (parseResponse.data.extractedInfo) {
-            const extracted = parseResponse.data.extractedInfo
-            
-            // 如果表单字段为空，则使用AI解析的结果
-            if (!jobForm.title && extracted.title) {
-              jobForm.title = extracted.title
-            }
-            if (!jobForm.department && extracted.department) {
-              jobForm.department = extracted.department
-            }
-            if (!jobForm.level && extracted.level) {
-              jobForm.level = extracted.level
-            }
-            if (!jobForm.location && extracted.location) {
-              jobForm.location = extracted.location
-            }
-            if (!jobForm.salary && extracted.salary) {
-              jobForm.salary = extracted.salary
-            }
+        if (createResponse.success) {
+          createdJob.value = {
+            id: createResponse.data.positionId,
+            title: jobForm.positionName,
+            description: jobForm.positionDescription,
+            requirements: jobForm.positionDemand
           }
-
-          // 2. 等待2秒让用户查看解析结果，然后自动创建职位并进行匹配
+          
+          // 等待2秒让用户查看创建结果，然后自动进行智能匹配
           setTimeout(async () => {
-            await createJobAndMatch()
+            currentStep.value = 3
+            await performMatching(createResponse.data.positionId)
           }, 2000)
         } else {
-          console.error('AI分析失败:', parseResponse.message)
-          alert('AI分析失败，请检查网络连接或重试')
-        }
-      } catch (error) {
-        console.error('AI分析错误:', error)
-        alert('AI分析出现错误，请重试')
-      }
-    }
-
-    const performMatching = async (jobId = null) => {
-      isMatching.value = true
-      matchingProgress.analyzed = 0
-      matchingProgress.matched = 0
-
-      try {
-        // 模拟匹配进度
-        const progressInterval = setInterval(() => {
-          if (matchingProgress.analyzed < matchingProgress.total) {
-            matchingProgress.analyzed += Math.floor(Math.random() * 10) + 5
-            matchingProgress.matched = Math.floor(matchingProgress.analyzed * 0.15)
-          }
-        }, 200)
-
-        const response = await apiManager.aiMatchCandidates(jobId || Date.now(), 'detailed')
-        
-        clearInterval(progressInterval)
-        matchingProgress.analyzed = matchingProgress.total
-        matchingProgress.matched = 12
-
-        if (response.success) {
-          matchResult.value = response.data
-          
-          // 匹配完成后，立即创建职位并关闭弹窗
-          await createJobAfterMatching()
-        } else {
-          console.error('智能匹配失败:', response.message)
-          alert('智能匹配失败，请重试')
-        }
-      } catch (error) {
-        console.error('智能匹配错误:', error)
-        alert('智能匹配出现错误，请重试')
-      } finally {
-        isMatching.value = false
-      }
-    }
-
-    const createJobAfterMatching = async () => {
-      try {
-        if (createdJob.value) {
-          // 职位已经创建，直接关闭弹窗并通知父组件
-          emit('created', createdJob.value)
-          closeModal()
-        } else {
-          console.error('未找到已创建的职位信息')
-          alert('职位信息异常，请重试')
-        }
-      } catch (error) {
-        console.error('完成职位创建错误:', error)
-        alert('完成职位创建出现错误，请重试')
-      }
-    }
-
-    const createJobAndMatch = async () => {
-      try {
-        // 先创建职位
-        const jobData = {
-          title: jobForm.title,
-          department: jobForm.department,
-          level: jobForm.level,
-          location: jobForm.location,
-          salary: jobForm.salary,
-          description: jobForm.description,
-          aiAnalysis: aiAnalysis.value,
-          status: 'active',
-          publishedAt: new Date().toISOString(),
-          user_id: 1
-        }
-
-        const createResponse = await apiManager.createJob(jobData)
-
-        if (createResponse.success) {
-          // 保存创建的职位信息
-          createdJob.value = createResponse.data
-          
-          // 自动跳转到智能匹配步骤
-          currentStep.value = 3
-          
-          // 开始智能匹配
-          await performMatching(createResponse.data.id)
-        } else {
           console.error('创建职位失败:', createResponse.message)
-          alert('创建职位失败，请重试')
+          alert('创建职位失败，请检查网络连接或重试')
         }
       } catch (error) {
         console.error('创建职位错误:', error)
@@ -364,52 +329,70 @@ export default {
       }
     }
 
-    const createJob = async () => {
-      isCreating.value = true
+    const performMatching = async () => {
+      isMatching.value = true
+      matchingProgress.analyzed = 0
+      matchingProgress.matched = 0
+      matchingProgress.scored = 0
 
       try {
-        const jobData = {
-          title: jobForm.title,
-          department: jobForm.department,
-          level: jobForm.level,
-          location: jobForm.location,
-          salary: jobForm.salary,
-          description: jobForm.description,
-          aiAnalysis: aiAnalysis.value,
-          matchResult: matchResult.value,
-          status: 'active',
-          publishedAt: new Date().toISOString(),
-          user_id: 1
+        // 模拟匹配进度
+        const updateProgress = (step, value) => {
+          matchingProgress[step] = value
         }
 
-        const response = await apiManager.createJob(jobData)
-
-        if (response.success) {
-          emit('created', response.data)
-          closeModal()
-        } else {
-          console.error('创建职位失败:', response.message)
+        // 分析职位要求
+        for (let i = 0; i <= 100; i += 10) {
+          updateProgress('analyzed', i)
+          await new Promise(resolve => setTimeout(resolve, 100))
         }
+
+        // 匹配候选人
+        for (let i = 0; i <= 100; i += 15) {
+          updateProgress('matched', i)
+          await new Promise(resolve => setTimeout(resolve, 120))
+        }
+
+        // 计算匹配度
+        for (let i = 0; i <= 100; i += 20) {
+          updateProgress('scored', i)
+          await new Promise(resolve => setTimeout(resolve, 100))
+        }
+
+        // 模拟匹配结果
+        matchResult.value = {
+          totalCandidates: Math.floor(Math.random() * 50) + 20,
+          highMatch: Math.floor(Math.random() * 15) + 5,
+          mediumMatch: Math.floor(Math.random() * 20) + 10,
+          lowMatch: Math.floor(Math.random() * 15) + 5
+        }
+
+        isMatching.value = false
       } catch (error) {
-        console.error('创建职位错误:', error)
-      } finally {
-        isCreating.value = false
+        console.error('匹配过程出错:', error)
+        isMatching.value = false
       }
     }
 
+    const createJob = async () => {
+      // 这个方法保留用于兼容性
+      return createJobDirectly()
+    }
+
+    const viewCandidates = () => {
+      emit('created', createdJob.value)
+      closeModal()
+    }
+
     const getScoreClass = (score) => {
-      if (score >= 90) return 'score-excellent'
-      if (score >= 80) return 'score-good'
-      if (score >= 70) return 'score-fair'
-      return 'score-poor'
+      if (score >= 80) return 'high-score'
+      if (score >= 60) return 'medium-score'
+      return 'low-score'
     }
 
     const getConfidenceStyle = (confidence) => {
-      const percentage = confidence * 100
-      let color = '#ef4444' // red
-      if (percentage >= 80) color = '#10b981' // green
-      else if (percentage >= 60) color = '#f59e0b' // yellow
-      
+      const percentage = confidence / 100
+      const color = percentage >= 0.8 ? '#10b981' : percentage >= 0.6 ? '#f59e0b' : '#ef4444'
       return {
         background: `conic-gradient(${color} ${percentage * 3.6}deg, #e5e7eb 0deg)`,
         color: color
@@ -426,7 +409,7 @@ export default {
     return {
       currentStep,
       jobForm,
-      isBasicFormValid,
+      isFormValid,
       isAnalyzing,
       isMatching,
       isCreating,
@@ -434,12 +417,14 @@ export default {
       matchingProgress,
       aiAnalysis,
       matchResult,
+      createdJob,
       closeModal,
       handleOverlayClick,
-      handleSubmitDescription,
+      handleSubmitJobInfo,
       createJob,
-      createJobAndMatch,
+      createJobDirectly,
       performMatching,
+      viewCandidates,
       getScoreClass,
       getConfidenceStyle
     }
@@ -459,7 +444,7 @@ export default {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(4px);
 }
 
 .modal-container {
@@ -468,9 +453,20 @@ export default {
   width: 90%;
   max-width: 800px;
   max-height: 90vh;
-  overflow-y: auto;
-  animation: slideUp 0.3s ease;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal-header {
@@ -479,62 +475,41 @@ export default {
   align-items: center;
   padding: 24px 32px;
   border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #111827;
 }
 
 .close-btn {
   background: none;
   border: none;
+  color: white;
+  cursor: pointer;
   padding: 8px;
   border-radius: 8px;
-  cursor: pointer;
-  color: #6b7280;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s;
 }
 
 .close-btn:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .modal-body {
   padding: 32px;
+  max-height: calc(90vh - 100px);
+  overflow-y: auto;
 }
 
-/* 简化表单介绍 */
-.simple-form-intro {
-  text-align: center;
-  margin-bottom: 32px;
-  padding: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
-  color: white;
-}
-
-.simple-form-intro h3 {
-  margin: 0 0 12px 0;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.simple-form-intro p {
-  margin: 0;
-  font-size: 16px;
-  opacity: 0.9;
-  line-height: 1.5;
-}
-
-/* 步骤指示器 */
 .steps-indicator {
   display: flex;
   align-items: center;
-  margin-bottom: 32px;
+  justify-content: center;
+  margin-bottom: 40px;
   padding: 0 20px;
 }
 
@@ -542,25 +517,31 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
+  gap: 8px;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+
+.step.active,
+.step.completed {
+  opacity: 1;
 }
 
 .step-number {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  background: #e5e7eb;
+  color: #6b7280;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  background: #e5e7eb;
-  color: #6b7280;
-  margin-bottom: 8px;
-  transition: all 0.3s ease;
+  transition: all 0.3s;
 }
 
 .step.active .step-number {
-  background: #3b82f6;
+  background: #667eea;
   color: white;
 }
 
@@ -571,554 +552,141 @@ export default {
 
 .step span {
   font-size: 14px;
-  color: #6b7280;
   font-weight: 500;
+  color: #6b7280;
 }
 
-.step.active span {
-  color: #3b82f6;
-}
-
+.step.active span,
 .step.completed span {
-  color: #10b981;
+  color: #374151;
 }
 
 .step-line {
+  flex: 1;
   height: 2px;
   background: #e5e7eb;
-  margin: 0 16px;
-  flex: 1;
-  margin-top: -20px;
-  transition: all 0.3s ease;
+  margin: 0 20px;
+  transition: background-color 0.3s;
 }
 
 .step-line.completed {
   background: #10b981;
 }
 
-/* 表单样式 */
 .step-content {
-  min-height: 400px;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.simple-form-intro {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.simple-form-intro h3 {
+  font-size: 28px;
+  margin: 0 0 12px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.simple-form-intro p {
+  color: #6b7280;
+  font-size: 16px;
+  margin: 0;
+  line-height: 1.6;
 }
 
 .form-group {
   margin-bottom: 24px;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 600;
   color: #374151;
+  font-size: 14px;
 }
 
 .form-group input,
-.form-group select,
 .form-group textarea {
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid #d1d5db;
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
   font-size: 14px;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
+  transition: border-color 0.2s;
+  font-family: inherit;
+  resize: vertical;
 }
 
 .form-group input:focus,
-.form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .textarea-hint {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-top: 8px;
   font-size: 12px;
-  color: #6b7280;
 }
 
 .hint-text {
-  flex: 1;
-  margin-right: 16px;
-  line-height: 1.4;
+  color: #6b7280;
 }
 
 .char-count {
   color: #9ca3af;
-  white-space: nowrap;
-}
-
-/* 按钮图标样式 */
-.btn-icon {
-  margin-right: 8px;
-  font-size: 16px;
-}
-
-/* AI分析样式 */
-.ai-analysis-container {
-  min-height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.analysis-loading {
-  text-align: center;
-}
-
-.loading-icon {
-  margin-bottom: 24px;
-}
-
-.rotating-circle {
-  animation: rotate 2s linear infinite;
-  stroke-linecap: round;
-}
-
-.analysis-loading h3 {
-  margin: 0 0 8px 0;
-  color: #111827;
-  font-size: 20px;
-}
-
-.analysis-loading p {
-  margin: 0 0 32px 0;
-  color: #6b7280;
-}
-
-.progress-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-}
-
-.progress-step {
-  padding: 8px 16px;
-  background: #f3f4f6;
-  border-radius: 6px;
-  color: #6b7280;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.progress-step.completed {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.analysis-result {
-  width: 100%;
-}
-
-.analysis-result h3 {
-  margin: 0 0 24px 0;
-  color: #111827;
-  font-size: 20px;
-}
-
-.analysis-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-.analysis-card {
-  background: #f9fafb;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-}
-
-.analysis-card h4 {
-  margin: 0 0 16px 0;
-  color: #374151;
-  font-size: 16px;
-}
-
-.skills-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.skill-tag {
-  background: #dbeafe;
-  color: #1e40af;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
   font-weight: 500;
 }
 
-.experience-list,
-.responsibilities-list {
-  margin: 0;
-  padding-left: 16px;
-}
-
-.experience-list li,
-.responsibilities-list li {
-  margin-bottom: 8px;
-  color: #4b5563;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.tags-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.match-tag {
-  background: #f3e8ff;
-  color: #7c3aed;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.confidence-score {
-  background: #f8fafc;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-}
-
-.confidence-score h4 {
-  margin: 0 0 12px 0;
-  color: #374151;
-}
-
-.confidence-bar {
-  height: 8px;
-  background: #e5e7eb;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.confidence-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #10b981, #34d399);
-  transition: width 1s ease;
-}
-
-.confidence-text {
-  font-weight: 600;
-  color: #10b981;
-}
-
-/* 智能匹配样式 */
-.matching-container {
-  min-height: 400px;
-}
-
-.matching-loading {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.matching-loading h3 {
-  margin: 0 0 8px 0;
-  color: #111827;
-  font-size: 20px;
-}
-
-.matching-loading p {
-  margin: 0 0 32px 0;
-  color: #6b7280;
-}
-
-.matching-loading .auto-publish-note {
-  color: #10b981;
-  font-weight: 500;
-  margin: 12px 0 0 0;
-}
-
-
-.matching-result {
-  width: 100%;
-}
-
-.result-summary {
-  margin-bottom: 32px;
-}
-
-.result-summary h3 {
-  margin: 0 0 16px 0;
-  color: #111827;
-  font-size: 20px;
-}
-
-.summary-stats {
-  display: flex;
-  gap: 32px;
-  background: #f8fafc;
-  padding: 24px;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-}
-
-.summary-item {
-  text-align: center;
-  flex: 1;
-}
-
-.summary-number {
-  display: block;
-  font-size: 28px;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 4px;
-}
-
-.summary-label {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.candidates-list h4 {
-  margin: 0 0 20px 0;
-  color: #111827;
-  font-size: 18px;
-}
-
-.candidate-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
-  transition: all 0.2s ease;
-}
-
-.candidate-card:hover {
-  border-color: #3b82f6;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-.candidate-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-
-.candidate-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.candidate-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.candidate-details h5 {
-  margin: 0 0 4px 0;
-  color: #111827;
-  font-size: 16px;
-}
-
-.match-score {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.score-label {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.score-value {
-  font-weight: 600;
-  font-size: 16px;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.score-excellent {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.score-good {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.score-fair {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.score-poor {
-  background: #fecaca;
-  color: #dc2626;
-}
-
-.confidence-indicator {
-  text-align: center;
-}
-
-.confidence-label {
-  display: block;
-  font-size: 12px;
-  color: #6b7280;
-  margin-bottom: 4px;
-}
-
-.confidence-circle {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 600;
-  position: relative;
-  margin: 0 auto;
-}
-
-.match-details {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-}
-
-.match-reasons h6,
-.risk-factors h6 {
-  margin: 0 0 8px 0;
-  color: #374151;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.match-reasons ul,
-.risk-factors ul {
-  margin: 0;
-  padding-left: 16px;
-}
-
-.match-reasons li {
-  margin-bottom: 4px;
-  color: #4b5563;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.risk-item {
-  margin-bottom: 4px;
-  color: #dc2626;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.recommendations {
-  margin-top: 32px;
-}
-
-.recommendations h4 {
-  margin: 0 0 16px 0;
-  color: #111827;
-  font-size: 18px;
-}
-
-.recommendation-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.recommendation-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-}
-
-.recommendation-card.priority {
-  background: #fef3c7;
-  border-color: #f59e0b;
-}
-
-.recommendation-card.potential {
-  background: #dbeafe;
-  border-color: #3b82f6;
-}
-
-.recommendation-card.training {
-  background: #e0e7ff;
-  border-color: #6366f1;
-}
-
-.rec-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
-}
-
-.rec-content {
-  flex: 1;
-}
-
-.rec-candidate {
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 2px;
-}
-
-.rec-reason {
-  font-size: 14px;
-  color: #4b5563;
-}
-
-/* 按钮样式 */
 .form-actions {
   display: flex;
   justify-content: center;
   margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid #e5e7eb;
 }
 
 .btn {
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
   font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.btn:disabled {
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -1128,90 +696,191 @@ export default {
   color: #374151;
 }
 
-.btn-secondary:hover:not(:disabled) {
+.btn-secondary:hover {
   background: #e5e7eb;
 }
 
-.btn-primary {
-  background: #3b82f6;
-  color: white;
+.btn-icon {
+  font-size: 16px;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: #2563eb;
+.ai-analysis-container {
+  text-align: center;
+  padding: 40px 20px;
 }
 
-.btn-success {
-  background: #10b981;
-  color: white;
+.analysis-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
-.btn-success:hover:not(:disabled) {
-  background: #059669;
+.loading-icon {
+  position: relative;
 }
 
-/* 动画 */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { 
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to { 
-    opacity: 1;
-    transform: translateY(0);
-  }
+.rotating-circle {
+  animation: rotate 2s linear infinite;
+  transform-origin: center;
 }
 
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .modal-container {
-    width: 95%;
-    margin: 20px;
-    max-height: calc(100vh - 40px);
-  }
+.analysis-loading h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #374151;
+}
 
-  .modal-header,
-  .modal-body {
-    padding: 20px;
-  }
+.analysis-loading p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 16px;
+}
 
-  .form-row {
-    grid-template-columns: 1fr;
-  }
+.progress-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 200px;
+}
 
-  .analysis-cards {
-    grid-template-columns: 1fr;
-  }
+.progress-step {
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  color: #6b7280;
+  transition: all 0.3s;
+}
 
-  .match-details {
-    grid-template-columns: 1fr;
-  }
+.progress-step.completed {
+  background: #ecfdf5;
+  color: #065f46;
+  border-left: 4px solid #10b981;
+}
 
-  .summary-stats {
-    flex-direction: column;
-    gap: 16px;
-  }
+.matching-container {
+  text-align: center;
+  padding: 20px;
+}
 
-  .steps-indicator {
-    padding: 0 10px;
-  }
+.matching-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  color: #374151;
+}
 
-  .step span {
-    font-size: 12px;
-  }
+.matching-header p {
+  margin: 0 0 32px 0;
+  color: #6b7280;
+  font-size: 16px;
+}
 
-  .step-line {
-    margin: 0 8px;
-  }
+.matching-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.progress-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-label {
+  min-width: 120px;
+  text-align: left;
+  font-weight: 500;
+  color: #374151;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  min-width: 40px;
+  text-align: right;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.match-results {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.results-header h4 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: #374151;
+}
+
+.results-header p {
+  margin: 0 0 24px 0;
+  color: #6b7280;
+}
+
+.results-summary {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.summary-item {
+  text-align: center;
+}
+
+.summary-number {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.summary-number.high-match {
+  color: #10b981;
+}
+
+.summary-number.medium-match {
+  color: #f59e0b;
+}
+
+.summary-number.low-match {
+  color: #6b7280;
+}
+
+.summary-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
 }
 </style>

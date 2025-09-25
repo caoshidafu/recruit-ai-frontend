@@ -80,7 +80,7 @@ class APIManager {
     const skills = []
     
     // 基于职位名称推断技能
-    const position = candidate.currentJobName || ''
+    const position = candidate.title || ''
     if (position.includes('Java') || position.includes('java')) {
       skills.push('Java', 'Spring', 'MySQL')
     } else if (position.includes('前端') || position.includes('Frontend') || position.includes('React') || position.includes('Vue')) {
@@ -133,89 +133,59 @@ class APIManager {
       
       if (response && response.code === 0 && response.data) {
         // 将真实接口返回的数据映射为前端组件所需的格式
-        console.log('真实接口返回的原始数据:', response.data)
-        const candidates = response.data.map(item => {
-          console.log('处理候选人数据:', {
-            name: item.name,
-            positiveLabels: item.positiveLabels,
-            resumeId: item.resumeId
-          })
-          return {
-            // 基本信息映射 - 根据接口文档注释
-            id: item.resumeId, // resumeId作为候选人ID
-            name: item.name, // candidate.name
-            experience: item.workYears, // candidate.experience - 工作年限
-            title: item.currentJobName, // candidate.title - 职位标题
-            location: item.workLocation, // candidate.location - 工作地点
-            matchScore: item.matchScore, // candidate.matchScore - 匹配分数
-            
-            // 能力评分
-            eduBackgroundScore: item.eduBackgroundScore || 0, // 学历背景分
-            skillMatchScore: item.skillMatchScore || 0, // 技能匹配分
-            projectExperienceScore: item.projectExperienceScore || 0, // 项目经验分
-            stabilityScore: item.stabilityScore || 0, // 稳定性分
-            developmentPotentialScore: item.developmentPotentialScore || 0, // 发展潜力分
-            
-            // 推荐信息
-            recommendReasons: item.positiveLabels || [], // candidate.recommendReasons - 推荐理由
-            negativeLabels: item.negativeLabels || [], // 负向标签 - 用于填充ai分析中的改进建议
-            recommendReason: item.recommendReason || '', // ai分析内容
-            
-            // AI分析数据结构
-            aiAnalysis: {
-              overallScore: item.matchScore || 85,
-              recommendReason: item.recommendReason || '该候选人整体素质优秀，建议优先考虑',
-              positiveLabels: item.positiveLabels || [],
-              negativeLabels: item.negativeLabels || [],
-              eduBackgroundScore: item.eduBackgroundScore || 80,
-              skillMatchScore: item.skillMatchScore || 85,
-              projectExperienceScore: item.projectExperienceScore || 88,
-              stabilityScore: item.stabilityScore || 75,
-              developmentPotentialScore: item.developmentPotentialScore || 90
-            },
-            
-            // 工作经历映射
-            workHistory: (item.workExperience || []).map(work => ({
-              company: work.companyName || '',
-              position: work.positionName || '',
-              duration: work.workTimeBucket || '',
-              description: work.detailedIntroduction || '',
-              startDate: work.startDate || '',
-              endDate: work.endDate || ''
-            })),
-            
-            // 教育经历映射
-            educationHistory: (item.eduExperience || []).map(edu => ({
-              school: edu.schoolName || '',
-              degree: edu.degreeName || '',
-              major: edu.majorName || '',
-              duration: `${edu.startDate ? new Date(edu.startDate).getFullYear() : ''}-${edu.endDate ? new Date(edu.endDate).getFullYear() : ''}`,
-              startDate: edu.startDate || '',
-              endDate: edu.endDate || ''
-            })),
-            
-            // 雷达图数据 - 基于能力评分生成
-            radarData: {
-              '学历背景': item.eduBackgroundScore || 80,
-              '技能匹配': item.skillMatchScore || 85,
-              '项目经验': item.projectExperienceScore || 88,
-              '稳定性': item.stabilityScore || 75,
-              '发展潜力': item.developmentPotentialScore || 90
-            },
-            
-            // 其他前端组件需要的字段
-            avatar: `https://i.pravatar.cc/48?seed=${item.resumeId}`, // 生成头像
-            skills: this.generateSkillsFromExperience(item), // 基于工作经历生成技能标签
-            education: item.eduExperience?.[0]?.degreeName || '本科', // 最高学历
-            
-            // 保留原有字段以确保兼容性
-            resumeId: item.resumeId,
-            workYears: item.workYears,
-            workLocation: item.workLocation,
-            workExperience: item.workExperience || [],
-            eduExperience: item.eduExperience || []
-          }
-        })
+        const candidates = response.data.map(item => ({
+          // 基本信息映射 - 根据接口文档注释
+          id: item.resumeId, // resumeId作为候选人ID
+          name: item.name, // candidate.name
+          experience: item.workYears, // candidate.experience - 工作年限
+          currentJobName: item.title, // candidate.title - 职位标题
+          location: item.workLocation, // candidate.location - 工作地点
+          matchScore: item.matchScore, // candidate.matchScore - 匹配分数
+          
+          // 能力评分
+          eduBackgroundScore: item.eduBackgroundScore || 0, // 学历背景分
+          skillMatchScore: item.skillMatchScore || 0, // 技能匹配分
+          projectExperienceScore: item.projectExperienceScore || 0, // 项目经验分
+          stabilityScore: item.stabilityScore || 0, // 稳定性分
+          developmentPotentialScore: item.developmentPotentialScore || 0, // 发展潜力分
+          
+          // 推荐信息
+          recommendReasons: item.positiveLabels || [], // candidate.recommendReasons - 推荐理由
+          negativeLabels: item.negativeLabels || [], // 负向标签 - 用于填充ai分析中的改进建议
+          recommendReason: item.recommendReason || '', // ai分析内容
+          
+          // 工作经历映射
+          workHistory: (item.workExperience || []).map(work => ({
+            company: work.companyName || '',
+            position: work.positionName || '',
+            duration: work.workTimeBucket || '',
+            description: work.detailedIntroduction || '',
+            startDate: work.startDate || '',
+            endDate: work.endDate || ''
+          })),
+          
+          // 教育经历映射
+          educationHistory: (item.eduExperience || []).map(edu => ({
+            school: edu.schoolName || '',
+            degree: edu.degreeName || '',
+            major: edu.majorName || '',
+            duration: `${edu.startDate ? new Date(edu.startDate).getFullYear() : ''}-${edu.endDate ? new Date(edu.endDate).getFullYear() : ''}`,
+            startDate: edu.startDate || '',
+            endDate: edu.endDate || ''
+          })),
+          
+          // 其他前端组件需要的字段
+          avatar: `https://i.pravatar.cc/48?seed=${item.resumeId}`, // 生成头像
+          skills: this.generateSkillsFromExperience(item), // 基于工作经历生成技能标签
+          education: item.eduExperience?.[0]?.degreeName || '本科', // 最高学历
+          
+          // 保留原有字段以确保兼容性
+          resumeId: item.resumeId,
+          workYears: item.workYears,
+          workLocation: item.workLocation,
+          workExperience: item.workExperience || [],
+          eduExperience: item.eduExperience || []
+        }))
         
         return {
           success: true,
