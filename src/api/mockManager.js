@@ -80,7 +80,7 @@ class APIManager {
     const skills = []
     
     // 基于职位名称推断技能
-    const position = candidate.title || ''
+    const position = candidate.currentJobName || ''
     if (position.includes('Java') || position.includes('java')) {
       skills.push('Java', 'Spring', 'MySQL')
     } else if (position.includes('前端') || position.includes('Frontend') || position.includes('React') || position.includes('Vue')) {
@@ -145,7 +145,7 @@ class APIManager {
             id: item.resumeId, // resumeId作为候选人ID
             name: item.name, // candidate.name
             experience: item.workYears, // candidate.experience - 工作年限
-            currentJobName: item.title, // candidate.title - 职位标题
+            title: item.currentJobName, // candidate.title - 职位标题
             location: item.workLocation, // candidate.location - 工作地点
             matchScore: item.matchScore, // candidate.matchScore - 匹配分数
             

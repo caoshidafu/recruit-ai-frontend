@@ -10,7 +10,23 @@
     <template v-if="showDetail">
       <div class="detail-section">
         <h4>岗位描述</h4>
-        <p>{{ job.description }}</p>
+        <div class="description-content">
+          <p v-if="typeof job.description === 'string'" class="description-item">
+            {{ job.description }}
+          </p>
+          <div v-else-if="Array.isArray(job.description)" class="description-list">
+            <p 
+              v-for="(desc, index) in job.description" 
+              :key="index" 
+              class="description-item"
+            >
+              {{ desc }}
+            </p>
+          </div>
+          <p v-else class="description-item">
+            暂无岗位描述
+          </p>
+        </div>
       </div>
 
       <div class="detail-section">
@@ -123,6 +139,56 @@ export default {
   font-size: 14px;
   color: var(--gray-600);
   line-height: 1.6;
+}
+
+.description-content {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+.description-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.description-item {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+.description-list .description-item {
+  padding: 12px 16px;
+  background: var(--gray-50);
+  border-radius: 8px;
+  border-left: 3px solid var(--primary);
+  position: relative;
+}
+
+.description-list .description-item::before {
+  content: counter(desc-counter);
+  counter-increment: desc-counter;
+  position: absolute;
+  left: -12px;
+  top: 12px;
+  background: var(--primary);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.description-list {
+  counter-reset: desc-counter;
 }
 
 .requirements-list {
