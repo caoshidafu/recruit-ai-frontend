@@ -4,25 +4,25 @@
     <div class="candidate-header" @click="toggleExpanded">
       <div class="candidate-basic-info">
         <img
-          :src="candidate.avatar"
-          :alt="candidate.name"
+          :src="candidate.avatar || 'https://i.pravatar.cc/48'"
+          :alt="candidate.name || '候选人'"
           class="candidate-avatar"
         />
         <div class="candidate-info">
-          <h4 class="candidate-name">{{ candidate.name }}</h4>
+          <h4 class="candidate-name">{{ candidate.name || '未知候选人' }}</h4>
           <div class="candidate-meta">
-            <span>{{ candidate.experience }}年经验</span>
+            <span>{{ candidate.experience || 0 }}年经验</span>
             <span class="separator">·</span>
-            <span>{{ candidate.title }}</span>
+            <span>{{ candidate.title || '未知职位' }}</span>
             <span class="separator">·</span>
-            <span>{{ candidate.location }}</span>
+            <span>{{ candidate.location || '未知地点' }}</span>
           </div>
         </div>
       </div>
 
       <div class="header-right">
         <div class="match-indicator">
-          <div class="match-score">{{ candidate.matchScore }}%</div>
+          <div class="match-score">{{ candidate.matchScore || 0 }}%</div>
           <div class="match-label">匹配度</div>
         </div>
         <!-- 展开/收起按钮 -->
@@ -40,7 +40,7 @@
           <h5>教育经历</h5>
           <div class="education-list">
             <div
-              v-for="(edu, index) in candidate.educationHistory.slice().reverse()"
+              v-for="(edu, index) in (candidate.educationHistory || []).slice().reverse()"
               :key="index"
               class="education-item"
             >
@@ -63,7 +63,7 @@
         <div v-if="candidate.recommendReasons && candidate.recommendReasons.length > 0" class="recommend-section">
           <h5>推荐理由</h5>
           <ul class="recommend-reasons">
-            <li v-for="(reason, index) in candidate.recommendReasons.slice(0, 5)" :key="index">
+            <li v-for="(reason, index) in (candidate.recommendReasons || []).slice(0, 5)" :key="index">
               {{ reason }}
             </li>
           </ul>
@@ -78,7 +78,7 @@
           <h5>技能标签</h5>
           <div class="candidate-skills">
             <span
-              v-for="skill in candidate.skills.slice(0, 5)"
+              v-for="skill in (candidate.skills || []).slice(0, 5)"
               :key="skill"
               class="skill-tag"
             >
@@ -92,7 +92,7 @@
           <h5>过往经历</h5>
           <div class="work-list">
             <div
-              v-for="(work, index) in candidate.workHistory.slice().reverse()"
+              v-for="(work, index) in (candidate.workHistory || []).slice().reverse()"
               :key="index"
               class="work-item"
             >
