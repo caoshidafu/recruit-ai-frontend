@@ -370,12 +370,12 @@ export default {
         
         // 使用新的统一API接口获取候选人数据，携带发布岗位id和匹配类型
         const response = await apiManager.getCandidatesByJobId(jobId, 1, matchType)
-
+        console.log('接口二返回数据:', response)
         if (response.success && response.data) {
           // 将接口返回的数据转换为页面需要的格式
-          const rawCandidatesData = response.data || []
+          // 注意：response.data 是一个对象，真正的候选人数组在 data.candidates 中
+          const rawCandidatesData = response.data.candidates || []
           
-          console.log(`成功获取职位ID ${jobId} 的候选人数据，共 ${rawCandidatesData.length} 人`)
           
           // 根据接口文档转换数据格式
           const candidatesData = rawCandidatesData.map(candidate => ({

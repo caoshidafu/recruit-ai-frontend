@@ -5,7 +5,7 @@
  * 后端接口基础URL配置
  * 直接使用真实域名进行API请求
  */
-const BASE_URL = 'https://is-ehr-recruit2.test.gifshow.com/recruit';
+const BASE_URL = 'https://kuaizhao-pre1.corp.kuaishou.com/recruit';
 
 // 导出配置
 export default BASE_URL;
