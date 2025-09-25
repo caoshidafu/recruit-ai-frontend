@@ -317,14 +317,23 @@ export default {
             requirements: Array.isArray(position.positionDemand) ? position.positionDemand : [position.positionDemand], // positionDemand -> requirements
             skills: position.positionSkillLabels || [], // positionSkillLabels -> skills
             experienceLabels: position.positionExperienceLabels || [], // positionExperienceLabels -> experienceLabels
-            // 添加页面所需的统计数据字段（默认值）
-            candidateCount: 0,
-            recommendCount: 0, 
-            interviewCount: 0,
-            interviewingCount: 0, // JobCard组件使用的字段名
-            requiredCount: 1,
-            headcount: 1, // JobCard组件使用的字段名
-            newCandidates: 0, // JobCard组件使用的字段名
+            // 添加页面所需的统计数据字段（使用mock数据）
+            ...(() => {
+              const candidateCount = Math.floor(Math.random() * 50) + 10 // 候选人总数：10-59
+              const newCandidates = Math.floor(Math.random() * 15) + 3   // 新推荐：3-17
+              const interviewingCount = Math.floor(Math.random() * Math.min(8, candidateCount / 3)) + 1 // 面试中：不超过候选人总数的1/3
+              const headcount = Math.floor(Math.random() * 3) + 1        // 需求人数：1-3
+              
+              return {
+                candidateCount,
+                recommendCount: newCandidates,  // 推荐数与新推荐保持一致
+                interviewCount: interviewingCount,
+                interviewingCount,              // JobCard组件使用的字段名
+                requiredCount: headcount,
+                headcount,                      // JobCard组件使用的字段名
+                newCandidates,                  // 新推荐候选人数
+              }
+            })(),
             // 添加其他页面可能需要的字段
             positionNature: position.positionNature || '全职',
             salary: '面议', // 接口文档中没有薪资字段，使用默认值
