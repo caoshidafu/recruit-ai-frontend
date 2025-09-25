@@ -159,14 +159,14 @@ class JobAPIManager {
         
         // 对候选人数据进行格式化处理，确保与CandidateCard组件期望的字段匹配
         const formattedCandidates = candidates.map(candidate => ({
-          // 基本信息
-          id: candidate.candidateId || candidate.id || Date.now() + Math.random(),
-          name: candidate.candidateName || candidate.name || '未知候选人',
-          title: candidate.currentPosition || candidate.title || '职位信息不详',
+          // 基本信息 - 使用接口二的实际字段名
+          id: candidate.resumeId || candidate.candidateId || candidate.id || Date.now() + Math.random(),
+          name: candidate.name || candidate.candidateName || '未知候选人',
+          title: candidate.title || candidate.currentPosition || '职位信息不详',
           currentCompany: candidate.currentCompany || candidate.company || '公司信息不详',
           experience: candidate.workYears || candidate.experience || 0,
           education: candidate.education || '学历不详',
-          location: candidate.location || '地址不详',
+          location: candidate.workLocation || candidate.location || '地址不详',
           status: '在职-看机会',
           expectedSalary: '面议',
           
@@ -179,35 +179,46 @@ class JobAPIManager {
                            Array.isArray(candidate.positiveLabels) ? candidate.positiveLabels : 
                            ['技能匹配度高', '工作经验丰富'],
           
+          // AI分析数据 - 添加缺失的关键字段
+          recommendReason: candidate.recommendReason || '', // AI推荐理由
+          negativeLabels: Array.isArray(candidate.negativeLabels) ? candidate.negativeLabels : [], // 负向标签
+          positiveLabels: Array.isArray(candidate.positiveLabels) ? candidate.positiveLabels : [], // 正向标签
+          
+          // 能力评分 - 确保AI分析雷达图所需的字段
+          eduBackgroundScore: candidate.eduBackgroundScore || 0, // 学历背景分
+          skillMatchScore: candidate.skillMatchScore || 0, // 技能匹配分
+          projectExperienceScore: candidate.projectExperienceScore || 0, // 项目经验分
+          stabilityScore: candidate.stabilityScore || 0, // 稳定性分
+          developmentPotentialScore: candidate.developmentPotentialScore || 0, // 发展潜力分
+          
           // 头像
           avatar: candidate.avatar || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70) + 1}`,
           
-          // 工作经历 - 确保格式正确
-          workHistory: Array.isArray(candidate.workHistory) ? candidate.workHistory : 
-                      Array.isArray(candidate.workExperience) ? candidate.workExperience.map(work => ({
-                        company: work.companyName || work.company || '',
-                        position: work.positionName || work.position || '',
-                        duration: work.workTimeBucket || work.duration || '',
-                        description: work.detailedIntroduction || work.description || ''
-                      })) : [],
+          // 工作经历 - 使用接口二的字段映射
+          workHistory: Array.isArray(candidate.workExperience) ? candidate.workExperience.map(work => ({
+            company: work.companyName || work.company || '',
+            position: work.positionName || work.position || '',
+            duration: work.workTimeBucket || work.duration || '',
+            description: work.detailedIntroduction || work.description || '',
+            startDate: work.startDate || '',
+            endDate: work.endDate || ''
+          })) : Array.isArray(candidate.workHistory) ? candidate.workHistory : [],
           
-          // 教育经历 - 确保格式正确
-          educationHistory: Array.isArray(candidate.educationHistory) ? candidate.educationHistory :
-                           Array.isArray(candidate.eduExperience) ? candidate.eduExperience.map(edu => ({
-                             school: edu.schoolName || edu.school || '',
-                             degree: edu.degreeName || edu.degree || '',
-                             major: edu.majorName || edu.major || '',
-                             duration: edu.duration || `${edu.startDate ? new Date(edu.startDate).getFullYear() : ''}-${edu.endDate ? new Date(edu.endDate).getFullYear() : ''}`
-                           })) : [],
+          // 教育经历 - 使用接口二的字段映射
+          educationHistory: Array.isArray(candidate.eduExperience) ? candidate.eduExperience.map(edu => ({
+            school: edu.schoolName || edu.school || '',
+            degree: edu.degreeName || edu.degree || '',
+            major: edu.majorName || edu.major || '',
+            duration: edu.duration || `${edu.startDate ? new Date(edu.startDate).getFullYear() : ''}-${edu.endDate ? new Date(edu.endDate).getFullYear() : ''}`
+          })) : Array.isArray(candidate.educationHistory) ? candidate.educationHistory : [],
           
-          // 雷达图数据
+          // 雷达图数据 - 使用接口二返回的能力评分
           radarData: candidate.radarData || {
-            "学历背景": candidate.eduBackgroundScore || Math.floor(Math.random() * 20) + 80,
-            "工作经历": Math.floor(Math.random() * 20) + 80,
-            "技能匹配": candidate.skillMatchScore || Math.floor(Math.random() * 20) + 80,
-            "项目经验": candidate.projectExperienceScore || Math.floor(Math.random() * 20) + 80,
+            "学历": candidate.eduBackgroundScore || Math.floor(Math.random() * 20) + 80,
+            "技能": candidate.skillMatchScore || Math.floor(Math.random() * 20) + 80,
+            "经验": candidate.projectExperienceScore || Math.floor(Math.random() * 20) + 80,
             "稳定性": candidate.stabilityScore || Math.floor(Math.random() * 20) + 75,
-            "发展潜力": candidate.developmentPotentialScore || Math.floor(Math.random() * 20) + 85
+            "潜力": candidate.developmentPotentialScore || Math.floor(Math.random() * 20) + 85
           },
           
           // 联系信息

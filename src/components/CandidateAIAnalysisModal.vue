@@ -253,7 +253,7 @@ export default {
         analysisData.value = {
           overallScore: candidate.matchScore || aiAnalysis.overallScore || 85,
           recommendation: candidate.recommendReason || aiAnalysis.recommendReason || '该候选人整体素质优秀，建议优先考虑',
-          strengths: candidate.recommendReasons || aiAnalysis.positiveLabels || [],
+          strengths: candidate.positiveLabels || candidate.recommendReasons || aiAnalysis.positiveLabels || [],
           improvements: candidate.negativeLabels || aiAnalysis.negativeLabels || [],
           jobMatching: {
             eduBackgroundScore: candidate.eduBackgroundScore || aiAnalysis.eduBackgroundScore || 80,
