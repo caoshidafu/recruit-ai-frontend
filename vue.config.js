@@ -24,17 +24,17 @@ module.exports = defineConfig({
         pathRewrite: {
           '^/api': '/recruit'
         },
-        onProxyReq: function(proxyReq, req, res) {
+        onProxyReq: function(proxyReq, req) {
           // 添加必要的请求头
           console.log('代理请求:', req.method, req.url, '-> ', proxyReq.path);
         },
-        onProxyRes: function(proxyRes, req, res) {
+        onProxyRes: function(proxyRes) {
           // 处理响应头，确保跨域
           proxyRes.headers['access-control-allow-origin'] = '*';
           proxyRes.headers['access-control-allow-methods'] = 'GET,POST,PUT,DELETE,OPTIONS';
           proxyRes.headers['access-control-allow-headers'] = 'Content-Type,Authorization,X-Requested-With';
         },
-        onError: function(err, req, res) {
+        onError: function(err) {
           console.error('代理错误:', err);
         }
       }

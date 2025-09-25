@@ -167,7 +167,7 @@
 
 <script>
 import { ref, reactive, computed, watch } from 'vue'
-import apiManager from '../api/mockManager.js'
+import jobAPIManager from '../api/JobAPIManager.js'
 
 export default {
   name: 'CreateJobModal',
@@ -272,7 +272,7 @@ export default {
         }
 
         console.log('🚀 开始创建职位，参数:', jobData)
-        const createResponse = await apiManager.createPosition(jobData)
+        const createResponse = await jobAPIManager.createRecommendPosition(jobData)
         console.log('📥 创建职位响应:', createResponse)
         
         if (progressInterval) {
@@ -291,10 +291,10 @@ export default {
         console.log('- createResponse是否为null:', createResponse === null)
         console.log('- createResponse是否为undefined:', createResponse === undefined)
 
-        // 更严格的成功检查
+        // 更严格的成功检查 - 适配真实API返回格式
         if (createResponse && 
             typeof createResponse === 'object' && 
-            createResponse.success === true) {
+            (createResponse.code === 0 || createResponse.code === "0")) {
           console.log('✅ 职位创建成功，准备设置createdJob')
           
           // 确保data和positionId存在
@@ -321,9 +321,9 @@ export default {
             await performMatching(positionId)
           }, 2000)
         } else {
-          console.error('❌ 创建职位失败 - success不为true')
+          console.error('❌ 创建职位失败 - code不为0')
           console.error('- 完整响应:', createResponse)
-          console.error('- success值:', createResponse?.success)
+          console.error('- code值:', createResponse?.code)
           console.error('- 错误信息:', createResponse?.message)
           
           // 显示更详细的错误信息

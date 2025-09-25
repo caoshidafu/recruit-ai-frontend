@@ -184,7 +184,7 @@ import JobDetail from './components/JobDetail.vue'
 import ResizableSplitter from './components/ResizableSplitter.vue'
 import CreateJobModal from './components/CreateJobModal.vue'
 import DashboardView from './components/DashboardView.vue'
-import apiManager from './api/mockManager.js'
+import jobAPIManager from './api/JobAPIManager.js'
 
 export default {
   name: 'App',
@@ -403,7 +403,7 @@ export default {
       try {
         loading.value = true
         // 调用真实接口一获取职位列表
-        const response = await apiManager.getPositionList()
+        const response = await jobAPIManager.getPositionList()
         if (response && response.code === 0 && response.data) {
           // 将接口返回的字段映射到页面字段
           jobs.value = response.data.map(position => ({
@@ -476,7 +476,7 @@ export default {
         console.log(`正在为职位ID ${jobId} 加载候选人数据... (匹配类型: ${matchType})`)
         
         // 使用新的统一API接口获取候选人数据，携带发布岗位id和匹配类型
-        const response = await apiManager.getCandidatesByJobId(jobId, 1, matchType)
+        const response = await jobAPIManager.getCandidatesByJobId(jobId, 1, matchType)
         console.log('接口二返回数据:', response)
         if (response.success && response.data) {
           // mockManager.getCandidatesByJobId 已经处理过数据格式转换

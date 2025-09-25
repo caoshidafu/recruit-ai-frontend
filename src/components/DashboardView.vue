@@ -123,7 +123,7 @@ import MetricCard from './MetricCard.vue'
 import BarChart from './BarChart.vue'
 import PieChart from './PieChart.vue'
 import LineChart from './LineChart.vue'
-import apiManager from '../api/mockManager.js'
+import dashboardAPIManager from '../api/DashboardAPIManager.js'
 
 export default {
   name: 'DashboardView',
@@ -200,7 +200,7 @@ export default {
         loading.value = true
         console.log('正在加载数据大盘数据...')
         
-        const response = await apiManager.getDashboardData()
+        const response = await dashboardAPIManager.getDashboardData()
         if (response.success) {
           dashboardData.value = response.data
           console.log('数据大盘数据加载成功:', dashboardData.value)
