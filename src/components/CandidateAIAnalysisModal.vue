@@ -66,14 +66,14 @@
               </h4>
               <div class="labels-container positive">
                 <div 
-                  v-for="(label, index) in (candidate.aiAnalysis?.positiveLabels || analysisData.strengths).slice(0, 5)" 
+                  v-for="(label, index) in (candidate.recommendReasons || candidate.aiAnalysis?.positiveLabels || analysisData.strengths).slice(0, 5)" 
                   :key="index"
                   class="label-tag positive"
                 >
                   <span class="label-icon">👍</span>
                   {{ label }}
                 </div>
-                <div v-if="!(candidate.aiAnalysis?.positiveLabels || analysisData.strengths).length" class="no-data">
+                <div v-if="!(candidate.recommendReasons || candidate.aiAnalysis?.positiveLabels || analysisData.strengths).length" class="no-data">
                   暂无优势标签
                 </div>
               </div>
@@ -87,14 +87,14 @@
               </h4>
               <div class="labels-container negative">
                 <div 
-                  v-for="(label, index) in (candidate.aiAnalysis?.negativeLabels || analysisData.improvements).slice(0, 5)" 
+                  v-for="(label, index) in (candidate.negativeLabels || candidate.aiAnalysis?.negativeLabels || analysisData.improvements).slice(0, 5)" 
                   :key="index"
                   class="label-tag negative"
                 >
                   <span class="label-icon">⚡</span>
                   {{ label }}
                 </div>
-                <div v-if="!(candidate.aiAnalysis?.negativeLabels || analysisData.improvements).length" class="no-data">
+                <div v-if="!(candidate.negativeLabels || candidate.aiAnalysis?.negativeLabels || analysisData.improvements).length" class="no-data">
                   暂无风险点
                 </div>
               </div>
@@ -149,20 +149,22 @@ export default {
     const isTyping = ref(false)
     const showDetailedContent = ref(false)  // 控制雷达图和其他内容的显示
     
-    // 计算雷达图数据
+    // 计算雷达图数据 - 优先使用接口二返回的数据
     const radarChartData = computed(() => {
       if (props.candidate?.radarData) {
         return props.candidate.radarData
       }
       
-      // 从AI分析数据中生成雷达图数据
-      const aiAnalysis = props.candidate?.aiAnalysis || {}
+      // 优先使用接口二返回的能力评分数据
+      const candidate = props.candidate || {}
+      const aiAnalysis = candidate.aiAnalysis || {}
+      
       return {
-        '学历': aiAnalysis.eduBackgroundScore || 80,
-        '技能': aiAnalysis.skillMatchScore || 85,
-        '经验': aiAnalysis.projectExperienceScore || 88,
-        '稳定性': aiAnalysis.stabilityScore || 75,
-        '潜力': aiAnalysis.developmentPotentialScore || 90
+        '学历': candidate.eduBackgroundScore || aiAnalysis.eduBackgroundScore || 80,
+        '技能': candidate.skillMatchScore || aiAnalysis.skillMatchScore || 85,
+        '经验': candidate.projectExperienceScore || aiAnalysis.projectExperienceScore || 88,
+        '稳定性': candidate.stabilityScore || aiAnalysis.stabilityScore || 75,
+        '潜力': candidate.developmentPotentialScore || aiAnalysis.developmentPotentialScore || 90
       }
     })
     
@@ -243,21 +245,22 @@ export default {
         loading.value = true
         error.value = ''
 
-        // 直接使用候选人数据中的AI分析信息
-        const aiAnalysis = props.candidate.aiAnalysis || {}
+        // 优先使用接口二返回的数据，然后是AI分析数据
+        const candidate = props.candidate || {}
+        const aiAnalysis = candidate.aiAnalysis || {}
         
-        // 设置分析数据
+        // 设置分析数据 - 直接使用接口二返回的recommendReason
         analysisData.value = {
           overallScore: aiAnalysis.overallScore || 85,
-          recommendation: aiAnalysis.recommendReason || '该候选人整体素质优秀，建议优先考虑',
-          strengths: aiAnalysis.positiveLabels || [],
-          improvements: aiAnalysis.negativeLabels || [],
+          recommendation: candidate.recommendReason || aiAnalysis.recommendReason || '该候选人整体素质优秀，建议优先考虑',
+          strengths: candidate.recommendReasons || aiAnalysis.positiveLabels || [],
+          improvements: candidate.negativeLabels || aiAnalysis.negativeLabels || [],
           jobMatching: {
-            eduBackgroundScore: aiAnalysis.eduBackgroundScore || 80,
-            skillMatchScore: aiAnalysis.skillMatchScore || 85,
-            projectExperienceScore: aiAnalysis.projectExperienceScore || 88,
-            stabilityScore: aiAnalysis.stabilityScore || 75,
-            developmentPotentialScore: aiAnalysis.developmentPotentialScore || 90
+            eduBackgroundScore: candidate.eduBackgroundScore || aiAnalysis.eduBackgroundScore || 80,
+            skillMatchScore: candidate.skillMatchScore || aiAnalysis.skillMatchScore || 85,
+            projectExperienceScore: candidate.projectExperienceScore || aiAnalysis.projectExperienceScore || 88,
+            stabilityScore: candidate.stabilityScore || aiAnalysis.stabilityScore || 75,
+            developmentPotentialScore: candidate.developmentPotentialScore || aiAnalysis.developmentPotentialScore || 90
           }
         }
 
