@@ -175,6 +175,15 @@ class APIManager {
             endDate: edu.endDate || ''
           })),
           
+          // 雷达图数据映射 - 用于AI分析模态框
+          radarData: {
+            '学历': item.eduBackgroundScore || 80,
+            '技能': item.skillMatchScore || 85,
+            '经验': item.projectExperienceScore || 88,
+            '稳定性': item.stabilityScore || 75,
+            '潜力': item.developmentPotentialScore || 90
+          },
+          
           // 其他前端组件需要的字段
           avatar: `https://i.pravatar.cc/48?seed=${item.resumeId}`, // 生成头像
           skills: this.generateSkillsFromExperience(item), // 基于工作经历生成技能标签

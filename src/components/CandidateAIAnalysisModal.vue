@@ -251,7 +251,7 @@ export default {
         
         // 设置分析数据 - 直接使用接口二返回的recommendReason
         analysisData.value = {
-          overallScore: aiAnalysis.overallScore || 85,
+          overallScore: candidate.matchScore || aiAnalysis.overallScore || 85,
           recommendation: candidate.recommendReason || aiAnalysis.recommendReason || '该候选人整体素质优秀，建议优先考虑',
           strengths: candidate.recommendReasons || aiAnalysis.positiveLabels || [],
           improvements: candidate.negativeLabels || aiAnalysis.negativeLabels || [],
