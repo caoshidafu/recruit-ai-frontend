@@ -1,7 +1,15 @@
 <template>
   <div class="app">
     <header class="app-header">
-      <h1 class="app-title">智能简历推荐系统 - {{ currentViewTitle }}</h1>
+      <div class="header-left">
+        <div class="logo-container">
+          <img src="/快手.ico" alt="快手智能简历推荐系统" class="app-logo" />
+          <div class="title-container">
+            <h1 class="app-title">智能简历推荐系统</h1>
+            <span class="subtitle">{{ currentViewTitle }}</span>
+          </div>
+        </div>
+      </div>
       <div class="header-center">
         <div class="view-switcher">
           <button 
@@ -714,6 +722,129 @@ export default {
   display: flex;
   align-items: center;
   gap: 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 24px;
+}
+
+.app-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+  background: white;
+  padding: 4px;
+}
+
+.app-logo:hover {
+  transform: scale(1.05);
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+  color: white;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-button {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+.icon-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.icon-button .icon {
+  font-size: 18px;
+}
+
+.icon-button .badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ff4757;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.user-info:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.user-info img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-info span {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
 }
 
 .header-center {
